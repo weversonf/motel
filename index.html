@@ -227,7 +227,7 @@
                 
                 try {
                     // Chama a API do Asaas através do nosso Servidor Node.js
-                    const resposta = await fetch('http://localhost:3001/api/gerar-pix', {
+                    const resposta = await fetch('http://localhost:3000/api/gerar-pix', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ 
