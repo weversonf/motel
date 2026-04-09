@@ -3,33 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot v2</title>
+    <title>Reserva - Motel Dreams v03</title>
     <style>
-        :root { --primary: #c0392b; --bg: #f4f7f6; --bot-bg: #ecf0f1; }
+        :root { --primary: #8a1c1c; --bg: #1a1a1a; --bot-bg: #f4f4f9; --text: #333; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
         body { background: var(--bg); display: flex; justify-content: center; align-items: center; height: 100vh; padding: 10px; }
         
-        .chat-container { width: 100%; max-width: 450px; background: #fff; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); display: flex; flex-direction: column; height: 90vh; max-height: 750px; overflow: hidden; }
-        .chat-header { background: #2c3e50; color: #fff; padding: 15px; text-align: center; font-weight: bold; font-size: 1.1rem; }
-        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; }
+        .chat-container { width: 100%; max-width: 450px; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); display: flex; flex-direction: column; height: 90vh; max-height: 750px; overflow: hidden; }
+        .chat-header { background: var(--primary); color: #fff; padding: 15px; text-align: center; font-weight: bold; font-size: 1.1rem; letter-spacing: 1px; text-transform: uppercase;}
+        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; background: #fafafa; }
         
         .msg { padding: 12px 16px; border-radius: 15px; max-width: 85%; line-height: 1.4; font-size: 0.95rem; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .msg.bot { background: var(--bot-bg); color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.bot { background: var(--bot-bg); color: var(--text); align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #eee; }
         .msg.user { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
         
-        .ui-box { margin-top: 5px; display: flex; flex-direction: column; gap: 10px; width: 100%; }
+        .ui-box { margin-top: 5px; display: flex; flex-direction: column; gap: 8px; width: 100%; }
         .ui-box input { padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; width: 100%; outline: none; }
-        .ui-box button.btn-action { padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
-        .ui-box button.btn-outline { padding: 12px; background: transparent; color: var(--primary); border: 2px solid var(--primary); border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        .ui-box button.btn-action { padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; }
+        .ui-box button.btn-action:hover { background: #661010; }
+        .ui-box button.btn-outline { padding: 12px; background: #fff; color: var(--primary); border: 2px solid var(--primary); border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: left; transition: 0.2s; }
+        .ui-box button.btn-outline:hover { background: var(--primary); color: #fff; }
         
-        .card-motel { background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.2s; }
-        .card-motel:hover { border-color: var(--primary); box-shadow: 0 0 10px rgba(192,57,43,0.2); }
-        .card-motel img { width: 100%; height: 100px; object-fit: cover; }
-        .card-motel div { padding: 10px; text-align: center; font-weight: bold; color: #333; }
+        .card-motel { background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
+        .card-motel:hover { border-color: var(--primary); box-shadow: 0 4px 10px rgba(138,28,28,0.2); }
+        .card-motel img { width: 100%; height: 120px; object-fit: cover; }
+        .card-motel div { padding: 12px; text-align: center; font-weight: bold; color: #333; }
 
-        .upsell-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; margin-bottom: 5px; }
-        .upsell-item.active { border-color: var(--primary); background: #fdf2f2; }
+        .termos-box { background: #fff3f3; border: 1px solid #ffcccc; padding: 12px; border-radius: 8px; font-size: 0.85rem; color: #d32f2f; }
+        .termos-box ul { padding-left: 20px; margin-top: 8px; margin-bottom: 12px; }
+        .termos-box li { margin-bottom: 6px; }
 
         .input-area { display: flex; padding: 15px; border-top: 1px solid #eee; gap: 10px; background: #fff; }
         .input-area input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
@@ -40,7 +43,7 @@
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">Autoatendimento - Motéis Fortaleza</div>
+        <div class="chat-header">Motel Dreams</div>
         <div class="chat-box" id="chat"></div>
         <div class="input-area" id="inputArea">
             <input type="text" id="userInput" placeholder="Digite aqui..." onkeypress="if(event.key === 'Enter') handleText()">
@@ -54,13 +57,16 @@
         const userInput = document.getElementById('userInput');
 
         let step = 0;
-        let userData = { nome: '', dataNasc: '', motel: '', dataRes: '', horaRes: '', upsells: [], total: 150, formaPagamento: '' };
+        let userData = { 
+            nome: '', dataNasc: '', suite: '', precoBase: 0, promocao: '', 
+            dataRes: '', horaRes: '', total: 0, formaPagamento: '' 
+        };
 
-        const moteis = [
-            { nome: "Dragon Motel", img: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=300&h=150&fit=crop" },
-            { nome: "Assahi Motel", img: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=300&h=150&fit=crop" },
-            { nome: "Dreams Motel", img: "https://images.unsplash.com/photo-1542314831-c6a4d27ece08?w=300&h=150&fit=crop" },
-            { nome: "Spa Urbano", img: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=300&h=150&fit=crop" }
+        // Exemplos de suítes do Motel Dreams (Pode trocar as URLs pelas imagens do seu Drive depois)
+        const suites = [
+            { nome: "Suíte Standard", preco: 100, img: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=200&fit=crop" },
+            { nome: "Suíte Master", preco: 180, img: "https://images.unsplash.com/photo-1542314831-c6a4d27ece08?w=400&h=200&fit=crop" },
+            { nome: "Suíte Dreams (Hidro)", preco: 250, img: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=400&h=200&fit=crop" }
         ];
 
         function addMsg(text, sender) {
@@ -81,30 +87,69 @@
 
             if (type === 'dataNasc') {
                 div.innerHTML = `<label>Data de nascimento:</label><input type="date" id="uiData"><button class="btn-action" onclick="processarUI('dataNasc')">Confirmar</button>`;
-            } else if (type === 'motel') {
-                div.style.background = 'transparent'; div.style.padding = '0';
-                moteis.forEach(m => {
-                    div.innerHTML += `<div class="card-motel" onclick="processarUI('motel', '${m.nome}')"><img src="${m.img}"><div>${m.nome} (R$ 150)</div></div>`;
+            } 
+            else if (type === 'suite') {
+                div.style.background = 'transparent'; div.style.padding = '0'; border = 'none';
+                suites.forEach(s => {
+                    div.innerHTML += `<div class="card-motel" onclick="processarUI('suite', '${s.nome}', ${s.preco})"><img src="${s.img}"><div>${s.nome} (Base 3h: R$ ${s.preco})</div></div>`;
                 });
-            } else if (type === 'dataRes') {
+            } 
+            else if (type === 'promocao') {
+                const base = userData.precoBase;
+                // Cálculos baseados na sua regra de negócio
+                const val3h = base * 0.70; // 30% desconto
+                const val12h = (base * 2.5) * 0.70; // Exemplo de proporção para 12h
+                const val24h = (base * 4) * 0.70; // Exemplo de proporção para 24h
+
+                div.innerHTML = `
+                    <p style="font-weight:bold; margin-bottom: 8px;">Escolha a permanência (Promoções ativas):</p>
+                    <button class="btn-outline" onclick="processarUI('promocao', 'Permanência de Dobro (Paga 3h ganha 3h = 6h)', ${base})">
+                        🎁 Perm. em Dobro (6h) - R$ ${base.toFixed(2)}
+                    </button>
+                    <button class="btn-outline" onclick="processarUI('promocao', '3h com 30% OFF', ${val3h})">
+                        🕒 3h (30% OFF) - R$ ${val3h.toFixed(2)}
+                    </button>
+                    <button class="btn-outline" onclick="processarUI('promocao', '12h com 30% OFF', ${val12h})">
+                        🕛 12h (30% OFF) - R$ ${val12h.toFixed(2)}
+                    </button>
+                    <button class="btn-outline" onclick="processarUI('promocao', '24h com 30% OFF', ${val24h})">
+                        🕛 24h (30% OFF) - R$ ${val24h.toFixed(2)}
+                    </button>
+                    <p style="font-size:0.75rem; color:#666; margin-top:5px;">*Nenhuma oferta acima inclui café da manhã.</p>
+                `;
+            } 
+            else if (type === 'dataRes') {
                 const hoje = new Date().toISOString().split('T')[0];
                 div.innerHTML = `<label>Data da reserva:</label><input type="date" id="uiDataRes" min="${hoje}"><button class="btn-action" onclick="processarUI('dataRes')">Confirmar Data</button>`;
-            } else if (type === 'horaRes') {
+            } 
+            else if (type === 'horaRes') {
                 div.innerHTML = `<label>Horário de chegada:</label><input type="time" id="uiHoraRes"><button class="btn-action" onclick="processarUI('horaRes')">Confirmar Horário</button>`;
-            } else if (type === 'upsell') {
+            } 
+            else if (type === 'termos') {
                 div.innerHTML = `
-                    <p style="font-weight:bold;">Torne o momento especial:</p>
-                    <div class="upsell-item" onclick="this.classList.toggle('active')" data-val="100" data-nome="🍾 Espumante"><span>🍾 Espumante</span><span>+ R$ 100</span></div>
-                    <div class="upsell-item" onclick="this.classList.toggle('active')" data-val="50" data-nome="🌹 Pétalas"><span>🌹 Pétalas</span><span>+ R$ 50</span></div>
-                    <button class="btn-action" onclick="processarUpsell(this.parentNode)">Avançar</button>
+                    <div class="termos-box">
+                        <b>⚠️ ATENÇÃO ÀS REGRAS DO MOTEL DREAMS:</b>
+                        <ul>
+                            <li>Oferta válida para até <b>2 pessoas</b>.</li>
+                            <li><b>NÃO INCLUI:</b> café da manhã, cortesias, refeições ou consumos do frigobar.</li>
+                            <li>Tolerância de atraso: <b>15 minutos</b>. Após isso, cancelamento automático.</li>
+                            <li><b>No-show (não comparecer):</b> Valor não será reembolsado nem remarcado.</li>
+                            <li><b>Desistência:</b> Reembolso apenas avisando com mínimo de 2 horas de antecedência.</li>
+                            <li><b>Remarcações:</b> Máximo de 10 dias para utilizar.</li>
+                            <li>Não realizamos alterações no horário agendado!</li>
+                        </ul>
+                        <button class="btn-action" onclick="processarUI('termos', 'Concordo')">Li e Concordo com os Termos</button>
+                    </div>
                 `;
-            } else if (type === 'pagamento') {
+            } 
+            else if (type === 'pagamento') {
                 div.innerHTML = `
-                    <p style="font-weight:bold;">Como deseja proceder?</p>
-                    <button class="btn-action" onclick="processarPagamento('pix_agora')">Pagar agora via Pix (Garante a vaga)</button>
-                    <button class="btn-outline" onclick="processarPagamento('recepcao')">Pagar na Recepção (Sujeito à fila)</button>
+                    <p style="font-weight:bold;">Para garantir a vaga e a promoção, como deseja pagar?</p>
+                    <button class="btn-action" style="margin-bottom: 8px;" onclick="processarPagamento('pix_agora')">Pagar agora (Pix) - Vaga Garantida</button>
+                    <button class="btn-outline" onclick="processarPagamento('recepcao')">Pagar na Recepção (Sujeito à fila/espera)</button>
                 `;
             }
+            
             chat.appendChild(div);
             chat.scrollTop = chat.scrollHeight;
         }
@@ -124,79 +169,82 @@
             return idade;
         }
 
-        function processarUI(tipo, valor = null) {
+        function processarUI(tipo, valor = null, precoBase = null) {
             if (tipo === 'dataNasc') {
                 const data = document.getElementById('uiData').value;
                 if(!data) return; addMsg(data.split('-').reverse().join('/'), 'user');
-                if (calcularIdade(data) < 18) { addMsg("Apenas maiores de 18 anos.", 'bot'); return; }
+                if (calcularIdade(data) < 18) { addMsg("Acesso permitido apenas para maiores de 18 anos.", 'bot'); return; }
                 userData.dataNasc = data; step++;
-            } else if (tipo === 'motel') {
-                addMsg(valor, 'user'); userData.motel = valor; step++;
-            } else if (tipo === 'dataRes') {
+            } 
+            else if (tipo === 'suite') {
+                addMsg(valor, 'user'); 
+                userData.suite = valor; 
+                userData.precoBase = precoBase;
+                step++;
+            } 
+            else if (tipo === 'promocao') {
+                addMsg(valor, 'user'); 
+                userData.promocao = valor; 
+                userData.total = precoBase; // O preço calculado já vem na variável precoBase nesta etapa
+                step++;
+            }
+            else if (tipo === 'dataRes') {
                 const data = document.getElementById('uiDataRes').value;
                 if(!data) return; addMsg(data.split('-').reverse().join('/'), 'user'); userData.dataRes = data; step++;
-            } else if (tipo === 'horaRes') {
+            } 
+            else if (tipo === 'horaRes') {
                 const hora = document.getElementById('uiHoraRes').value;
                 if(!hora) return; addMsg(hora, 'user'); userData.horaRes = hora; step++;
             }
-            removerUIAnterior();
-            setTimeout(nextStep, 500);
-        }
+            else if (tipo === 'termos') {
+                addMsg("Li e Concordo", 'user');
+                step++;
+            }
 
-        function processarUpsell(container) {
-            const ativos = container.querySelectorAll('.upsell-item.active');
-            let txt = [];
-            ativos.forEach(el => {
-                userData.total += parseInt(el.getAttribute('data-val'));
-                userData.upsells.push(el.getAttribute('data-nome'));
-                txt.push(el.getAttribute('data-nome'));
-            });
-            addMsg(txt.length ? txt.join(' e ') : "Nenhum adicional", 'user');
             removerUIAnterior();
-            step++;
             setTimeout(nextStep, 500);
         }
 
         function processarPagamento(escolha) {
             userData.formaPagamento = escolha;
-            addMsg(escolha === 'pix_agora' ? "Pagar agora via Pix" : "Pagar na Recepção", 'user');
+            addMsg(escolha === 'pix_agora' ? "Pagar agora (Pix)" : "Pagar na Recepção", 'user');
             removerUIAnterior();
             step++;
             setTimeout(nextStep, 500);
         }
 
         // ==========================================
-        // INTEGRAÇÃO SISMOTEL (Simulação do Backend)
+        // INTEGRAÇÃO SISMOTEL E RESUMO
         // ==========================================
         function enviarParaSismotel(statusReserva) {
-            console.log("Enviando JSON para a API do Sismotel...");
             const payload = {
+                motel: "Motel Dreams",
                 cliente_nome: userData.nome,
                 cliente_nascimento: userData.dataNasc,
-                motel: userData.motel,
+                suite: userData.suite,
+                promocao_aplicada: userData.promocao,
                 data_reserva: userData.dataRes,
                 hora_chegada: userData.horaRes,
                 valor_total: userData.total,
-                adicionais: userData.upsells,
-                status: statusReserva // 'confirmado' ou 'pendente_recepcao'
+                status: statusReserva 
             };
-            console.log(JSON.stringify(payload, null, 2));
-            // Aqui entrará o fetch() real para o seu servidor Node.js que conecta no Sismotel
+            console.log("Enviando para Sismotel API:", JSON.stringify(payload, null, 2));
         }
 
         function nextStep() {
             switch(step) {
-                case 0: addMsg("Olá! Sou o assistente de reservas. Como você se chama?", 'bot'); toggleUI(true); break;
-                case 1: addMsg(`Prazer, ${userData.nome}. Precisamos validar sua idade:`, 'bot'); renderUI('dataNasc'); break;
-                case 2: addMsg("Perfeito. Escolha o motel desejado:", 'bot'); renderUI('motel'); break;
-                case 3: addMsg("Para qual data será o agendamento?", 'bot'); renderUI('dataRes'); break;
-                case 4: addMsg("Qual o horário previsto de chegada?", 'bot'); renderUI('horaRes'); break;
-                case 5: addMsg("Deseja adicionar algo especial na suíte?", 'bot'); renderUI('upsell'); break;
-                case 6: 
-                    addMsg(`Seu total deu <b>R$ ${userData.total},00</b>.`, 'bot');
+                case 0: addMsg("Olá! Sou o assistente virtual do <b>Motel Dreams</b>. Como você se chama?", 'bot'); toggleUI(true); break;
+                case 1: addMsg(`Prazer, ${userData.nome}. Para validar sua reserva, informe sua data de nascimento:`, 'bot'); renderUI('dataNasc'); break;
+                case 2: addMsg("Excelente. Qual das nossas suítes você deseja?", 'bot'); renderUI('suite'); break;
+                case 3: addMsg("Temos promoções ativas! Qual você prefere?", 'bot'); renderUI('promocao'); break;
+                case 4: addMsg("Legal! Para qual data será o agendamento?", 'bot'); renderUI('dataRes'); break;
+                case 5: addMsg("Qual será o horário de chegada? (Lembre-se da tolerância de 15 min)", 'bot'); renderUI('horaRes'); break;
+                case 6: addMsg("Quase lá! Leia atentamente as regras da sua promoção:", 'bot'); renderUI('termos'); break;
+                case 7: 
+                    addMsg(`Tudo certo! O total da sua reserva é <b>R$ ${userData.total.toFixed(2)}</b>.`, 'bot');
                     renderUI('pagamento'); 
                     break;
-                case 7: 
+                case 8: 
                     finalizarFluxo(); 
                     break;
             }
@@ -204,15 +252,13 @@
 
         function finalizarFluxo() {
             if (userData.formaPagamento === 'recepcao') {
-                // Envia pro Sismotel como pendente
                 enviarParaSismotel('pendente_recepcao');
-                addMsg(`✅ Tudo certo! Seu pré-agendamento foi enviado diretamente para a recepção do <b>${userData.motel}</b>. Te aguardamos lá!`, 'bot');
+                addMsg(`✅ Pré-agendamento enviado para a recepção do <b>Motel Dreams</b>! Chegue no horário pontualmente para não perder a vaga. Te aguardamos!`, 'bot');
             } else {
-                // Envia pro Sismotel como aguardando pix (ou envia só depois que pagar)
                 enviarParaSismotel('aguardando_pix');
                 const msgPix = `
-                    Excelente. Sua vaga está sendo segurada no sistema.<br>
-                    Copie o código abaixo e pague no seu app do banco.<br>
+                    Excelente. Sua vaga e promoção estão bloqueadas no sistema!<br><br>
+                    Copie o código abaixo e pague no app do seu banco:<br>
                     <div class="pix-box" onclick="alert('Código Copiado!')">00020126360014BR.GOV.BCB.PIX...</div>
                     <button class="btn-action" onclick="confirmarPix()">Já realizei o pagamento</button>
                 `;
@@ -221,14 +267,12 @@
         }
 
         function confirmarPix() {
-            removerUIAnterior(); // Remove o botão de pagar
+            removerUIAnterior(); 
             addMsg("Já realizei o pagamento", 'user');
             
             setTimeout(() => {
-                // Aqui o backend validaria se caiu o Pix mesmo.
-                // Atualiza o Sismotel informando que está pago.
                 enviarParaSismotel('confirmado_pago');
-                addMsg(`✅ Pix confirmado! Sua reserva no <b>${userData.motel}</b> está 100% garantida.`, 'bot');
+                addMsg(`✅ Pagamento Confirmado! Sua suíte no <b>Motel Dreams</b> está 100% garantida. Até lá!`, 'bot');
             }, 1000);
         }
 
