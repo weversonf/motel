@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserva Premium - Motéis Fortaleza</title>
+    <title>Chatbot com Integração Sismotel</title>
     <style>
         :root { --primary: #c0392b; --bg: #f4f7f6; --bot-bg: #ecf0f1; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
@@ -18,18 +18,16 @@
         .msg.bot { background: var(--bot-bg); color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
         .msg.user { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 2px; }
         
-        /* UI Interativa Otimizada */
         .ui-box { margin-top: 5px; display: flex; flex-direction: column; gap: 10px; width: 100%; }
         .ui-box input { padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem; width: 100%; outline: none; }
         .ui-box button.btn-action { padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
+        .ui-box button.btn-outline { padding: 12px; background: transparent; color: var(--primary); border: 2px solid var(--primary); border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; }
         
-        /* Cards de Motéis com Imagem */
         .card-motel { background: #fff; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.2s; }
         .card-motel:hover { border-color: var(--primary); box-shadow: 0 0 10px rgba(192,57,43,0.2); }
         .card-motel img { width: 100%; height: 100px; object-fit: cover; }
         .card-motel div { padding: 10px; text-align: center; font-weight: bold; color: #333; }
 
-        /* Upsell / Adicionais */
         .upsell-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; margin-bottom: 5px; }
         .upsell-item.active { border-color: var(--primary); background: #fdf2f2; }
 
@@ -42,7 +40,7 @@
 </head>
 <body>
     <div class="chat-container">
-        <div class="chat-header">Motéis Fortaleza - Autoatendimento</div>
+        <div class="chat-header">Autoatendimento - Motéis Fortaleza</div>
         <div class="chat-box" id="chat"></div>
         <div class="input-area" id="inputArea">
             <input type="text" id="userInput" placeholder="Digite aqui..." onkeypress="if(event.key === 'Enter') handleText()">
@@ -56,8 +54,7 @@
         const userInput = document.getElementById('userInput');
 
         let step = 0;
-        let userData = { nome: '', dataNasc: '', motel: '', dataRes: '', horaRes: '', upsells: [], total: 150, id: null };
-        let verifyPaymentInterval;
+        let userData = { nome: '', dataNasc: '', motel: '', dataRes: '', horaRes: '', upsells: [], total: 150, formaPagamento: '' };
 
         const moteis = [
             { nome: "Dragon Motel", img: "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=300&h=150&fit=crop" },
@@ -65,16 +62,6 @@
             { nome: "Dreams Motel", img: "https://images.unsplash.com/photo-1542314831-c6a4d27ece08?w=300&h=150&fit=crop" },
             { nome: "Spa Urbano", img: "https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=300&h=150&fit=crop" }
         ];
-
-        function getBanco() { return JSON.parse(localStorage.getItem('moteis_v2')) || []; }
-        function salvarReserva() {
-            const banco = getBanco();
-            userData.id = Date.now();
-            userData.status = 'pendente';
-            userData.timestamp = Date.now();
-            banco.push(userData);
-            localStorage.setItem('moteis_v2', JSON.stringify(banco));
-        }
 
         function addMsg(text, sender) {
             const div = document.createElement('div');
@@ -85,6 +72,7 @@
         }
 
         function toggleUI(show) { inputArea.style.display = show ? 'flex' : 'none'; }
+        function removerUIAnterior() { const uis = document.querySelectorAll('.ui-box'); if(uis.length) uis[uis.length - 1].style.display = 'none'; }
 
         function renderUI(type) {
             toggleUI(false);
@@ -96,11 +84,7 @@
             } else if (type === 'motel') {
                 div.style.background = 'transparent'; div.style.padding = '0';
                 moteis.forEach(m => {
-                    div.innerHTML += `
-                        <div class="card-motel" onclick="processarUI('motel', '${m.nome}')">
-                            <img src="${m.img}" alt="${m.nome}">
-                            <div>${m.nome} - Suíte Padrão (R$ 150)</div>
-                        </div>`;
+                    div.innerHTML += `<div class="card-motel" onclick="processarUI('motel', '${m.nome}')"><img src="${m.img}"><div>${m.nome} (R$ 150)</div></div>`;
                 });
             } else if (type === 'dataRes') {
                 const hoje = new Date().toISOString().split('T')[0];
@@ -109,10 +93,16 @@
                 div.innerHTML = `<label>Horário de chegada:</label><input type="time" id="uiHoraRes"><button class="btn-action" onclick="processarUI('horaRes')">Confirmar Horário</button>`;
             } else if (type === 'upsell') {
                 div.innerHTML = `
-                    <p style="margin-bottom:10px;font-weight:bold;">Torne o momento especial:</p>
-                    <div class="upsell-item" onclick="this.classList.toggle('active')" data-val="100" data-nome="🍾 Espumante"><span>🍾 Espumante Chandon</span><span>+ R$ 100</span></div>
-                    <div class="upsell-item" onclick="this.classList.toggle('active')" data-val="50" data-nome="🌹 Pétalas de Rosa"><span>🌹 Decoração com Pétalas</span><span>+ R$ 50</span></div>
+                    <p style="font-weight:bold;">Torne o momento especial:</p>
+                    <div class="upsell-item" onclick="this.classList.toggle('active')" data-val="100" data-nome="🍾 Espumante"><span>🍾 Espumante</span><span>+ R$ 100</span></div>
+                    <div class="upsell-item" onclick="this.classList.toggle('active')" data-val="50" data-nome="🌹 Pétalas"><span>🌹 Pétalas</span><span>+ R$ 50</span></div>
                     <button class="btn-action" onclick="processarUpsell(this.parentNode)">Avançar</button>
+                `;
+            } else if (type === 'pagamento') {
+                div.innerHTML = `
+                    <p style="font-weight:bold;">Como deseja proceder?</p>
+                    <button class="btn-action" onclick="processarPagamento('pix_agora')">Pagar agora via Pix (Garante a vaga)</button>
+                    <button class="btn-outline" onclick="processarPagamento('recepcao')">Pagar na Recepção (Sujeito à fila)</button>
                 `;
             }
             chat.appendChild(div);
@@ -134,17 +124,11 @@
             return idade;
         }
 
-        function removerUIAnterior() {
-            const uis = document.querySelectorAll('.ui-box');
-            if(uis.length) uis[uis.length - 1].style.display = 'none';
-        }
-
         function processarUI(tipo, valor = null) {
             if (tipo === 'dataNasc') {
                 const data = document.getElementById('uiData').value;
-                if(!data) return;
-                addMsg(data.split('-').reverse().join('/'), 'user');
-                if (calcularIdade(data) < 18) { addMsg("Apenas para maiores de 18 anos. Atendimento encerrado.", 'bot'); return; }
+                if(!data) return; addMsg(data.split('-').reverse().join('/'), 'user');
+                if (calcularIdade(data) < 18) { addMsg("Apenas maiores de 18 anos.", 'bot'); return; }
                 userData.dataNasc = data; step++;
             } else if (tipo === 'motel') {
                 addMsg(valor, 'user'); userData.motel = valor; step++;
@@ -173,6 +157,33 @@
             setTimeout(nextStep, 500);
         }
 
+        function processarPagamento(escolha) {
+            userData.formaPagamento = escolha;
+            addMsg(escolha === 'pix_agora' ? "Pagar agora via Pix" : "Pagar na Recepção", 'user');
+            removerUIAnterior();
+            step++;
+            setTimeout(nextStep, 500);
+        }
+
+        // ==========================================
+        // INTEGRAÇÃO SISMOTEL (Simulação do Backend)
+        // ==========================================
+        function enviarParaSismotel(statusReserva) {
+            console.log("Enviando JSON para a API do Sismotel...");
+            const payload = {
+                cliente_nome: userData.nome,
+                cliente_nascimento: userData.dataNasc,
+                motel: userData.motel,
+                data_reserva: userData.dataRes,
+                hora_chegada: userData.horaRes,
+                valor_total: userData.total,
+                adicionais: userData.upsells,
+                status: statusReserva // 'confirmado' ou 'pendente_recepcao'
+            };
+            console.log(JSON.stringify(payload, null, 2));
+            // Aqui entrará o fetch() real para o seu servidor Node.js que conecta no Sismotel
+        }
+
         function nextStep() {
             switch(step) {
                 case 0: addMsg("Olá! Sou o assistente de reservas. Como você se chama?", 'bot'); toggleUI(true); break;
@@ -180,51 +191,45 @@
                 case 2: addMsg("Perfeito. Escolha o motel desejado:", 'bot'); renderUI('motel'); break;
                 case 3: addMsg("Para qual data será o agendamento?", 'bot'); renderUI('dataRes'); break;
                 case 4: addMsg("Qual o horário previsto de chegada?", 'bot'); renderUI('horaRes'); break;
-                case 5: addMsg("Deseja adicionar algo especial na suíte antes da sua chegada?", 'bot'); renderUI('upsell'); break;
-                case 6: finalizarReserva(); break;
+                case 5: addMsg("Deseja adicionar algo especial na suíte?", 'bot'); renderUI('upsell'); break;
+                case 6: 
+                    addMsg(`Seu total deu <b>R$ ${userData.total},00</b>.`, 'bot');
+                    renderUI('pagamento'); 
+                    break;
+                case 7: 
+                    finalizarFluxo(); 
+                    break;
             }
         }
 
-        function finalizarReserva() {
-            salvarReserva();
-            const adicionais = userData.upsells.length ? userData.upsells.join(', ') : 'Nenhum';
-            const msgFinal = `
-                <b>Resumo da Reserva</b><br>
-                Motel: ${userData.motel}<br>
-                Data: ${userData.dataRes.split('-').reverse().join('/')} às ${userData.horaRes}<br>
-                Adicionais: ${adicionais}<br>
-                <b>Total: R$ ${userData.total},00</b><br><br>
-                Vaga bloqueada! Você tem <b>2 minutos</b> para realizar o pagamento, ou a vaga será liberada.<br>
-                <div class="pix-box" onclick="alert('Código Copiado!')">00020126360014BR.GOV.BCB.PIX...</div>
-                <button class="btn-action" onclick="alert('Simulando pagamento...') || simularPagamento()">Já realizei o pagamento</button>
-            `;
-            addMsg(msgFinal, 'bot');
+        function finalizarFluxo() {
+            if (userData.formaPagamento === 'recepcao') {
+                // Envia pro Sismotel como pendente
+                enviarParaSismotel('pendente_recepcao');
+                addMsg(`✅ Tudo certo! Seu pré-agendamento foi enviado diretamente para a recepção do <b>${userData.motel}</b>. Te aguardamos lá!`, 'bot');
+            } else {
+                // Envia pro Sismotel como aguardando pix (ou envia só depois que pagar)
+                enviarParaSismotel('aguardando_pix');
+                const msgPix = `
+                    Excelente. Sua vaga está sendo segurada no sistema.<br>
+                    Copie o código abaixo e pague no seu app do banco.<br>
+                    <div class="pix-box" onclick="alert('Código Copiado!')">00020126360014BR.GOV.BCB.PIX...</div>
+                    <button class="btn-action" onclick="confirmarPix()">Já realizei o pagamento</button>
+                `;
+                addMsg(msgPix, 'bot');
+            }
+        }
+
+        function confirmarPix() {
+            removerUIAnterior(); // Remove o botão de pagar
+            addMsg("Já realizei o pagamento", 'user');
             
-            // Inicia checagem contínua para ver se o ADM ou o sistema cancelou/aprovou
-            verifyPaymentInterval = setInterval(checarStatusPagamento, 2000);
-        }
-
-        function checarStatusPagamento() {
-            const banco = getBanco();
-            const minhaReserva = banco.find(r => r.id === userData.id);
-            if (!minhaReserva) return;
-
-            if (minhaReserva.status === 'pago') {
-                clearInterval(verifyPaymentInterval);
-                addMsg(`✅ Pagamento confirmado! Sua reserva está garantida. Te esperamos no ${userData.motel}!`, 'bot');
-            } else if (minhaReserva.status === 'cancelado') {
-                clearInterval(verifyPaymentInterval);
-                addMsg(`❌ O tempo expirou e o pagamento não foi identificado. A vaga foi liberada.`, 'bot');
-            }
-        }
-
-        function simularPagamento() {
-            const banco = getBanco();
-            const index = banco.findIndex(r => r.id === userData.id);
-            if (index !== -1) {
-                banco[index].status = 'pago';
-                localStorage.setItem('moteis_v2', JSON.stringify(banco));
-            }
+            setTimeout(() => {
+                // Aqui o backend validaria se caiu o Pix mesmo.
+                // Atualiza o Sismotel informando que está pago.
+                enviarParaSismotel('confirmado_pago');
+                addMsg(`✅ Pix confirmado! Sua reserva no <b>${userData.motel}</b> está 100% garantida.`, 'bot');
+            }, 1000);
         }
 
         window.onload = nextStep;
