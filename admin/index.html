@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel ADM 2.0 - Motéis Fortaleza</title>
+    <style>
+        :root { --bg: #f4f7f6; --text: #333; --primary: #2c3e50; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body { background: var(--bg); color: var(--text); padding: 20px; }
+
+        .dashboard { max-width: 1200px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .btn-limpar { background: #e74c3c; color: white; padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+
+        /* Métricas */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; }
+        .metric-card { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: center; border-left: 5px solid var(--primary); }
+        .metric-card h3 { font-size: 0.9rem; color: #7f8c8d; text-transform: uppercase; margin-bottom: 5px; }
+        .metric-card .value { font-size: 1.8rem; font-weight: bold; color: var(--primary); }
+
+        /* Tabela */
+        .table-container { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #eee; font-size: 0.95rem; }
+        th { background: #f8f9fa; font-weight: bold; color: #555; }
+        
+        .status { padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold; }
+        .status.pendente { background: #ffeaa7; color: #d35400; animation: blink 1.5s infinite; }
+        .status.pago { background: #55efc4; color: #00b894; }
+        .status.cancelado { background: #fab1a0; color: #d63031; }
+        
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .acoes { display: flex; gap: 5px; }
+        .btn { padding: 6px 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.8rem; color: white; display: flex; align-items: center; gap: 5px;}
+        .btn-ok { background: #00b894; }
+        .btn-x { background: #d63031; }
+        .btn-wpp { background: #25D366; }
+
+        /* Notificação (Toast) */
+        #toast { position: fixed; top: 20px; right: 20px; background: #2c3e50; color: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transform: translateX(150%); transition: 0.3s; font-weight: bold; z-index: 1000; }
+        #toast.show { transform: translateX(0); }
+    </style>
+</head>
+<body>
+
+    <div id="toast">🔔 Nova Reserva Recebida!</div>
+
+    <div class="dashboard">
+        <div class="header">
+            <h2>Gestão Operacional (Auto-Refresh)</h2>
+            <button class="btn-limpar" onclick="limparBanco()">Zerar Sistema</button>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card"><h3>Faturamento (Pagos)</h3><div class="value" id="metRenda">R$ 0</div></div>
+            <div class="metric-card"><h3>Total Reservas</h3><div class="value" id="metTotal">0</div></div>
+            <div class="metric-card"><h3>Motel Mais Buscado</h3><div class="value" id="metTop">-</div></div>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Motel / Data</th>
+                        <th>Adicionais</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaAdmin"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let ultimoIdVisto = 0;
+
+        function getBanco() { return JSON.parse(localStorage.getItem('moteis_v2')) || []; }
+        function salvarBanco(b) { localStorage.setItem('moteis_v2', JSON.stringify(b)); }
+        function limparBanco() { if(confirm("Zerar tudo?")) { localStorage.clear(); processarDados(); } }
+
+        function atualizarStatus(id, status) {
+            const banco = getBanco();
+            const res = banco.find(r => r.id === id);
+            if(res) { res.status = status; salvarBanco(banco); processarDados(); }
+        }
+
+        function simularWpp(nome, fone="85999999999") {
+            alert(`SISTEMA: Disparo via API simulado para ${nome}.\nEnviado comprovante para o número ${fone}.`);
+        }
+
+        function mostrarNotificacao() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        function verificarExpiracoes(banco) {
+            let alterou = false;
+            const agora = Date.now();
+            banco.forEach(r => {
+                // Se está pendente por mais de 2 minutos (120000ms), cancela automaticamente
+                if (r.status === 'pendente' && (agora - r.timestamp > 120000)) {
+                    r.status = 'cancelado';
+                    alterou = true;
+                }
+            });
+            if (alterou) salvarBanco(banco);
+            return banco;
+        }
+
+        function processarDados() {
+            let banco = getBanco();
+            banco = verificarExpiracoes(banco);
+
+            const tbody = document.getElementById('tabelaAdmin');
+            tbody.innerHTML = '';
+
+            let renda = 0;
+            let motesCount = {};
+            let maiorIdAtual = 0;
+
+            if (banco.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:30px;">Nenhuma movimentação.</td></tr>';
+            } else {
+                banco.reverse().forEach(r => {
+                    // Métricas
+                    if (r.id > maiorIdAtual) maiorIdAtual = r.id;
+                    if (r.status === 'pago') renda += r.total;
+                    motesCount[r.motel] = (motesCount[r.motel] || 0) + 1;
+
+                    // Tabela
+                    const dataF = r.dataRes.split('-').reverse().join('/');
+                    const adic = r.upsells && r.upsells.length ? r.upsells.join(', ') : '-';
+                    
+                    let botoes = '';
+                    if (r.status === 'pendente') {
+                        botoes = `
+                            <button class="btn btn-ok" onclick="atualizarStatus(${r.id}, 'pago')" title="Confirmar Recebimento">✔ Pago</button>
+                            <button class="btn btn-x" onclick="atualizarStatus(${r.id}, 'cancelado')" title="Cancelar Reserva">✖</button>
+                        `;
+                    } else if (r.status === 'pago') {
+                        botoes = `<button class="btn btn-wpp" onclick="simularWpp('${r.nome}')">📱 Disparar Voucher</button>`;
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b>${r.nome}</b><br><small>Tel: (85) 9XXXX-XXXX</small></td>
+                        <td>${r.motel}<br><small>${dataF} às ${r.horaRes}</small></td>
+                        <td><small>${adic}</small></td>
+                        <td><b>R$ ${r.total}</b></td>
+                        <td><span class="status ${r.status}">${r.status.toUpperCase()}</span></td>
+                        <td class="acoes">${botoes}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // Atualiza Dashboard
+            document.getElementById('metRenda').innerText = `R$ ${renda},00`;
+            document.getElementById('metTotal').innerText = banco.length;
+            
+            let topMotel = "-"; let maxC = 0;
+            for (let m in motesCount) { if(motesCount[m] > maxC) { maxC = motesCount[m]; topMotel = m; } }
+            document.getElementById('metTop').innerText = topMotel;
+
+            // Sistema de Notificação
+            if (ultimoIdVisto !== 0 && maiorIdAtual > ultimoIdVisto) mostrarNotificacao();
+            if (maiorIdAtual > 0) ultimoIdVisto = maiorIdAtual;
+        }
+
+        window.onload = processarDados;
+        setInterval(processarDados, 3000); // Polling 3 segundos
+    </script>
+</body>
+</html>
