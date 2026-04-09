@@ -11,7 +11,7 @@ app.use(express.json());
 // ATENÇÃO: COLE SUA NOVA CHAVE DE PRODUÇÃO ABAIXO
 // A que você gerou após ter apagado a anterior por segurança!
 // =====================================================================
-const ASAAS_API_KEY = 'SUA_NOVA_CHAVE_API_AQUI'; 
+const ASAAS_API_KEY = '$aact_prod_000MzkwODA2MWY2OGM3MWRlMDU2NWM3MzJlNzZmNGZhZGY6OmNiOWMxMzQwLWE4YTctNDM0Yi04MGMyLThkMDRjMDk2YWQ2ZDo6JGFhY2hfNmYyYjgyZDAtMjYwMy00ZjQ4LTk4MDgtMjFjNmUwZmYxOTlj'; 
 const ASAAS_URL = 'https://api.asaas.com/v3';
 
 // 1. Rota para gerar a cobrança PIX
