@@ -8,49 +8,37 @@
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
     
     <style>
-        :root {
-            --primary: #00ff00; 
-            --bg: #050505;      
-            --header-bg: #0a0a0a;
-            --panel-bg: #111111;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary: #00ff00; --bg: #050505; --header-bg: #0a0a0a; --panel-bg: #111111; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: #fff; padding: 20px; }
 
         header {
             background: var(--header-bg); border-bottom: 1px solid rgba(0, 255, 0, 0.2);
             padding: 20px; text-align: center; margin-bottom: 30px; border-radius: 8px;
             box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+            position: relative;
         }
         
         h1 { color: var(--primary); font-size: 1.5rem; letter-spacing: 2px; text-transform: uppercase; }
         span.subtitle { font-size: 0.8rem; color: #888; text-transform: uppercase; letter-spacing: 1px; }
 
-        .container { max-width: 1200px; margin: 0 auto; }
+        /* Estilo do Botão Exportar */
+        .btn-export {
+            position: absolute; right: 20px; top: 25px; background: #000; color: var(--primary);
+            border: 1px solid var(--primary); padding: 8px 16px; border-radius: 5px;
+            font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        .btn-export:hover { background: rgba(0,255,0,0.1); box-shadow: 0 0 10px var(--primary); }
 
-        /* Customização do Calendário para o Tema Escuro */
+        .container { max-width: 1200px; margin: 0 auto; }
         #calendar { background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid rgba(0, 255, 0, 0.2); }
         .fc-theme-standard td, .fc-theme-standard th { border-color: #333 !important; }
         .fc-col-header-cell-cushion, .fc-daygrid-day-number, .fc-timegrid-axis-cushion, .fc-timegrid-slot-label-cushion { color: #fff !important; }
-        
-        /* Botões do Calendário */
         .fc .fc-button-primary { background-color: #000 !important; border-color: var(--primary) !important; color: var(--primary) !important; font-weight: bold; text-transform: uppercase; }
         .fc .fc-button-primary:hover { background-color: rgba(0, 255, 0, 0.1) !important; }
         .fc .fc-button-primary:not(:disabled).fc-button-active { background-color: var(--primary) !important; color: #000 !important; }
 
-        /* Eventos (Reservas) */
-        .fc-event {
-            background-color: var(--primary) !important; 
-            color: #000 !important; 
-            border: none !important; 
-            padding: 3px 6px; 
-            font-weight: bold; 
-            cursor: pointer;
-            border-radius: 4px;
-            transition: 0.2s;
-        }
-        .fc-event:hover { box-shadow: 0 0 10px var(--primary); transform: scale(1.02); }
+        .fc-event { background-color: var(--primary) !important; color: #000 !important; border: none !important; padding: 3px 6px; font-weight: bold; cursor: pointer; border-radius: 4px; transition: 0.2s; }
     </style>
 </head>
 <body>
@@ -58,9 +46,9 @@
     <div class="container">
         <header>
             <h1><span>♾️</span> DREAMS MOTEL</h1>
-            <span class="subtitle">Painel de Recepção - Controle de Agendamentos</span>
+            <span class="subtitle">Controle de Agendamentos</span>
+            <button class="btn-export" onclick="window.exportarExcel()">📥 Exportar Excel</button>
         </header>
-
         <div id='calendar'></div>
     </div>
 
@@ -68,7 +56,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-        // Configuração Firebase (A mesma do Bot)
         const firebaseConfig = {
             apiKey: "AIzaSyCln4mcb1j46UcmG-sTVb3bUudTQCpdfvY",
             authDomain: "moteisfortaleza-9dadd.firebaseapp.com",
@@ -81,76 +68,62 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Função para buscar as reservas e formatar para o FullCalendar
+        // LÓGICA DE EXPORTAÇÃO EXCEL (CSV)
+        window.exportarExcel = async function() {
+            const querySnapshot = await getDocs(collection(db, "reservas"));
+            
+            // Cabeçalho do Excel
+            let csvContent = "Nome,Email,Telefone,CPF,Suite,Data Reserva,Hora Chegada,Status,Data Criacao\n";
+            
+            querySnapshot.forEach((doc) => {
+                const d = doc.data();
+                // Usa formato padrão para não quebrar colunas no Excel
+                csvContent += `"${d.cliente_nome}","${d.cliente_email || ''}","${d.cliente_telefone || ''}","${d.cliente_cpf}","${d.suite}","${d.data_reserva}","${d.hora_chegada}","${d.status}","${d.criado_em}"\n`;
+            });
+
+            // Força o encode para acentos funcionarem no Excel (BOM UTF-8)
+            const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Reservas_Dreams_${new Date().toISOString().split('T')[0]}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
         async function carregarReservas() {
             const querySnapshot = await getDocs(collection(db, "reservas"));
             const eventos = [];
-
             querySnapshot.forEach((doc) => {
                 const data = doc.data();
-                
-                // Monta a string de Data e Hora no padrão ISO 8601 (Ex: 2026-04-21T15:30:00)
                 const dataHoraIso = `${data.data_reserva}T${data.hora_chegada}:00`;
-
                 eventos.push({
                     id: doc.id,
                     title: `${data.cliente_nome} - ${data.suite}`,
                     start: dataHoraIso,
-                    extendedProps: {
-                        cpf: data.cliente_cpf,
-                        status: data.status,
-                        criado_em: data.criado_em
-                    }
+                    extendedProps: { cpf: data.cliente_cpf, telefone: data.cliente_telefone, status: data.status }
                 });
             });
-
             return eventos;
         }
 
-        // Inicializar o FullCalendar após o HTML carregar
         document.addEventListener('DOMContentLoaded', async function() {
             var calendarEl = document.getElementById('calendar');
-            
-            // Aqui buscamos os dados no Firebase antes de renderizar
             const eventosFirebase = await carregarReservas();
 
             var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridDay', // Visão diária ideal para a recepção
-                headerToolbar: {
-                    left: 'prev,next today',
-                    center: 'title',
-                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
-                },
+                initialView: 'timeGridDay',
+                headerToolbar: { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridWeek,timeGridDay' },
                 locale: 'pt-br',
-                buttonText: {
-                    today: 'Hoje',
-                    month: 'Mês',
-                    week: 'Semana',
-                    day: 'Dia'
-                },
-                slotMinTime: '06:00:00', // Começa a mostrar às 6h da manhã
-                slotLabelFormat: {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    omitZeroMinute: false,
-                    meridiem: false
-                },
-                events: eventosFirebase, // Passa as reservas do Firebase para o calendário
+                slotMinTime: '06:00:00',
+                events: eventosFirebase,
                 eventClick: function(info) {
-                    // Quando clicar na reserva, mostra os detalhes
                     const props = info.event.extendedProps;
-                    
-                    let mensagem = `📋 DETALHES DA RESERVA\n\n`;
-                    mensagem += `Cliente: ${info.event.title.split(' - ')[0]}\n`;
-                    mensagem += `CPF: ${props.cpf}\n`;
-                    mensagem += `Suíte: ${info.event.title.split(' - ')[1]}\n`;
-                    mensagem += `Chegada: ${info.event.start.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}\n`;
-                    mensagem += `Status: ${props.status}\n`;
-                    
-                    alert(mensagem);
+                    alert(`📋 DETALHES\nCliente: ${info.event.title}\nTelefone: ${props.telefone || 'N/A'}\nCPF: ${props.cpf}\nStatus: ${props.status}`);
                 }
             });
-
             calendar.render();
         });
     </script>
