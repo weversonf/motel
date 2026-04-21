@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserva Dreams v05.2 - Firebase</title>
+    <title>Reserva Dreams v06 - Firebase</title>
     <style>
         :root {
             --primary: #00ff00; 
@@ -45,14 +45,10 @@
         .btn-action { padding: 12px; background: var(--primary); color: #000; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; }
         .btn-action:hover { box-shadow: 0 0 10px var(--primary); }
         
-        .btn-outline { padding: 12px; background: #000; color: var(--primary); border: 2px solid var(--primary); border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; text-align: left; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
-        
         .card-motel { background: #111; border: 1px solid #333; border-radius: 8px; overflow: hidden; cursor: pointer; transition: 0.2s; margin-bottom: 5px; }
         .card-motel:hover { border-color: var(--primary); }
         .card-motel img { width: 100%; height: 120px; object-fit: cover; }
         .card-motel div { padding: 12px; text-align: center; font-weight: bold; color: var(--primary); }
-
-        .termos-box { background: #111; border: 2px solid var(--primary); padding: 15px; border-radius: 8px; color: var(--bot-text); }
 
         .input-area { display: flex; padding: 15px; border-top: 1px solid rgba(0,255,0,0.1); gap: 10px; background: #0a0a0a; }
         .input-area input { flex: 1; padding: 12px; border: 1px solid #333; border-radius: 20px; outline: none; background: #1a1a1a; color: #fff; }
@@ -72,7 +68,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
         import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
 
-        // Configuração real do seu Firebase (Moteis Fortaleza)
         const firebaseConfig = {
             apiKey: "AIzaSyCln4mcb1j46UcmG-sTVb3bUudTQCpdfvY",
             authDomain: "moteisfortaleza-9dadd.firebaseapp.com",
@@ -90,7 +85,7 @@
         const userInput = document.getElementById('userInput');
 
         let step = 0;
-        let userData = { nome: '', dataNasc: '', cpf: '', suite: '', precoBase: 0, promocao: '', dataRes: '', horaRes: '', total: 0 };
+        let userData = { nome: '', email: '', telefone: '', dataNasc: '', cpf: '', suite: '', precoBase: 0, dataRes: '', horaRes: '', total: 0 };
 
         const suites = [
             { nome: "Suíte Standard", preco: 100, img: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=200&fit=crop" },
@@ -106,7 +101,6 @@
             chat.scrollTop = chat.scrollHeight;
         }
 
-        // Expondo as funções no window para o HTML reconhecer
         window.handleEnter = function(event, type) {
             if (event.key === 'Enter') {
                 if (type === 'nome') window.handleText();
@@ -117,18 +111,33 @@
         function toggleUI(show) { inputArea.style.display = show ? 'flex' : 'none'; }
         function removerUIAnterior() { const uis = document.querySelectorAll('.ui-box'); uis.forEach(u => u.style.display = 'none'); }
 
+        // Pega a data atual convertida para o fuso horário local para usar no "min" do input date
+        const local = new Date();
+        local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
+        const hojeLocal = local.toISOString().split('T')[0];
+
         function renderUI(type) {
             toggleUI(false);
             const div = document.createElement('div');
             div.className = 'ui-box msg bot';
 
-            if (type === 'dataNasc') {
-                div.innerHTML = `<label>Selecione sua data de nascimento:</label>
+            if (type === 'email') {
+                div.innerHTML = `<label>E-mail:</label>
+                <input type="email" id="uiEmail" placeholder="seu@email.com" onkeypress="window.handleEnter(event, 'email')">
+                <button class="btn-action" onclick="window.processarUI('email')">Confirmar</button>`;
+            }
+            else if (type === 'telefone') {
+                div.innerHTML = `<label>WhatsApp / Telefone:</label>
+                <input type="tel" id="uiTelefone" placeholder="(00) 00000-0000" maxlength="15" oninput="window.mascaraTelefone(this)" onkeypress="window.handleEnter(event, 'telefone')">
+                <button class="btn-action" onclick="window.processarUI('telefone')">Confirmar</button>`;
+            }
+            else if (type === 'dataNasc') {
+                div.innerHTML = `<label>Data de nascimento:</label>
                 <input type="date" id="uiData" onkeypress="window.handleEnter(event, 'dataNasc')">
                 <button class="btn-action" onclick="window.processarUI('dataNasc')">Confirmar</button>`;
             } 
             else if (type === 'cpf') {
-                div.innerHTML = `<label>CPF para reserva:</label>
+                div.innerHTML = `<label>CPF (Apenas números):</label>
                 <input type="text" id="uiCpf" placeholder="000.000.000-00" maxlength="14" oninput="window.mascaraCPF(this)" onkeypress="window.handleEnter(event, 'cpf')">
                 <button class="btn-action" onclick="window.processarUI('cpf')">Confirmar CPF</button>`;
             }
@@ -139,9 +148,8 @@
                 });
             } 
             else if (type === 'dataRes') {
-                const hoje = new Date().toISOString().split('T')[0];
                 div.innerHTML = `<label>Data da reserva:</label>
-                <input type="date" id="uiDataRes" min="${hoje}" onkeypress="window.handleEnter(event, 'dataRes')">
+                <input type="date" id="uiDataRes" min="${hojeLocal}" onkeypress="window.handleEnter(event, 'dataRes')">
                 <button class="btn-action" onclick="window.processarUI('dataRes')">Confirmar Data</button>`;
             } 
             else if (type === 'horaRes') {
@@ -150,7 +158,7 @@
                 <button class="btn-action" onclick="window.processarUI('horaRes')">Confirmar Horário</button>`;
             }
             else if (type === 'finalizar') {
-                div.innerHTML = `<button class="btn-action" onclick="window.finalizarFluxo()">Confirmar Pré-Reserva na Recepção</button>`;
+                div.innerHTML = `<button class="btn-action" onclick="window.finalizarFluxo()">Confirmar Pré-Reserva</button>`;
             }
 
             chat.appendChild(div);
@@ -174,51 +182,77 @@
             i.value = i.value.replace(/(\d{3})(\d{1,2})$/,"$1-$2");
         }
 
+        window.mascaraTelefone = function(i) {
+            i.value = i.value.replace(/\D/g,"");
+            i.value = i.value.replace(/^(\d{2})(\d)/g,"($1) $2");
+            i.value = i.value.replace(/(\d)(\d{4})$/,"$1-$2");
+        }
+
         window.processarUI = function(tipo, valor = null, precoBase = null) {
-            if (tipo === 'dataNasc') { 
+            if (tipo === 'email') { 
+                const email = document.getElementById('uiEmail').value; 
+                if(!email.includes('@')) { alert("Digite um e-mail válido."); return; }
+                addMsg(email, 'user'); userData.email = email; step++; 
+            }
+            else if (tipo === 'telefone') { 
+                const tel = document.getElementById('uiTelefone').value; 
+                if(tel.length < 14) { alert("Digite o telefone completo."); return; }
+                addMsg(tel, 'user'); userData.telefone = tel; step++; 
+            }
+            else if (tipo === 'dataNasc') { 
                 const data = document.getElementById('uiData').value; 
                 if(!data) return;
-                addMsg(data.split('-').reverse().join('/'), 'user');
-                userData.dataNasc = data; step++; 
+                addMsg(data.split('-').reverse().join('/'), 'user'); userData.dataNasc = data; step++; 
             } 
             else if (tipo === 'cpf') { 
                 const cpf = document.getElementById('uiCpf').value; 
                 if(cpf.length < 14) return;
-                addMsg(cpf, 'user');
-                userData.cpf = cpf; step++; 
+                addMsg(cpf, 'user'); userData.cpf = cpf; step++; 
             }
-            else if (tipo === 'suite') { addMsg(valor, 'user'); userData.suite = valor; userData.precoBase = precoBase; step++; } 
+            else if (tipo === 'suite') { 
+                addMsg(valor, 'user'); userData.suite = valor; userData.precoBase = precoBase; step++; 
+            } 
             else if (tipo === 'dataRes') { 
                 const data = document.getElementById('uiDataRes').value; 
                 if(!data) return;
-                addMsg(data.split('-').reverse().join('/'), 'user');
-                userData.dataRes = data; step++; 
+                addMsg(data.split('-').reverse().join('/'), 'user'); userData.dataRes = data; step++; 
             } 
             else if (tipo === 'horaRes') { 
                 const hora = document.getElementById('uiHoraRes').value; 
                 if(!hora) return;
-                addMsg(hora, 'user');
-                userData.horaRes = hora; step++; 
+
+                // LÓGICA DE BLOQUEIO DE HORÁRIO PASSADO
+                const agora = new Date();
+                const dataEscolhida = new Date(`${userData.dataRes}T${hora}:00`);
+                if (dataEscolhida < agora) {
+                    alert("⚠️ Horário inválido. Escolha um horário futuro.");
+                    return;
+                }
+
+                addMsg(hora, 'user'); userData.horaRes = hora; step++; 
             }
+            
             removerUIAnterior(); setTimeout(nextStep, 500);
         }
 
         function nextStep() {
             switch(step) {
                 case 0: addMsg("Olá! Bem-vindo ao <b>Motel Dreams</b>. Como você se chama?", 'bot'); toggleUI(true); userInput.focus(); break;
-                case 1: addMsg(`Prazer, ${userData.nome}. Selecione sua data de nascimento:`, 'bot'); renderUI('dataNasc'); break;
-                case 2: addMsg("Informe seu CPF para o sistema:", 'bot'); renderUI('cpf'); break;
-                case 3: addMsg("Qual suíte deseja?", 'bot'); renderUI('suite'); break;
-                case 4: addMsg("Para qual data deseja agendar?", 'bot'); renderUI('dataRes'); break;
-                case 5: addMsg("Qual o horário previsto de chegada?", 'bot'); renderUI('horaRes'); break;
-                case 6: 
-                    addMsg(`<b>Resumo da Reserva:</b><br>Suíte: ${userData.suite}<br>Data: ${userData.dataRes.split('-').reverse().join('/')}<br>Hora: ${userData.horaRes}`, 'bot');
+                case 1: addMsg(`Prazer, ${userData.nome}. Qual o seu melhor e-mail?`, 'bot'); renderUI('email'); break;
+                case 2: addMsg("E o seu WhatsApp?", 'bot'); renderUI('telefone'); break;
+                case 3: addMsg("Selecione sua data de nascimento:", 'bot'); renderUI('dataNasc'); break;
+                case 4: addMsg("Informe seu CPF para o agendamento:", 'bot'); renderUI('cpf'); break;
+                case 5: addMsg("Qual suíte deseja?", 'bot'); renderUI('suite'); break;
+                case 6: addMsg("Para qual data deseja agendar?", 'bot'); renderUI('dataRes'); break;
+                case 7: addMsg("Qual o horário previsto de chegada?", 'bot'); renderUI('horaRes'); break;
+                case 8: 
+                    addMsg(`<b>Resumo:</b><br>Suíte: ${userData.suite}<br>Data: ${userData.dataRes.split('-').reverse().join('/')}<br>Hora: ${userData.horaRes}`, 'bot');
                     renderUI('finalizar');
                     break;
             }
         }
 
-        // Envio real para o Firebase
+        // Envio real para o Firebase (agora com Email e Telefone)
         window.finalizarFluxo = async function() {
             removerUIAnterior();
             addMsg("⏳ Registrando sua pré-reserva no sistema...", 'bot');
@@ -226,7 +260,10 @@
             try {
                 const docRef = await addDoc(collection(db, "reservas"), {
                     cliente_nome: userData.nome,
+                    cliente_email: userData.email,
+                    cliente_telefone: userData.telefone,
                     cliente_cpf: userData.cpf,
+                    cliente_nascimento: userData.dataNasc,
                     suite: userData.suite,
                     data_reserva: userData.dataRes,
                     hora_chegada: userData.horaRes,
@@ -234,8 +271,7 @@
                     criado_em: new Date().toISOString()
                 });
 
-                addMsg("✅ <b>Pré-Reserva Confirmada!</b><br>Apresente seu CPF na recepção ao chegar no Dreams.", 'bot');
-                console.log("Salvo no Firebase com Sucesso! ID:", docRef.id);
+                addMsg("✅ <b>Pré-Reserva Confirmada!</b><br>Apresente seu CPF na recepção ao chegar.", 'bot');
             } catch (error) {
                 console.error("Erro no Firebase:", error);
                 addMsg("❌ Tivemos um problema de conexão. Por favor, mostre esta tela na recepção.", 'bot');
