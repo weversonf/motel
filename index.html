@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reserva Dreams v06 - Firebase</title>
+    <title>Reserva Dreams v07 - Firebase</title>
     <style>
         :root {
             --primary: #00ff00; 
@@ -252,13 +252,14 @@
             }
         }
 
-        // Envio real para o Firebase (agora com Email e Telefone)
+// Envio real: Firebase (Seu Painel) + Apps Script (Sismotel)
         window.finalizarFluxo = async function() {
             removerUIAnterior();
-            addMsg("⏳ Registrando sua pré-reserva no sistema...", 'bot');
+            addMsg("⏳ Registrando sua pré-reserva...", 'bot');
 
             try {
-                const docRef = await addDoc(collection(db, "reservas"), {
+                // 1. Salva no seu Firebase (para o Painel da Recepção)
+                await addDoc(collection(db, "reservas"), {
                     cliente_nome: userData.nome,
                     cliente_email: userData.email,
                     cliente_telefone: userData.telefone,
@@ -271,9 +272,16 @@
                     criado_em: new Date().toISOString()
                 });
 
+                // 2. Dispara invisivelmente para o Apps Script (Ponte do Sismotel)
+                await fetch("https://script.google.com/macros/s/AKfycbzAVBD7ReZHQN-vLMEQem8HhnOuAobesEq3OI4W78y1lRAUHhDT_FOUoZg7nV-p9GYV1w/exec", {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" }, // text/plain evita bloqueio do navegador (CORS)
+                    body: JSON.stringify(userData) // Manda os dados do cliente pro Script
+                });
+
                 addMsg("✅ <b>Pré-Reserva Confirmada!</b><br>Apresente seu CPF na recepção ao chegar.", 'bot');
             } catch (error) {
-                console.error("Erro no Firebase:", error);
+                console.error("Erro no sistema:", error);
                 addMsg("❌ Tivemos um problema de conexão. Por favor, mostre esta tela na recepção.", 'bot');
             }
         }
