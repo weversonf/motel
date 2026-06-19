@@ -804,6 +804,16 @@
             color: #fff;
         }
 
+        .btn-icon.delete {
+            background: rgba(255, 107, 107, 0.05);
+            color: var(--text-tertiary);
+            font-size: 0.85rem;
+        }
+        .btn-icon.delete:hover {
+            background: var(--red);
+            color: #fff;
+        }
+
         .empty {
             text-align: center;
             padding: 60px 20px;
@@ -1829,7 +1839,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, query, orderBy, getDocs, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, orderBy, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -1929,6 +1939,13 @@
                 }
             }
         } catch(e) {
+            // Error reading admin_exists (e.g. security rules). Treat as first access.
+            console.warn("First access check failed:", e);
+            modoAuth = 'setup';
+            document.querySelector('#loginSubtitulo').textContent = 'Primeiro acesso — crie o administrador master';
+            document.querySelector('#loginBtn').textContent = 'Criar Conta Master';
+            document.querySelector('#authLink').textContent = '';
+            document.querySelector('#esqueciSenha').style.display = 'none';
             document.getElementById('loginCarregando').style.display = 'none';
             document.getElementById('loginConteudo').style.display = '';
         }
@@ -2379,7 +2396,7 @@
             const sc = ev.status === 'confirmado' ? 'status-confirmado' : ev.status === 'aguardando_pagamento' ? 'status-aguardando' : ev.status === 'cancelado' ? 'status-cancelado' : 'status-pendente';
             const sl = ev.status === 'confirmado' ? 'Confirmado' : ev.status === 'aguardando_pagamento' ? 'Aguardando Pagto' : ev.status === 'cancelado' ? 'Cancelado' : 'Pendente';
             const cor = dadosMotels[ev.motel]?.cor || '#999';
-            h += `<tr><td><span class="status ${sc}">${sl}</span></td><td><span class="motel-tag" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${ev.motel || '-'}</span></td><td>${ev.suite || '-'}</td><td>${ev.cliente_nome || '-'}</td><td style="color:var(--text-tertiary);font-size:0.75rem">${ev.cliente_cpf || '-'}</td><td>${ev.data_reserva ? ev.data_reserva.split('-').reverse().join('/') : '-'}</td><td style="color:var(--text-secondary)">${ev.hora_chegada || ev.horaRes || '-'}</td><td><button class="btn-icon confirm" onclick="window.alterarStatus('${ev.id}','confirmado')">✓</button><button class="btn-icon cancel" onclick="window.alterarStatus('${ev.id}','cancelado')" style="margin-left:6px">✕</button></td></tr>`;
+            h += `<tr><td><span class="status ${sc}">${sl}</span></td><td><span class="motel-tag" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${ev.motel || '-'}</span></td><td>${ev.suite || '-'}</td><td>${ev.cliente_nome || '-'}</td><td style="color:var(--text-tertiary);font-size:0.75rem">${ev.cliente_cpf || '-'}</td><td>${ev.data_reserva ? ev.data_reserva.split('-').reverse().join('/') : '-'}</td><td style="color:var(--text-secondary)">${ev.hora_chegada || ev.horaRes || '-'}</td><td><button class="btn-icon confirm" onclick="window.alterarStatus('${ev.id}','confirmado')">✓</button><button class="btn-icon cancel" onclick="window.alterarStatus('${ev.id}','cancelado')" style="margin-left:6px">✕</button><button class="btn-icon delete" onclick="window.excluirReserva('${ev.id}')" style="margin-left:6px" title="Excluir">🗑</button></td></tr>`;
         });
         h += '</tbody></table>';
         w.innerHTML = h;
@@ -2394,6 +2411,19 @@
             renderTabela();
         } catch (e) {
             alert("Erro: " + e.message);
+        }
+    }
+
+    window.excluirReserva = async function(id) {
+        if (!confirm("Tem certeza que deseja excluir permanentemente esta reserva?")) return;
+        try {
+            await deleteDoc(doc(db, "reservas", id));
+            await carregarReservas();
+            atualizarEstatisticas();
+            renderCalendario();
+            renderTabela();
+        } catch (e) {
+            alert("Erro ao excluir: " + e.message);
         }
     }
 
