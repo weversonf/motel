@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Reserva - Moteis Fortaleza</title>
+    <title>Pré-Reserva - Rede de Motéis</title>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
     <style>
         :root, [data-theme="light"] {
             --primary: #d20150;
@@ -109,7 +110,7 @@
             messagingSenderId: "285292896374",
             appId: "1:285292896374:web:ef6d3ad37e94313ad3bf57"
         };
-        try { firebase.initializeApp(firebaseConfig); var db = firebase.firestore(); } catch(e) { console.warn('Firebase fail:', e); }
+        try { firebase.initializeApp(firebaseConfig); var db = firebase.firestore(); var auth = firebase.auth(); } catch(e) { console.warn('Firebase fail:', e); }
 
         var chat = document.getElementById('chat');
         var inputArea = document.getElementById('inputArea');
@@ -117,16 +118,17 @@
         var step = 0;
         var userData = { motel:'', suite:'', duracao:'3h', preco:0, precoOriginal:0, promocao:'nenhuma', nome:'', cpf:'', dataRes:'', horaRes:'', paymentId:'' };
         var motels = {};
+        var chatPronto = false;
 
         var DADOS_PADRAO = {
-            "Spa Urbano":{cor:"#ff44ff",icone:"🌿",suites:[
+            "Spa Urbano":{cor:"#ff44ff",icone:"🌿",token_asaas:"",suites:[
                 {nome:"Suíte Jade",preco3:160,preco12:300,preco24:613,fracao:14,qtde:28},
                 {nome:"Suíte Safira",preco3:180,preco12:335,preco24:675,fracao:15,qtde:13},
                 {nome:"Suíte Rubi",preco3:204,preco12:377,preco24:748,fracao:17,qtde:4},
                 {nome:"Suíte Esmeralda",preco3:441,preco12:791,preco24:1737,fracao:37,qtde:1},
                 {nome:"Suíte Diamante",preco3:552,preco12:986,preco24:1814,fracao:46,qtde:1}
             ]},
-            "Assahi":{cor:"#ff8800",icone:"⛩️",suites:[
+            "Assahi":{cor:"#ff8800",icone:"⛩️",token_asaas:"",suites:[
                 {nome:"Suíte Tahiti",preco3:180,preco12:335,preco24:675,fracao:15,qtde:48},
                 {nome:"Suíte Bora Bora",preco3:208,preco12:384,preco24:760,fracao:17,qtde:14},
                 {nome:"Suíte Mauí (Cadeirante)",preco3:240,preco12:440,preco24:858,fracao:20,qtde:1},
@@ -137,7 +139,7 @@
                 {nome:"Suíte Malibú",preco3:663,preco12:1180,preco24:2153,fracao:55,qtde:1},
                 {nome:"Suíte Mandala",preco3:997,preco12:1765,preco24:3178,fracao:83,qtde:1}
             ]},
-            "Dreams":{cor:"#00ff88",icone:"✨",suites:[
+            "Dreams":{cor:"#00ff88",icone:"✨",token_asaas:"",suites:[
                 {nome:"Suíte Delirius",preco3:127,preco12:242,preco24:512,fracao:11,qtde:31},
                 {nome:"Suíte Romântica",preco3:152,preco12:286,preco24:589,fracao:12,qtde:1},
                 {nome:"Suíte Sonho",preco3:167,preco12:312,preco24:635,fracao:14,qtde:7},
@@ -147,7 +149,7 @@
                 {nome:"Suite Ceará",preco3:220,preco12:415,preco24:747,fracao:19,qtde:1},
                 {nome:"Suite Fortaleza",preco3:220,preco12:415,preco24:747,fracao:19,qtde:1}
             ]},
-            "Motel Dragon":{cor:"#ff4444",icone:"🐉",suites:[
+            "Motel Dragon":{cor:"#ff4444",icone:"🐉",token_asaas:"",suites:[
                 {nome:"Suíte Sonho",preco3:193,preco12:357,preco24:713,fracao:17,qtde:28},
                 {nome:"Suíte Inspiração",preco3:259,preco12:473,preco24:916,fracao:22,qtde:10},
                 {nome:"Suíte Felicidade",preco3:301,preco12:547,preco24:1046,fracao:25,qtde:8},
@@ -558,9 +560,9 @@
             try {
                 if (db) {
                     if (userData.alterandoReserva && userData.reservaExistenteId) {
-                        await db.collection("reservas").doc(userData.reservaExistenteId).update({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:payload.status, origem:payload.origem, token_asaas:'' });
+                        await db.collection("reservas").doc(userData.reservaExistenteId).update({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:payload.status, origem:payload.origem, token_asaas:payload.token_asaas });
                     } else {
-                        await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:'' });
+                        await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:payload.token_asaas });
                     }
                 }
             } catch(e) { console.warn("Firebase save/update fail:", e); }
@@ -615,9 +617,18 @@
             try {
                 if (db) {
                     var snap = await db.collection("config").doc("motels").get();
-                    if (snap.exists) { motels = snap.data().motels || JSON.parse(JSON.stringify(DADOS_PADRAO)); }
-                    else { motels = JSON.parse(JSON.stringify(DADOS_PADRAO)); }
-                } else { motels = JSON.parse(JSON.stringify(DADOS_PADRAO)); }
+                    if (snap.exists) {
+                        motels = snap.data().motels;
+                        var tokenOk = motels[Object.keys(motels)[0]]?.token_asaas;
+                        console.log("Motels carregados do Firestore, token_asaas presente:", !!tokenOk);
+                    } else {
+                        console.log("Documento config/motels nao existe no Firestore, usando fallback");
+                        motels = JSON.parse(JSON.stringify(DADOS_PADRAO));
+                    }
+                } else {
+                    console.log("db nao disponivel, usando fallback");
+                    motels = JSON.parse(JSON.stringify(DADOS_PADRAO));
+                }
             } catch(e) {
                 console.warn("Erro ao carregar motels:", e);
                 motels = JSON.parse(JSON.stringify(DADOS_PADRAO));
@@ -626,7 +637,17 @@
         }
 
         window.nextStep = nextStep;
-        window.onload = carregarMotels;
+        window.onload = async function() {
+            if (auth) {
+                try {
+                    await auth.signInAnonymously();
+                    console.log("Auth anonimo OK");
+                } catch(e) {
+                    console.warn("Auth anonimo falhou, usando fallback:", e);
+                }
+            }
+            await carregarMotels();
+        };
     </script>
 </body>
 </html>
