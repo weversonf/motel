@@ -675,6 +675,7 @@
                 cliente_cpf: userData.cpf,
                 data_reserva: userData.dataRes,
                 hora_chegada: userData.horaRes,
+                protocolo: userData.protocolo,
                 status: isRecepcao ? 'pendente_recepcao' : 'aguardando_pagamento',
                 origem: 'chat_web',
                 criado_em: new Date().toISOString(),
@@ -684,10 +685,10 @@
             try {
                 if (db) {
                     if (userData.alterandoReserva && userData.reservaExistenteId) {
-                        await db.collection("reservas").doc(userData.reservaExistenteId).update({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:payload.status, origem:payload.origem, token_asaas:payload.token_asaas });
+                        await db.collection("reservas").doc(userData.reservaExistenteId).update({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, token_asaas:payload.token_asaas });
                         reservaId = userData.reservaExistenteId;
                     } else {
-                        var ref = await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:payload.token_asaas });
+                        var ref = await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:payload.token_asaas });
                         reservaId = ref.id;
                     }
                 }
@@ -747,9 +748,11 @@
         };
 
         window.verificarPagamento = async function() {
+            var reservaDocId = null;
             if (!userData.paymentId && db && userData.cpf) {
                 var q = await db.collection("reservas").where("cliente_cpf", "==", userData.cpf).where("status", "==", "aguardando_pagamento").orderBy("criado_em", "desc").limit(1).get();
                 if (!q.empty) {
+                    reservaDocId = q.docs[0].id;
                     var d = q.docs[0].data();
                     if (d.payment_id) userData.paymentId = d.payment_id;
                 }
@@ -762,6 +765,14 @@
                 var result = await resp.json();
                 if (result.pago) { 
                     userData.statusVoucher = 'CONFIRMADO';
+                    if (db) {
+                        var ref = reservaDocId ? db.collection("reservas").doc(reservaDocId) : null;
+                        if (!ref && userData.cpf) {
+                            var q2 = await db.collection("reservas").where("cliente_cpf", "==", userData.cpf).where("status", "==", "aguardando_pagamento").orderBy("criado_em", "desc").limit(1).get();
+                            if (!q2.empty) ref = q2.docs[0].ref;
+                        }
+                        if (ref) await ref.update({ status: 'confirmado' }).catch(function(e){ console.warn("Falha ao atualizar status:", e); });
+                    }
                     addMsg("✅ <b>Pagamento confirmado!</b> Sua reserva está agendada.", 'bot');
                     addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
                 }
