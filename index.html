@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Pré-Reserva - Moteis Fortaleza</title>
+    <title>Pré-Reserva - Motéis Fortaleza</title>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
@@ -679,7 +679,8 @@
                 status: isRecepcao ? 'pendente_recepcao' : 'aguardando_pagamento',
                 origem: 'chat_web',
                 criado_em: new Date().toISOString(),
-                token_asaas: motelAtual ? (motelAtual.token_asaas || '') : ''
+                token_asaas: motelAtual ? (motelAtual.token_asaas || '') : '',
+                redirect_url: window.location.href.split('?')[0] + '?pagamento=1'
             };
             var reservaId = null;
             try {
@@ -737,7 +738,7 @@
                 addMsg('<div style="text-align:center;padding:8px 0">'
                     + badgePromo
                     + '<p style="color:#888;font-size:.85rem;margin-bottom:10px">Sua reserva será confirmada após o pagamento.</p>'
-                    + '<a href="' + paymentUrl + '" target="_blank" class="btn-action" style="display:inline-block;text-decoration:none;padding:14px 24px;font-size:1rem;border-radius:10px">💳 Pagar Agora - R$ ' + userData.preco + ',00</a>'
+                    + '<button class="btn-action" style="padding:14px 24px;font-size:1rem;border-radius:10px" onclick="window.pagarAgora(\'' + paymentUrl + '\')">💳 Pagar Agora - R$ ' + userData.preco + ',00</button>'
                     + '<p style="color:#666;font-size:.7rem;margin-top:8px">Pagamento via PIX (ASAAS)</p>'
                     + '<button class="btn-action" style="margin-top:8px;background:#333;color:#fff;font-size:.85rem;padding:10px" onclick="window.verificarPagamento()">✅ Já paguei, verificar</button></div>', 'bot');
             } else {
@@ -745,6 +746,12 @@
             }
             addMsg('<div style="font-size:.8rem;color:#888;text-align:center">Protocolo: ' + userData.protocolo + '</div>', 'bot');
             addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
+        };
+
+        window.pagarAgora = function(url) {
+            sessionStorage.setItem('pagamento_userData', JSON.stringify(userData));
+            sessionStorage.setItem('asaas_redirect', '1');
+            window.location.href = url;
         };
 
         window.verificarPagamento = async function() {
@@ -828,7 +835,18 @@
         }
 
         window.nextStep = nextStep;
+        var asaasReturn = false;
         window.onload = async function() {
+            if (sessionStorage.getItem('asaas_redirect')) {
+                sessionStorage.removeItem('asaas_redirect');
+                asaasReturn = true;
+                var saved = sessionStorage.getItem('pagamento_userData');
+                if (saved) {
+                    try { userData = JSON.parse(saved); } catch(e) {}
+                    sessionStorage.removeItem('pagamento_userData');
+                }
+                step = -1;
+            }
             if (auth) {
                 try {
                     await auth.signInAnonymously();
@@ -838,6 +856,10 @@
                 }
             }
             await carregarMotels();
+            if (asaasReturn && userData.paymentId) {
+                addMsg("🔄 Retornando do pagamento, verificando...", 'bot');
+                await window.verificarPagamento();
+            }
         };
     </script>
 </body>
