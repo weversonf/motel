@@ -82,7 +82,8 @@
         .input-area button:hover { transform:translateY(-1px); box-shadow:0 4px 16px var(--shadow); }
         .resumo-item { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid var(--bot-border); font-size:.9rem; }
         .resumo-item span:last-child { color:var(--primary); font-weight:600; }
-        .badge-pendente { color:#f59e0b; font-size:.75rem; margin-top:10px; text-align:center; }
+            .badge-pendente { color:#f59e0b; font-size:.75rem; margin-top:10px; text-align:center; }
+            @media print { body * { visibility:hidden; } .voucher-print, .voucher-print * { visibility:visible; } .voucher-print { position:absolute; left:0; top:0; width:100%; padding:20px; } }
         .disclaimer { font-size:.7rem; color:var(--text3); text-align:center; padding:10px 20px; background:var(--disclaimer-bg); border-top:1px solid var(--bot-border); transition:background .3s; }
     </style>
 </head>
@@ -116,44 +117,45 @@
         var inputArea = document.getElementById('inputArea');
         var userInput = document.getElementById('userInput');
         var step = 0;
-        var userData = { motel:'', suite:'', duracao:'3h', preco:0, precoOriginal:0, promocao:'nenhuma', nome:'', cpf:'', dataRes:'', horaRes:'', paymentId:'' };
+        var userData = { motel:'', suite:'', duracao:'3h', preco:0, precoOriginal:0, promocao:'nenhuma', nome:'', cpf:'', dataRes:'', horaRes:'', paymentId:'', tagsBusca:[] };
         var motels = {};
         var chatPronto = false;
+        var modoTeste = window.location.search.indexOf('test=1') >= 0;
 
         var DADOS_PADRAO = {
             "Spa Urbano":{cor:"#ff44ff",icone:"🌿",token_asaas:"",suites:[
-                {nome:"Suíte Jade",preco3:160,preco12:300,preco24:613,fracao:14,qtde:28},
-                {nome:"Suíte Safira",preco3:180,preco12:335,preco24:675,fracao:15,qtde:13},
-                {nome:"Suíte Rubi",preco3:204,preco12:377,preco24:748,fracao:17,qtde:4},
-                {nome:"Suíte Esmeralda",preco3:441,preco12:791,preco24:1737,fracao:37,qtde:1},
-                {nome:"Suíte Diamante",preco3:552,preco12:986,preco24:1814,fracao:46,qtde:1}
+                {nome:"Suíte Jade",preco3:160,preco12:300,preco24:613,fracao:14,qtde:28,descricao:"TV Smart, Ar Split, Secador, Prancha p/ Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Safira",preco3:180,preco12:335,preco24:675,fracao:15,qtde:13,descricao:"Hidromassagem c/ iluminação Cromoterapia, TV Smart, Ar Split, Cortinas, Secador, Prancha p/ Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Rubi",preco3:204,preco12:377,preco24:748,fracao:17,qtde:4,descricao:"Hidromassagem c/ iluminação Cromoterapia, Pole Dance, TV Smart, Ar Split, Secador, Prancha p/ Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Esmeralda",preco3:441,preco12:791,preco24:1737,fracao:37,qtde:1,descricao:"Piscina Aquecida, Pole Dance, Sonorização, Iluminação, Hidromassagem c/ iluminação Cromoterapia, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suíte Diamante",preco3:552,preco12:986,preco24:1814,fracao:46,qtde:1,descricao:"Boate, Duas Camas, Piscina Aquecida com Cascata, Telão, Sonorização, Iluminação, Pole Dance, Hidromassagem c/ iluminação Cromoterapia, Sauna a Vapor, Poltrona Erótica, TV, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]}
             ]},
             "Assahi":{cor:"#ff8800",icone:"⛩️",token_asaas:"",suites:[
-                {nome:"Suíte Tahiti",preco3:180,preco12:335,preco24:675,fracao:15,qtde:48},
-                {nome:"Suíte Bora Bora",preco3:208,preco12:384,preco24:760,fracao:17,qtde:14},
-                {nome:"Suíte Mauí (Cadeirante)",preco3:240,preco12:440,preco24:858,fracao:20,qtde:1},
-                {nome:"Suíte Honolulu",preco3:268,preco12:489,preco24:944,fracao:23,qtde:2},
-                {nome:"Suíte Kauai",preco3:281,preco12:511,preco24:983,fracao:24,qtde:2},
-                {nome:"Suíte Fórmula 1",preco3:613,preco12:1092,preco24:2000,fracao:51,qtde:1},
-                {nome:"Suíte Cancún",preco3:663,preco12:1180,preco24:2153,fracao:55,qtde:1},
-                {nome:"Suíte Malibú",preco3:663,preco12:1180,preco24:2153,fracao:55,qtde:1},
-                {nome:"Suíte Mandala",preco3:997,preco12:1765,preco24:3178,fracao:83,qtde:1}
+                {nome:"Suíte Tahiti",preco3:180,preco12:335,preco24:675,fracao:15,qtde:48,descricao:"TV Smart, Home, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Bora Bora",preco3:208,preco12:384,preco24:760,fracao:17,qtde:14,descricao:"Hidromassagem c/ iluminação Cromoterapia, TV Smart, Poltrona, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Mauí (Cadeirante)",preco3:240,preco12:440,preco24:858,fracao:20,qtde:1,descricao:"TV Smart, Home, 2 Camas, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Honolulu",preco3:268,preco12:489,preco24:944,fracao:23,qtde:2,descricao:"Área de banho, Poltrona, Ofurô com iluminação Cromoterapia, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Kauai",preco3:281,preco12:511,preco24:983,fracao:24,qtde:2,descricao:"Hidromassagem c/ iluminação Cromoterapia, Pole Dance, Sauna a Vapor, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Fórmula 1",preco3:613,preco12:1092,preco24:2000,fracao:51,qtde:1,descricao:"Boate, Duas Camas, Piscina Aquecida, Sonorização, Pole Dance, Hidromassagem c/ iluminação Cromoterapia, Sauna a Vapor, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suíte Cancún",preco3:663,preco12:1180,preco24:2153,fracao:55,qtde:1,descricao:"Boate, Piscina Aquecida com Cascata, Telão, 2 Camas, Sonorização, Pole Dance, Hidromassagem c/ iluminação Cromoterapia, Sauna a Vapor, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suíte Malibú",preco3:663,preco12:1180,preco24:2153,fracao:55,qtde:1,descricao:"Boate, Piscina Aquecida com Cascata, Telão, 2 Camas, Sonorização, Pole Dance, Hidromassagem c/ iluminação Cromoterapia, Sauna a Vapor, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suíte Mandala",preco3:997,preco12:1765,preco24:3177,fracao:83,qtde:1,descricao:"Boate, Piscina Aquecida com Cascata, Telão, Sonorização, Pole Dance, Hidromassagem c/ iluminação Cromoterapia, Sauna a Vapor, Poltrona Erótica, TV Smart, Jardim, Lounge, Cafofo, Bar, Duas suítes com 2 camas de casal, Área reservada para o DJ, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]}
             ]},
             "Dreams":{cor:"#00ff88",icone:"✨",token_asaas:"",suites:[
-                {nome:"Suíte Delirius",preco3:127,preco12:242,preco24:512,fracao:11,qtde:31},
-                {nome:"Suíte Romântica",preco3:152,preco12:286,preco24:589,fracao:12,qtde:1},
-                {nome:"Suíte Sonho",preco3:167,preco12:312,preco24:635,fracao:14,qtde:7},
-                {nome:"Suíte Fantasia",preco3:180,preco12:335,preco24:675,fracao:15,qtde:6},
-                {nome:"Suíte Sonho Amado",preco3:193,preco12:357,preco24:713,fracao:17,qtde:8},
-                {nome:"Suíte Sonho Molhado",preco3:220,preco12:415,preco24:747,fracao:19,qtde:2},
-                {nome:"Suite Ceará",preco3:220,preco12:415,preco24:747,fracao:19,qtde:1},
-                {nome:"Suite Fortaleza",preco3:220,preco12:415,preco24:747,fracao:19,qtde:1}
+                {nome:"Suíte Delirius",preco3:127,preco12:242,preco24:512,fracao:11,qtde:31,descricao:"TV, Sistema de DVD, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Romântica",preco3:152,preco12:286,preco24:589,fracao:12,qtde:1,descricao:"Hidromassagem com iluminação Cromoterapia, Sala de Jantar, Poltrona, TV, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Sonho",preco3:167,preco12:312,preco24:635,fracao:14,qtde:7,descricao:"TV Smart, Alexa, Poltrona Erótica, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Fantasia",preco3:180,preco12:335,preco24:675,fracao:15,qtde:6,descricao:"Piscina ao Ar Livre, Hidromassagem com iluminação Cromoterapia, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suíte Sonho Amado",preco3:193,preco12:357,preco24:713,fracao:17,qtde:8,descricao:"TV Smart, Alexa, Hidromassagem com iluminação Cromoterapia, Poltrona Erótica, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Sonho Molhado",preco3:220,preco12:415,preco24:747,fracao:19,qtde:2,descricao:"TV Smart, Piscina ao Ar Livre, Alexa, Hidromassagem com iluminação Cromoterapia, Pole Dance, Sauna, Poltrona Erótica, Home Theater, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suite Ceará",preco3:220,preco12:415,preco24:747,fracao:19,qtde:1,descricao:"TV Smart, Piscina ao Ar Livre, Alexa, Hidromassagem com iluminação Cromoterapia, Pole Dance, Sauna, Poltrona Erótica, Home Theater, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suite Fortaleza",preco3:220,preco12:415,preco24:747,fracao:19,qtde:1,descricao:"TV Smart, Piscina ao Ar Livre, Alexa, Hidromassagem com iluminação Cromoterapia, Pole Dance, Sauna, Poltrona Erótica, Home Theater, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]}
             ]},
             "Motel Dragon":{cor:"#ff4444",icone:"🐉",token_asaas:"",suites:[
-                {nome:"Suíte Sonho",preco3:193,preco12:357,preco24:713,fracao:17,qtde:28},
-                {nome:"Suíte Inspiração",preco3:259,preco12:473,preco24:916,fracao:22,qtde:10},
-                {nome:"Suíte Felicidade",preco3:301,preco12:547,preco24:1046,fracao:25,qtde:8},
-                {nome:"Suíte Sucesso",preco3:552,preco12:986,preco24:1814,fracao:46,qtde:4}
+                {nome:"Suíte Sonho",preco3:193,preco12:357,preco24:713,fracao:17,qtde:28,descricao:'TV 65" Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.',tags:[]},
+                {nome:"Suíte Inspiração",preco3:259,preco12:473,preco24:916,fracao:22,qtde:10,descricao:'TV 65" Smart, Hidromassagem com iluminação Cromoterapia, Ar Split, Secador, Prancha para Cabelo e Portão Automático.',tags:["hidro"]},
+                {nome:"Suíte Felicidade",preco3:301,preco12:547,preco24:1046,fracao:25,qtde:8,descricao:'TV 65" Smart, Hidromassagem com iluminação Cromoterapia, Sauna, Ar Split, Secador, Prancha para Cabelo e Portão Automático.',tags:["hidro"]},
+                {nome:"Suíte Sucesso",preco3:552,preco12:986,preco24:1814,fracao:46,qtde:4,descricao:'TV 75" Smart, Piscina Aquecida, Poltrona Erótica, Hidromassagem com iluminação Cromoterapia, Pole Dance, Sauna, Alexa, Ar Split, Secador, Prancha para Cabelo e Portão Automático.',tags:["hidro","piscina"]}
             ]}
         };
 
@@ -186,7 +188,7 @@
             chat.scrollTop = chat.scrollHeight;
         }
         window.voltar = function() {
-            if (step <= 0) return;
+            if (step <= 0) { window.irParaMenu(); return; }
             step--;
             removerUIAnterior();
             var msgs = chat.querySelectorAll('.msg');
@@ -211,18 +213,18 @@
                 div.innerHTML = '<label>CPF (Apenas números):</label>'
                     + '<input type="text" id="uiCpf" placeholder="000.000.000-00" maxlength="14" oninput="window.mascaraCPF(this)" onkeypress="window.handleEnterUI(event,\'cpf\')">'
                     + '<button class="btn-action" onclick="window.processarUI(\'cpf\')">Confirmar CPF</button>'
-                    + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span></div>';
+                    + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>';
             } else if (type === 'dataRes') {
                 div.innerHTML = '<label>Data da reserva:</label>'
                     + '<input type="date" id="uiDataRes" min="' + hojeLocal + '" onkeypress="window.handleEnterUI(event,\'dataRes\')">'
                     + '<button class="btn-action" onclick="window.processarUI(\'dataRes\')">Verificar disponibilidade</button>'
                     + '<div id="disponibilidadeMsg" style="display:none;padding:8px;border-radius:8px;font-size:.85rem;text-align:center"></div>'
-                    + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span></div>';
+                    + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>';
             } else if (type === 'horaRes') {
                 div.innerHTML = '<label>Horário de chegada:</label>'
                     + '<input type="time" id="uiHoraRes" onkeypress="window.handleEnterUI(event,\'horaRes\')">'
                     + '<button class="btn-action" onclick="window.processarUI(\'horaRes\')">Confirmar Horário</button>'
-                    + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span></div>';
+                    + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>';
             } else if (type === 'finalizar') {
                 var corPreco = motels[userData.motel] ? motels[userData.motel].cor : '#d20150';
                 var vDesc = Math.round(userData.precoOriginal * 0.7);
@@ -241,7 +243,7 @@
                     + '</div>'
                     + '<button class="btn-action" style="margin-bottom:8px;background:#28a745" onclick="window.mostrarOpcoesPix()">💳 Pagar com PIX</button>'
                     + '<button class="btn-action" style="background:#666" onclick="window.confirmarCartao()">💳 Pagar com Cartão</button>'
-                    + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span></div>'
+                    + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>'
                     + '<div class="badge-pendente">⏳ Pré-reserva - aguardando confirmação</div>';
             }
             chat.appendChild(div);
@@ -280,7 +282,7 @@
                     + '<div class="card-sub">' + m.suites.length + ' suítes</div></div>';
             });
             div.appendChild(row);
-            div.innerHTML += '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span></div>';
+            div.innerHTML += '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>';
             chat.appendChild(div);
             chat.scrollTop = chat.scrollHeight;
         }
@@ -303,20 +305,59 @@
             setTimeout(nextStep, 400);
         };
 
+        function renderFiltroTags() {
+            removerUIAnterior();
+            var div = document.createElement('div');
+            div.className = 'ui-box msg bot';
+            div.style.background = 'transparent'; div.style.border = 'none';
+            div.innerHTML = '<div style="font-size:.85rem;color:#666;margin-bottom:8px">Selecione as características desejadas:</div>'
+                + '<div class="card-row">'
+                + '<div class="card-select" style="--cor:#d20150;--cor-sombra:#d2015033" onclick="window.filtrarSuites(\'hidro\')"><div class="card-logo">🛁</div><div class="card-nome">Hidro</div></div>'
+                + '<div class="card-select" style="--cor:#00aaff;--cor-sombra:#00aaff33" onclick="window.filtrarSuites(\'piscina\')"><div class="card-logo">🏊</div><div class="card-nome">Piscina</div></div>'
+                + '<div class="card-select" style="--cor:#666;--cor-sombra:#66666633" onclick="window.filtrarSuites(\'todas\')"><div class="card-logo">📋</div><div class="card-nome">Ver Todas</div></div>'
+                + '</div>'
+                + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>';
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        window.filtrarSuites = function(tag) {
+            userData.tagsBusca = tag === 'todas' ? [] : [tag];
+            addMsg(tag === 'todas' ? '📋 Todas as suítes' : '🔍 ' + tag, 'user');
+            step = 3;
+            removerUIAnterior();
+            setTimeout(nextStep, 400);
+        };
+
         function renderSuiteCards() {
             toggleUI(false);
             var div = document.createElement('div');
             div.className = 'ui-box msg bot';
             div.style.background = 'transparent'; div.style.border = 'none';
             var motel = motels[userData.motel];
-            motel.suites.forEach(function(s) {
+            var tagsSel = userData.tagsBusca || [];
+            var filtradas = tagsSel.length ? motel.suites.filter(function(s) {
+                return tagsSel.some(function(t) { return (s.tags || []).includes(t); });
+            }) : motel.suites;
+            if (filtradas.length === 0) filtradas = motel.suites;
+            var bestCount = 0;
+            filtradas.forEach(function(s) {
+                var matchCount = tagsSel.filter(function(t) { return (s.tags || []).includes(t); }).length;
+                if (matchCount > bestCount) bestCount = matchCount;
+            });
+            filtradas.forEach(function(s) {
                 var disp = s.qtde ? '<span style="color:#888;font-size:.7rem">' + s.qtde + ' un.</span>' : '';
+                var matchCount = tagsSel.filter(function(t) { return (s.tags || []).includes(t); }).length;
+                var estrela = matchCount > 0 && matchCount === bestCount ? ' ⭐ Melhor opção' : '';
+                var tagsHtml = (s.tags || []).map(function(t) { return '<span style="display:inline-block;padding:1px 6px;border-radius:4px;font-size:.6rem;background:' + motel.cor + '22;color:' + motel.cor + ';margin-right:2px">' + t + '</span>'; }).join('');
                 div.innerHTML += '<div class="card-select" style="--cor:' + motel.cor + ';--cor-sombra:' + motel.cor + '66" onclick="window.selectSuite(\'' + s.nome + '\')">'
                     + '<div style="padding:10px 12px">'
-                    + '<div style="font-weight:bold;color:' + motel.cor + ';font-size:.9rem">' + s.nome + ' ' + disp + '</div>'
+                    + '<div style="font-weight:bold;color:' + motel.cor + ';font-size:.9rem">' + s.nome + estrela + ' ' + disp + '</div>'
+                    + (s.descricao ? '<div style="font-size:.7rem;color:#888;margin:2px 0">' + s.descricao + '</div>' : '')
+                    + (tagsHtml ? '<div style="margin-top:4px">' + tagsHtml + '</div>' : '')
                     + '<div style="font-size:.75rem;color:#aaa;margin-top:4px">3h R$ ' + s.preco3 + ' · 12h R$ ' + s.preco12 + ' · 24h R$ ' + s.preco24 + '</div></div></div>';
             });
-            div.innerHTML += '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span></div>';
+            div.innerHTML += '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>';
             chat.appendChild(div);
             chat.scrollTop = chat.scrollHeight;
         }
@@ -343,7 +384,7 @@
                 + '<div style="padding:14px;font-weight:bold;color:var(--cor);text-align:center;font-size:1rem">🌙 12 Horas <span style="color:#888;font-weight:normal">R$ ' + s.preco12 + '</span></div></div>'
                 + '<div class="card-select" style="--cor:' + cor + ';--cor-sombra:' + cor + '66" onclick="window.selectDuracao(\'24h\',' + s.preco24 + ')">'
                 + '<div style="padding:14px;font-weight:bold;color:var(--cor);text-align:center;font-size:1rem">🌞 24 Horas <span style="color:#888;font-weight:normal">R$ ' + s.preco24 + '</span></div></div>'
-                + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span></div>';
+                + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>';
             chat.appendChild(div);
             chat.scrollTop = chat.scrollHeight;
         }
@@ -482,16 +523,94 @@
             setTimeout(nextStep, 500);
         };
 
+        function renderMenuInicial() {
+            removerUIAnterior();
+            toggleUI(false);
+            var h = new Date().getHours();
+            var saudacao = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+            addMsg('🔥 <b>' + saudacao + '!</b> Encontre a suíte ideal em menos de 30 segundos.', 'bot');
+            var div = document.createElement('div');
+            div.className = 'ui-box msg bot';
+            div.style.background = 'transparent'; div.style.border = 'none';
+            div.innerHTML = '<div class="card-row">'
+                + '<div class="card-select" style="--cor:#d20150;--cor-sombra:#d2015066" onclick="window.verCatalogo()"><div class="card-logo">🛏️</div><div class="card-nome">Ver Suítes</div><div class="card-sub">Catálogo completo</div></div>'
+                + '<div class="card-select" style="--cor:#28a745;--cor-sombra:#28a74566" onclick="window.iniciarReserva()"><div class="card-logo">📲</div><div class="card-nome">Fazer Reserva</div><div class="card-sub">Pré-reserva online</div></div>'
+                + '</div>';
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        window.iniciarReserva = function() {
+            userData = { motel:'', suite:'', duracao:'3h', preco:0, precoOriginal:0, promocao:'nenhuma', nome:'', cpf:'', dataRes:'', horaRes:'', paymentId:'', tagsBusca:[], alterandoReserva:false };
+            step = 0;
+            nextStep();
+        };
+
+        window.verCatalogo = function() {
+            step = -2;
+            addMsg("🏨 Confira nossas suítes:", 'bot');
+            renderMotelCardsCatalogo();
+        };
+
+        window.irParaMenu = function() {
+            chat.innerHTML = '';
+            userData = { motel:'', suite:'', duracao:'3h', preco:0, precoOriginal:0, promocao:'nenhuma', nome:'', cpf:'', dataRes:'', horaRes:'', paymentId:'', alterandoReserva:false };
+            step = -1;
+            nextStep();
+        };
+
+        function renderMotelCardsCatalogo() {
+            toggleUI(false);
+            var div = document.createElement('div');
+            div.className = 'ui-box msg bot';
+            div.style.background = 'transparent'; div.style.border = 'none'; div.style.padding = '0';
+            var row = document.createElement('div');
+            row.className = 'card-row';
+            Object.keys(motels).forEach(function(nome) {
+                var m = motels[nome];
+                row.innerHTML += '<div class="card-select" style="--cor:' + m.cor + ';--cor-sombra:' + m.cor + '66" onclick="window.verSuitesCatalogo(\'' + nome + '\')">'
+                    + '<div class="card-logo">' + m.icone + '</div>'
+                    + '<div class="card-nome">' + nome + '</div>'
+                    + '<div class="card-sub">' + m.suites.length + ' suítes</div></div>';
+            });
+            div.appendChild(row);
+            div.innerHTML += '<div style="text-align:center;margin-top:8px"><span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar ao menu</span></div>';
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        window.verSuitesCatalogo = function(motelNome) {
+            var motel = motels[motelNome];
+            var precoMin = Math.min.apply(null, motel.suites.map(function(s) { return s.preco3; }));
+            var precoMax = Math.max.apply(null, motel.suites.map(function(s) { return s.preco24; }));
+            addMsg(motel.icone + ' <b>' + motelNome + '</b> — de R$ ' + precoMin + ' a R$ ' + precoMax, 'bot');
+            var div = document.createElement('div');
+            div.className = 'ui-box msg bot';
+            div.style.background = 'transparent'; div.style.border = 'none';
+            motel.suites.forEach(function(s) {
+                var best = s.preco3 <= motel.suites.reduce(function(m, x) { return Math.min(m, x.preco3); }, Infinity) ? ' ⭐ Mais econômica' : '';
+                div.innerHTML += '<div class="card-select" style="--cor:' + motel.cor + ';--cor-sombra:' + motel.cor + '66;cursor:default">'
+                    + '<div style="padding:10px 12px"><div style="font-weight:bold;color:' + motel.cor + ';font-size:.9rem">' + s.nome + best + '</div>'
+                    + (s.descricao ? '<div style="font-size:.7rem;color:#888;margin:2px 0">' + s.descricao + '</div>' : '')
+                    + '<div style="font-size:.75rem;color:#aaa;margin-top:4px">3h R$ ' + s.preco3 + ' · 12h R$ ' + s.preco12 + ' · 24h R$ ' + s.preco24 + '</div></div></div>';
+            });
+            div.innerHTML += '<div style="text-align:center;margin-top:8px"><span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar ao menu</span></div>';
+            chat.appendChild(div);
+            chat.scrollTop = chat.scrollHeight;
+        };
+
         function nextStep() {
             switch (step) {
-                case 0: addMsg("Olá! Bem-vindo à <b>Pré-Reserva Online</b>. Como você se chama?", 'bot'); toggleUI(true); userInput.focus(); break;
+                case -1: renderMenuInicial(); break;
+                case 0: addMsg("Qual seu nome?", 'bot'); toggleUI(true); userInput.focus(); break;
                 case 1: addMsg("Prazer, " + userData.nome + "! Qual motel você deseja?", 'bot'); renderMotelCards(); break;
-                case 2: addMsg("Qual suíte você prefere?", 'bot'); renderSuiteCards(); break;
-                case 3: addMsg("Qual período deseja?", 'bot'); renderDuracao(); break;
-                case 4: addMsg("Informe seu CPF:", 'bot'); renderUI('cpf'); break;
-                case 5: addMsg("Para qual data deseja agendar no <b>" + userData.motel + "</b>?", 'bot'); renderUI('dataRes'); break;
-                case 6: addMsg("Qual horário pretende chegar?", 'bot'); renderUI('horaRes'); break;
-                case 7: addMsg("Confira os dados da sua pré-reserva:", 'bot'); renderUI('finalizar'); break;
+                case 2: addMsg("Quais características você busca?", 'bot'); renderFiltroTags(); break;
+                case 3: renderSuiteCards(); break;
+                case 4: addMsg("Qual período deseja?", 'bot'); renderDuracao(); break;
+                case 5: addMsg("Informe seu CPF:", 'bot'); renderUI('cpf'); break;
+                case 6: addMsg("Para qual data deseja agendar no <b>" + userData.motel + "</b>?", 'bot'); renderUI('dataRes'); break;
+                case 7: addMsg("Qual horário pretende chegar?", 'bot'); renderUI('horaRes'); break;
+                case 8: addMsg("Confira os dados da sua pré-reserva:", 'bot'); renderUI('finalizar'); break;
             }
         }
 
@@ -536,11 +655,15 @@
         async function finalizarFluxo() {
             removerUIAnterior();
             addMsg("⏳ Registrando sua pré-reserva...", 'bot');
+            var protocolo = new Date().getTime().toString(36).toUpperCase();
+            userData.protocolo = protocolo;
             var motelAtual = motels[userData.motel];
             var promoInfo = '';
             if (userData.promocao === 'desconto30') promoInfo = '30%_OFF';
             else if (userData.promocao === 'mais3h') promoInfo = '3h+3h';
             var isRecepcao = userData.promocao === 'recepcao';
+            var isPix = !isRecepcao && !modoTeste;
+            userData.statusVoucher = isRecepcao ? 'PENDENTE' : isPix ? 'AGUARDANDO PAGAMENTO' : 'CONFIRMADO';
             var payload = {
                 motel: userData.motel,
                 suite: userData.suite,
@@ -557,12 +680,15 @@
                 criado_em: new Date().toISOString(),
                 token_asaas: motelAtual ? (motelAtual.token_asaas || '') : ''
             };
+            var reservaId = null;
             try {
                 if (db) {
                     if (userData.alterandoReserva && userData.reservaExistenteId) {
                         await db.collection("reservas").doc(userData.reservaExistenteId).update({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:payload.status, origem:payload.origem, token_asaas:payload.token_asaas });
+                        reservaId = userData.reservaExistenteId;
                     } else {
-                        await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:payload.token_asaas });
+                        var ref = await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:payload.token_asaas });
+                        reservaId = ref.id;
                     }
                 }
             } catch(e) { console.warn("Firebase save/update fail:", e); }
@@ -573,17 +699,35 @@
             if (isRecepcao) {
                 addMsg(tituloSucesso, 'bot');
                 addMsg((isAlteracao ? '✏️ Sua reserva foi atualizada. ' : '💵 Sua reserva foi enviada para a recepção. ') + 'Apresente seu CPF no check-in.', 'bot');
-                addMsg('<div style="font-size:.8rem;color:#888;text-align:center">Protocolo: ' + new Date().getTime().toString(36).toUpperCase() + '</div>', 'bot');
+                addMsg('<div style="font-size:.8rem;color:#888;text-align:center">Protocolo: ' + userData.protocolo + '</div>', 'bot');
+                addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
                 return;
             }
 
             var paymentUrl = '';
             var errorPagamento = '';
+            if (modoTeste) {
+                paymentUrl = '#test';
+                userData.paymentId = 'test_' + Date.now();
+                if (reservaId) {
+                    await db.collection("reservas").doc(reservaId).update({ payment_id: userData.paymentId, status: 'confirmado', modo_teste: true }).catch(function(){});
+                }
+                addMsg(tituloSucesso, 'bot');
+                addMsg('🧪 <b>MODO TESTE</b> — Reserva confirmada sem pagamento.', 'bot');
+                addMsg('<div style="font-size:.8rem;color:#888;text-align:center">Protocolo: ' + userData.protocolo + '</div>', 'bot');
+                addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
+                return;
+            }
             try {
                 var resp = await fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify(payload) });
                 var result = await resp.json();
                 if (result.pagamento_url) paymentUrl = result.pagamento_url;
-                if (result.payment_id) userData.paymentId = result.payment_id;
+                if (result.payment_id) {
+                    userData.paymentId = result.payment_id;
+                    if (reservaId) {
+                        await db.collection("reservas").doc(reservaId).update({ payment_id: result.payment_id }).catch(function(){});
+                    }
+                }
                 if (result.erro) { console.warn("ASAAS error:", result.erro); errorPagamento = result.erro; }
             } catch(e) { console.warn("Apps Script fail:", e); }
             addMsg(tituloSucesso, 'bot');
@@ -598,21 +742,57 @@
             } else {
                 addMsg(errorPagamento ? '⚠️ Erro ao gerar pagamento: ' + errorPagamento.replace('ERRO_ASAAS: ','') + '<br><small>Avise a recepção.</small>' : (motelAtual && motelAtual.token_asaas ? '⏳ Link de pagamento indisponível no momento. A recepção entrará em contato.' : '💳 Pagamento online será habilitado em breve. Apresente seu CPF na recepção.'), 'bot');
             }
-            addMsg('<div style="font-size:.8rem;color:#888;text-align:center">Protocolo: ' + new Date().getTime().toString(36).toUpperCase() + '</div>', 'bot');
+            addMsg('<div style="font-size:.8rem;color:#888;text-align:center">Protocolo: ' + userData.protocolo + '</div>', 'bot');
+            addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
         };
 
         window.verificarPagamento = async function() {
-            if (!userData.paymentId) { alert('ID do pagamento não encontrado.'); return; }
+            if (!userData.paymentId && db && userData.cpf) {
+                var q = await db.collection("reservas").where("cliente_cpf", "==", userData.cpf).where("status", "==", "aguardando_pagamento").orderBy("criado_em", "desc").limit(1).get();
+                if (!q.empty) {
+                    var d = q.docs[0].data();
+                    if (d.payment_id) userData.paymentId = d.payment_id;
+                }
+            }
+            if (!userData.paymentId) { alert('ID do pagamento não encontrado. Faça a reserva novamente.'); return; }
             var motelAtual = motels[userData.motel];
             addMsg("🔍 Verificando pagamento...", 'bot');
             try {
                 var resp = await fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'verificar_pagamento', payment_id:userData.paymentId, cliente_cpf:userData.cpf, token_asaas:(motelAtual ? (motelAtual.token_asaas||'') : '') }) });
                 var result = await resp.json();
-                if (result.pago) { addMsg("✅ <b>Pagamento confirmado!</b> Sua reserva está agendada.", 'bot'); }
+                if (result.pago) { 
+                    userData.statusVoucher = 'CONFIRMADO';
+                    addMsg("✅ <b>Pagamento confirmado!</b> Sua reserva está agendada.", 'bot');
+                    addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
+                }
                 else { addMsg('⏳ Pagamento com status: <b>' + (result.status || 'não encontrado') + '</b>. Se já pagou, aguarde alguns instantes e tente novamente.', 'bot'); }
             } catch(e) { addMsg("⚠️ Erro ao verificar pagamento. Tente novamente.", 'bot'); }
         };
 
+        window.mostrarComprovante = function() {
+            var m = motels[userData.motel] || {};
+            var protocolo = userData.protocolo || new Date().getTime().toString(36).toUpperCase();
+            var statusTexto = userData.statusVoucher || 'CONFIRMADO';
+            var statusIcon = statusTexto === 'CONFIRMADO' ? '✅' : statusTexto === 'PENDENTE' ? '⏳' : '🟡';
+            var cor = m.cor || '#d20150';
+            addMsg('<div style="background:#fff;border:1px solid #e0d0e8;border-radius:16px;padding:16px;max-width:100%">'
+                + '<div style="text-align:center;border-bottom:2px solid ' + cor + ';padding-bottom:12px;margin-bottom:14px">'
+                + '<div style="font-weight:700;color:' + cor + ';font-size:1.1rem;letter-spacing:1px">Pré-reserva online</div>'
+                + '<div style="color:#888;font-size:.75rem">Motéis Fortaleza</div></div>'
+                + '<div style="text-align:center;margin:10px 0"><img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=' + encodeURIComponent(protocolo) + '" style="width:120px;height:120px;border:1px solid #eee;border-radius:8px"></div>'
+                + '<div class="resumo-item"><span>Motel</span><span>' + m.icone + ' ' + userData.motel + '</span></div>'
+                + '<div class="resumo-item"><span>Suíte</span><span>' + userData.suite + '</span></div>'
+                + '<div class="resumo-item"><span>Período</span><span>' + userData.duracao + '</span></div>'
+                + '<div class="resumo-item"><span>Data</span><span>' + (userData.dataRes ? userData.dataRes.split('-').reverse().join('/') : '') + '</span></div>'
+                + '<div class="resumo-item"><span>Horário</span><span>' + userData.horaRes + '</span></div>'
+                + '<div class="resumo-item"><span>Cliente</span><span>' + userData.nome + '</span></div>'
+                + '<div class="resumo-item"><span>CPF</span><span>' + userData.cpf + '</span></div>'
+                + '<div class="resumo-item"><span>Valor</span><span>R$ ' + userData.preco + ',00</span></div>'
+                + '<div style="padding:8px 12px;border-radius:8px;text-align:center;font-weight:700;font-size:.9rem;margin:14px 0;background:' + (statusTexto === 'CONFIRMADO' ? '#d4edda' : '#fff3cd') + ';color:' + (statusTexto === 'CONFIRMADO' ? '#155724' : '#856404') + '">' + statusIcon + ' ' + statusTexto + '</div>'
+                + '<div style="text-align:center;font-size:.8rem;color:#888;border-top:1px solid #eee;padding-top:12px">🎉 Apresente este comprovante na recepção junto com seu CPF</div>'
+                + '<div style="text-align:center;font-size:.7rem;color:#aaa;margin-top:6px;letter-spacing:1px">Protocolo: ' + protocolo + '</div>'
+                + '</div>', 'bot');
+        };
         async function carregarMotels() {
             try {
                 if (db) {
