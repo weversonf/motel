@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Pré-Reserva - Moteis Fortaleza</title>
+    <title>Pré-Reserva - Rede de Motéis</title>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
@@ -729,6 +729,7 @@
                     localStorage.setItem('ultimo_cpf', userData.cpf);
                     localStorage.setItem('ultimo_motel', userData.motel);
                     localStorage.setItem('ultimo_protocolo', userData.protocolo);
+                    localStorage.setItem('ultimo_token_asaas', payload.token_asaas || '');
                     if (reservaId) {
                         await db.collection("reservas").doc(reservaId).update({ payment_id: result.payment_id }).catch(function(){});
                     }
@@ -762,7 +763,8 @@
                     var motelNome = userData.motel || localStorage.getItem('ultimo_motel') || '';
                     var motelAtual = motels[motelNome] || null;
                     var cpf = userData.cpf || localStorage.getItem('ultimo_cpf') || '';
-                    var resp = await fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'verificar_pagamento', payment_id:pid, cliente_cpf:cpf, token_asaas:(motelAtual ? (motelAtual.token_asaas||'') : '') }) });
+                    var token = (motelAtual ? motelAtual.token_asaas : '') || localStorage.getItem('ultimo_token_asaas') || '';
+                    var resp = await fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'verificar_pagamento', payment_id:pid, cliente_cpf:cpf, token_asaas:token }) });
                     var result = await resp.json();
                     if (result.pago) {
                         clearInterval(window.pagamentoPollInterval);
@@ -788,7 +790,7 @@
             }, 300000);
         };
 
-        window.verificarPagamento = async function() {
+        window.verificarPagamento = async function(cpfForcado) {
             var reservaDocId = null;
             if (!userData.paymentId) {
                 var savedId = localStorage.getItem('ultimo_payment_id');
@@ -799,24 +801,36 @@
                     if (!userData.protocolo) userData.protocolo = localStorage.getItem('ultimo_protocolo') || '';
                 }
             }
-            if (!userData.paymentId && db && userData.cpf) {
-                var q = await db.collection("reservas").where("cliente_cpf", "==", userData.cpf).where("status", "==", "aguardando_pagamento").orderBy("criado_em", "desc").limit(1).get();
-                if (!q.empty) {
-                    reservaDocId = q.docs[0].id;
-                    var d = q.docs[0].data();
-                    if (d.payment_id) {
-                        userData.paymentId = d.payment_id;
-                        localStorage.setItem('ultimo_payment_id', d.payment_id);
-                        localStorage.setItem('ultimo_cpf', userData.cpf);
-                        localStorage.setItem('ultimo_motel', userData.motel);
+            if (!userData.paymentId) {
+                var cpfBusca = cpfForcado || userData.cpf || localStorage.getItem('ultimo_cpf');
+                if (cpfBusca && db) {
+                    var q = await db.collection("reservas").where("cliente_cpf", "==", cpfBusca).orderBy("criado_em", "desc").limit(1).get();
+                    if (!q.empty) {
+                        reservaDocId = q.docs[0].id;
+                        var d = q.docs[0].data();
+                        if (d.payment_id) {
+                            userData.paymentId = d.payment_id;
+                            userData.cpf = d.cliente_cpf || cpfBusca;
+                            userData.motel = d.motel || '';
+                            userData.protocolo = d.protocolo || '';
+                            localStorage.setItem('ultimo_payment_id', d.payment_id);
+                            localStorage.setItem('ultimo_cpf', userData.cpf);
+                            localStorage.setItem('ultimo_motel', userData.motel);
+                            localStorage.setItem('ultimo_protocolo', userData.protocolo);
+                        }
                     }
                 }
             }
-            if (!userData.paymentId) { alert('ID do pagamento não encontrado. Faça a reserva novamente.'); return; }
+            if (!userData.paymentId) {
+                var cpfInput = prompt("Digite seu CPF para localizar a reserva:");
+                if (cpfInput) return window.verificarPagamento(cpfInput);
+                return;
+            }
             var motelAtual = motels[userData.motel];
+            var tokenAsaas = (motelAtual ? motelAtual.token_asaas : '') || localStorage.getItem('ultimo_token_asaas') || '';
             addMsg("🔍 Verificando pagamento...", 'bot');
             try {
-                var resp = await fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'verificar_pagamento', payment_id:userData.paymentId, cliente_cpf:userData.cpf, token_asaas:(motelAtual ? (motelAtual.token_asaas||'') : '') }) });
+                var resp = await fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'verificar_pagamento', payment_id:userData.paymentId, cliente_cpf:userData.cpf, token_asaas:tokenAsaas }) });
                 var result = await resp.json();
                 if (result.pago) { 
                     userData.statusVoucher = 'CONFIRMADO';
