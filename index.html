@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Pré-Reserva - Rede de Motéis</title>
+    <title>Pré-Reserva - Moteis Fortaleza</title>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
@@ -725,6 +725,10 @@
                 if (result.pagamento_url) paymentUrl = result.pagamento_url;
                 if (result.payment_id) {
                     userData.paymentId = result.payment_id;
+                    localStorage.setItem('ultimo_payment_id', result.payment_id);
+                    localStorage.setItem('ultimo_cpf', userData.cpf);
+                    localStorage.setItem('ultimo_motel', userData.motel);
+                    localStorage.setItem('ultimo_protocolo', userData.protocolo);
                     if (reservaId) {
                         await db.collection("reservas").doc(reservaId).update({ payment_id: result.payment_id }).catch(function(){});
                     }
@@ -748,20 +752,24 @@
 
         window.pagarAgora = function(url) {
             window.open(url, '_blank');
-            addMsg('💳 Pagamento aberto em nova aba. Após pagar, a confirmação será automática.', 'bot');
+            addMsg('💳 Pagamento aberto em nova aba. Acompanhando status automaticamente...', 'bot');
             if (window.pagamentoPollInterval) clearInterval(window.pagamentoPollInterval);
+            var tentativas = 0;
             window.pagamentoPollInterval = setInterval(async function() {
-                if (!userData.paymentId) return;
+                var pid = userData.paymentId || localStorage.getItem('ultimo_payment_id');
+                if (!pid) { tentativas++; if (tentativas > 3) { clearInterval(window.pagamentoPollInterval); window.pagamentoPollInterval = null; } return; }
                 try {
-                    var motelAtual = motels[userData.motel];
-                    var resp = await fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'verificar_pagamento', payment_id:userData.paymentId, cliente_cpf:userData.cpf, token_asaas:(motelAtual ? (motelAtual.token_asaas||'') : '') }) });
+                    var motelNome = userData.motel || localStorage.getItem('ultimo_motel') || '';
+                    var motelAtual = motels[motelNome] || null;
+                    var cpf = userData.cpf || localStorage.getItem('ultimo_cpf') || '';
+                    var resp = await fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'verificar_pagamento', payment_id:pid, cliente_cpf:cpf, token_asaas:(motelAtual ? (motelAtual.token_asaas||'') : '') }) });
                     var result = await resp.json();
                     if (result.pago) {
                         clearInterval(window.pagamentoPollInterval);
                         window.pagamentoPollInterval = null;
                         userData.statusVoucher = 'CONFIRMADO';
                         if (db) {
-                            var q = await db.collection("reservas").where("cliente_cpf", "==", userData.cpf).where("status", "==", "aguardando_pagamento").orderBy("criado_em", "desc").limit(1).get();
+                            var q = await db.collection("reservas").where("cliente_cpf", "==", cpf).where("status", "==", "aguardando_pagamento").orderBy("criado_em", "desc").limit(1).get();
                             if (!q.empty) {
                                 await q.docs[0].ref.update({ status: 'confirmado' }).catch(function(e){ console.warn("Falha ao atualizar status:", e); });
                             }
@@ -775,18 +783,33 @@
                 if (window.pagamentoPollInterval) {
                     clearInterval(window.pagamentoPollInterval);
                     window.pagamentoPollInterval = null;
+                    addMsg('⏱️ A verificação automática encerrou. Use "✅ Já paguei, verificar" para conferir.', 'bot');
                 }
             }, 300000);
         };
 
         window.verificarPagamento = async function() {
             var reservaDocId = null;
+            if (!userData.paymentId) {
+                var savedId = localStorage.getItem('ultimo_payment_id');
+                if (savedId) {
+                    userData.paymentId = savedId;
+                    if (!userData.cpf) userData.cpf = localStorage.getItem('ultimo_cpf') || '';
+                    if (!userData.motel) userData.motel = localStorage.getItem('ultimo_motel') || '';
+                    if (!userData.protocolo) userData.protocolo = localStorage.getItem('ultimo_protocolo') || '';
+                }
+            }
             if (!userData.paymentId && db && userData.cpf) {
                 var q = await db.collection("reservas").where("cliente_cpf", "==", userData.cpf).where("status", "==", "aguardando_pagamento").orderBy("criado_em", "desc").limit(1).get();
                 if (!q.empty) {
                     reservaDocId = q.docs[0].id;
                     var d = q.docs[0].data();
-                    if (d.payment_id) userData.paymentId = d.payment_id;
+                    if (d.payment_id) {
+                        userData.paymentId = d.payment_id;
+                        localStorage.setItem('ultimo_payment_id', d.payment_id);
+                        localStorage.setItem('ultimo_cpf', userData.cpf);
+                        localStorage.setItem('ultimo_motel', userData.motel);
+                    }
                 }
             }
             if (!userData.paymentId) { alert('ID do pagamento não encontrado. Faça a reserva novamente.'); return; }
