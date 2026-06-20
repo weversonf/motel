@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Pré-Reserva - Motéis Fortaleza</title>
+    <title>Pré-Reserva - Moteis Fortaleza</title>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
@@ -745,7 +745,6 @@
                 addMsg(errorPagamento ? '⚠️ Erro ao gerar pagamento: ' + errorPagamento.replace('ERRO_ASAAS: ','') + '<br><small>Avise a recepção.</small>' : (motelAtual && motelAtual.token_asaas ? '⏳ Link de pagamento indisponível no momento. A recepção entrará em contato.' : '💳 Pagamento online será habilitado em breve. Apresente seu CPF na recepção.'), 'bot');
             }
             addMsg('<div style="font-size:.8rem;color:#888;text-align:center">Protocolo: ' + userData.protocolo + '</div>', 'bot');
-            addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
         };
 
         window.pagarAgora = function(url) {
