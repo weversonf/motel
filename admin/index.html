@@ -908,8 +908,7 @@
             border-radius: var(--radius-sm);
         }
 
-        .nome-input,
-        .preco-input {
+        .nome-input {
             padding: 8px 12px;
             border: 1px solid var(--border-color);
             border-radius: 6px;
@@ -919,7 +918,28 @@
             transition: 0.2s;
             flex: 1;
         }
+        .preco-input {
+            padding: 8px 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 0.75rem;
+            transition: 0.2s;
+            width: 50px;
+            text-align: center;
+        }
 
+        .descricao-input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 0.8rem;
+            transition: 0.2s;
+        }
+        .descricao-input:focus,
         .nome-input:focus,
         .preco-input:focus {
             outline: none;
@@ -1002,6 +1022,15 @@
         .token-status.nao {
             background: rgba(255, 107, 107, 0.2);
             color: var(--red);
+        }
+
+        .stat-card {
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .stat-card.filtro-ativo {
+            box-shadow: 0 0 0 3px var(--primary), 0 4px 20px var(--shadow);
+            transform: scale(1.02);
         }
 
         .cal-legend {
@@ -1721,29 +1750,29 @@
         </div>
 
         <!-- CARDS ESTATÍSTICAS -->
-        <div class="stats-container">
-            <div class="stat-card">
+        <div class="stats-container" id="statsContainer">
+            <div class="stat-card" onclick="window.filtrarPorStatus('')">
                 <div class="stat-icon">📊</div>
                 <div class="stat-content">
                     <div class="stat-number" id="totalReservas">35</div>
                     <div class="stat-label">Total de reservas</div>
                 </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="window.filtrarPorStatus('hoje')">
                 <div class="stat-icon">📅</div>
                 <div class="stat-content">
                     <div class="stat-number" id="reservasHoje">0</div>
                     <div class="stat-label">Reservas hoje</div>
                 </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="window.filtrarPorStatus('aguardando_pagamento')">
                 <div class="stat-icon">⏳</div>
                 <div class="stat-content">
                     <div class="stat-number" id="pendentes">7</div>
                     <div class="stat-label">Pendentes</div>
                 </div>
             </div>
-            <div class="stat-card">
+            <div class="stat-card" onclick="window.filtrarPorStatus('confirmado')">
                 <div class="stat-icon">✅</div>
                 <div class="stat-content">
                     <div class="stat-number" id="confirmados">22</div>
@@ -1862,38 +1891,38 @@
     const PADRAO = {
         motels: {
             "Spa Urbano":{cor:"#ff44ff",icone:"🌿",suites:[
-                {nome:"Suíte Jade",preco3:160,preco12:300,preco24:613,fracao:14,qtde:28},
-                {nome:"Suíte Safira",preco3:180,preco12:335,preco24:675,fracao:15,qtde:13},
-                {nome:"Suíte Rubi",preco3:204,preco12:377,preco24:748,fracao:17,qtde:4},
-                {nome:"Suíte Esmeralda",preco3:441,preco12:791,preco24:1737,fracao:37,qtde:1},
-                {nome:"Suíte Diamante",preco3:552,preco12:986,preco24:1814,fracao:46,qtde:1}
+                {nome:"Suíte Jade",preco3:160,preco12:300,preco24:613,fracao:14,qtde:28,descricao:"TV Smart, Ar Split, Secador, Prancha p/ Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Safira",preco3:180,preco12:335,preco24:675,fracao:15,qtde:13,descricao:"Hidromassagem c/ iluminação Cromoterapia, TV Smart, Ar Split, Cortinas, Secador, Prancha p/ Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Rubi",preco3:204,preco12:377,preco24:748,fracao:17,qtde:4,descricao:"Hidromassagem c/ iluminação Cromoterapia, Pole Dance, TV Smart, Ar Split, Secador, Prancha p/ Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Esmeralda",preco3:441,preco12:791,preco24:1737,fracao:37,qtde:1,descricao:"Piscina Aquecida, Pole Dance, Sonorização, Iluminação, Hidromassagem c/ iluminação Cromoterapia, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suíte Diamante",preco3:552,preco12:986,preco24:1814,fracao:46,qtde:1,descricao:"Boate, Duas Camas, Piscina Aquecida com Cascata, Telão, Sonorização, Iluminação, Pole Dance, Hidromassagem c/ iluminação Cromoterapia, Sauna a Vapor, Poltrona Erótica, TV, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]}
             ],token_asaas:""},
             "Assahi":{cor:"#ff8800",icone:"⛩️",suites:[
-                {nome:"Suíte Tahiti",preco3:180,preco12:335,preco24:675,fracao:15,qtde:48},
-                {nome:"Suíte Bora Bora",preco3:208,preco12:384,preco24:760,fracao:17,qtde:14},
-                {nome:"Suíte Mauí (Cadeirante)",preco3:240,preco12:440,preco24:858,fracao:20,qtde:1},
-                {nome:"Suíte Honolulu",preco3:268,preco12:489,preco24:944,fracao:23,qtde:2},
-                {nome:"Suíte Kauai",preco3:281,preco12:511,preco24:983,fracao:24,qtde:2},
-                {nome:"Suíte Fórmula 1",preco3:613,preco12:1092,preco24:2000,fracao:51,qtde:1},
-                {nome:"Suíte Cancún",preco3:663,preco12:1180,preco24:2153,fracao:55,qtde:1},
-                {nome:"Suíte Malibú",preco3:663,preco12:1180,preco24:2153,fracao:55,qtde:1},
-                {nome:"Suíte Mandala",preco3:997,preco12:1765,preco24:3178,fracao:83,qtde:1}
+                {nome:"Suíte Tahiti",preco3:180,preco12:335,preco24:675,fracao:15,qtde:48,descricao:"TV Smart, Home, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Bora Bora",preco3:208,preco12:384,preco24:760,fracao:17,qtde:14,descricao:"Hidromassagem c/ iluminação Cromoterapia, TV Smart, Poltrona, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Mauí (Cadeirante)",preco3:240,preco12:440,preco24:858,fracao:20,qtde:1,descricao:"TV Smart, Home, 2 Camas, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Honolulu",preco3:268,preco12:489,preco24:944,fracao:23,qtde:2,descricao:"Área de banho, Poltrona, Ofurô com iluminação Cromoterapia, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Kauai",preco3:281,preco12:511,preco24:983,fracao:24,qtde:2,descricao:"Hidromassagem c/ iluminação Cromoterapia, Pole Dance, Sauna a Vapor, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Fórmula 1",preco3:613,preco12:1092,preco24:2000,fracao:51,qtde:1,descricao:"Boate, Duas Camas, Piscina Aquecida, Sonorização, Pole Dance, Hidromassagem c/ iluminação Cromoterapia, Sauna a Vapor, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suíte Cancún",preco3:663,preco12:1180,preco24:2153,fracao:55,qtde:1,descricao:"Boate, Piscina Aquecida com Cascata, Telão, 2 Camas, Sonorização, Pole Dance, Hidromassagem c/ iluminação Cromoterapia, Sauna a Vapor, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suíte Malibú",preco3:663,preco12:1180,preco24:2153,fracao:55,qtde:1,descricao:"Boate, Piscina Aquecida com Cascata, Telão, 2 Camas, Sonorização, Pole Dance, Hidromassagem c/ iluminação Cromoterapia, Sauna a Vapor, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suíte Mandala",preco3:997,preco12:1765,preco24:3177,fracao:83,qtde:1,descricao:"Boate, Piscina Aquecida com Cascata, Telão, Sonorização, Pole Dance, Hidromassagem c/ iluminação Cromoterapia, Sauna a Vapor, Poltrona Erótica, TV Smart, Jardim, Lounge, Cafofo, Bar, Duas suítes com 2 camas de casal, Área reservada para o DJ, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]}
             ],token_asaas:""},
             "Dreams":{cor:"#00ff88",icone:"✨",suites:[
-                {nome:"Suíte Delirius",preco3:127,preco12:242,preco24:512,fracao:11,qtde:31},
-                {nome:"Suíte Romântica",preco3:152,preco12:286,preco24:589,fracao:12,qtde:1},
-                {nome:"Suíte Sonho",preco3:167,preco12:312,preco24:635,fracao:14,qtde:7},
-                {nome:"Suíte Fantasia",preco3:180,preco12:335,preco24:675,fracao:15,qtde:6},
-                {nome:"Suíte Sonho Amado",preco3:193,preco12:357,preco24:713,fracao:17,qtde:8},
-                {nome:"Suíte Sonho Molhado",preco3:220,preco12:415,preco24:747,fracao:19,qtde:2},
-                {nome:"Suite Ceará",preco3:220,preco12:415,preco24:747,fracao:19,qtde:1},
-                {nome:"Suite Fortaleza",preco3:220,preco12:415,preco24:747,fracao:19,qtde:1}
+                {nome:"Suíte Delirius",preco3:127,preco12:242,preco24:512,fracao:11,qtde:31,descricao:"TV, Sistema de DVD, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Romântica",preco3:152,preco12:286,preco24:589,fracao:12,qtde:1,descricao:"Hidromassagem com iluminação Cromoterapia, Sala de Jantar, Poltrona, TV, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Sonho",preco3:167,preco12:312,preco24:635,fracao:14,qtde:7,descricao:"TV Smart, Alexa, Poltrona Erótica, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Fantasia",preco3:180,preco12:335,preco24:675,fracao:15,qtde:6,descricao:"Piscina ao Ar Livre, Hidromassagem com iluminação Cromoterapia, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suíte Sonho Amado",preco3:193,preco12:357,preco24:713,fracao:17,qtde:8,descricao:"TV Smart, Alexa, Hidromassagem com iluminação Cromoterapia, Poltrona Erótica, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
+                {nome:"Suíte Sonho Molhado",preco3:220,preco12:415,preco24:747,fracao:19,qtde:2,descricao:"TV Smart, Piscina ao Ar Livre, Alexa, Hidromassagem com iluminação Cromoterapia, Pole Dance, Sauna, Poltrona Erótica, Home Theater, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suite Ceará",preco3:220,preco12:415,preco24:747,fracao:19,qtde:1,descricao:"TV Smart, Piscina ao Ar Livre, Alexa, Hidromassagem com iluminação Cromoterapia, Pole Dance, Sauna, Poltrona Erótica, Home Theater, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
+                {nome:"Suite Fortaleza",preco3:220,preco12:415,preco24:747,fracao:19,qtde:1,descricao:"TV Smart, Piscina ao Ar Livre, Alexa, Hidromassagem com iluminação Cromoterapia, Pole Dance, Sauna, Poltrona Erótica, Home Theater, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]}
             ],token_asaas:""},
             "Motel Dragon":{cor:"#ff4444",icone:"🐉",suites:[
-                {nome:"Suíte Sonho",preco3:193,preco12:357,preco24:713,fracao:17,qtde:28},
-                {nome:"Suíte Inspiração",preco3:259,preco12:473,preco24:916,fracao:22,qtde:10},
-                {nome:"Suíte Felicidade",preco3:301,preco12:547,preco24:1046,fracao:25,qtde:8},
-                {nome:"Suíte Sucesso",preco3:552,preco12:986,preco24:1814,fracao:46,qtde:4}
+                {nome:"Suíte Sonho",preco3:193,preco12:357,preco24:713,fracao:17,qtde:28,descricao:'TV 65" Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.',tags:[]},
+                {nome:"Suíte Inspiração",preco3:259,preco12:473,preco24:916,fracao:22,qtde:10,descricao:'TV 65" Smart, Hidromassagem com iluminação Cromoterapia, Ar Split, Secador, Prancha para Cabelo e Portão Automático.',tags:["hidro"]},
+                {nome:"Suíte Felicidade",preco3:301,preco12:547,preco24:1046,fracao:25,qtde:8,descricao:'TV 65" Smart, Hidromassagem com iluminação Cromoterapia, Sauna, Ar Split, Secador, Prancha para Cabelo e Portão Automático.',tags:["hidro"]},
+                {nome:"Suíte Sucesso",preco3:552,preco12:986,preco24:1814,fracao:46,qtde:4,descricao:'TV 75" Smart, Piscina Aquecida, Poltrona Erótica, Hidromassagem com iluminação Cromoterapia, Pole Dance, Sauna, Alexa, Ar Split, Secador, Prancha para Cabelo e Portão Automático.',tags:["hidro","piscina"]}
             ],token_asaas:""}
         }
     };
@@ -1906,15 +1935,31 @@
     let usuarios = [];
     let uidAtual = null;
 
-    // Auto-login via Firebase Auth state + first-access check
+    // Persist login across refreshes
+    auth.setPersistence('local');
+
     var authInitialized = false;
+
+    function mostrarLogin() {
+        document.getElementById('loginCarregando').style.display = 'none';
+        document.getElementById('loginConteudo').style.display = '';
+    }
+
     onAuthStateChanged(auth, async function(user) {
-        if (user && !authInitialized) {
+        if (user) {
+            if (authInitialized) return;
             authInitialized = true;
             uidAtual = user.uid;
-            var snap = await getDoc(doc(db, "usuarios", user.uid));
-            var data = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
-            await entrarSistema(user, data.role, data.nome);
+            try {
+                var snap = await getDoc(doc(db, "usuarios", user.uid));
+                var data = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
+                await entrarSistema(user, data.role, data.nome);
+            } catch(e) {
+                console.warn('Auto-login error:', e);
+                mostrarLogin();
+            }
+        } else if (!authInitialized) {
+            authInitialized = false;
         }
     });
 
@@ -1928,26 +1973,26 @@
                 document.querySelector('#loginBtn').textContent = 'Criar Conta Master';
                 document.querySelector('#authLink').textContent = '';
                 document.querySelector('#esqueciSenha').style.display = 'none';
+                mostrarLogin();
             } else {
                 modoAuth = 'login';
                 document.querySelector('#authLink').textContent = 'Primeiro acesso? Configurar';
-                if (auth.currentUser) {
-                    // already logged in via onAuthStateChanged
-                } else {
-                    document.getElementById('loginCarregando').style.display = 'none';
-                    document.getElementById('loginConteudo').style.display = '';
-                }
+                // Wait for onAuthStateChanged to handle auto-login.
+                // If still not logged in after a short delay, show login form.
+                setTimeout(function() {
+                    if (!auth.currentUser && !authInitialized) {
+                        mostrarLogin();
+                    }
+                }, 1500);
             }
         } catch(e) {
-            // Error reading admin_exists (e.g. security rules). Treat as first access.
             console.warn("First access check failed:", e);
             modoAuth = 'setup';
             document.querySelector('#loginSubtitulo').textContent = 'Primeiro acesso — crie o administrador master';
             document.querySelector('#loginBtn').textContent = 'Criar Conta Master';
             document.querySelector('#authLink').textContent = '';
             document.querySelector('#esqueciSenha').style.display = 'none';
-            document.getElementById('loginCarregando').style.display = 'none';
-            document.getElementById('loginConteudo').style.display = '';
+            mostrarLogin();
         }
     })();
 
@@ -2067,11 +2112,35 @@
         renderGerenciar();
     }
 
+    function preencherSuite(s) {
+        if (!s.tags) s.tags = [];
+        if (s.descricao && s.tags.length === 0) {
+            var low = s.descricao.toLowerCase();
+            if (low.indexOf('hidromassagem') >= 0 && s.tags.indexOf('hidro') < 0) s.tags.push('hidro');
+            if (low.indexOf('piscina') >= 0 && s.tags.indexOf('piscina') < 0) s.tags.push('piscina');
+        }
+        return s;
+    }
+
+    function migrarDados() {
+        Object.keys(dadosMotels).forEach(function(n) {
+            dadosMotels[n].suites.forEach(function(s) {
+                preencherSuite(s);
+                var padrão = PADRAO.motels[n] ? PADRAO.motels[n].suites.find(function(x) { return x.nome === s.nome; }) : null;
+                if (padrão) {
+                    if (padrão.descricao && !s.descricao) s.descricao = padrão.descricao;
+                    if (padrão.tags && s.tags.length === 0) s.tags = padrão.tags.slice();
+                }
+            });
+        });
+    }
+
     async function carregarMotels() {
         try {
             const snap = await getDoc(doc(db, "config", "motels"));
             if (snap.exists()) {
                 dadosMotels = snap.data().motels;
+                migrarDados();
             } else {
                 dadosMotels = JSON.parse(JSON.stringify(PADRAO.motels));
             }
@@ -2109,6 +2178,19 @@
         document.getElementById('reservasHoje').textContent = t.filter(r => r.data_reserva === hoje).length;
         document.getElementById('pendentes').textContent = t.filter(r => r.status === 'aguardando_pagamento').length;
         document.getElementById('confirmados').textContent = t.filter(r => r.status === 'confirmado').length;
+    }
+
+    window.filtrarPorStatus = function(status) {
+        document.getElementById('filterStatus').value = status === 'hoje' ? '' : status;
+        if (status === 'hoje') {
+            document.getElementById('filterData').value = new Date().toISOString().split('T')[0];
+        } else if (status === '') {
+            document.getElementById('filterData').value = '';
+        }
+        document.querySelectorAll('#statsContainer .stat-card').forEach(function(c) { c.classList.remove('filtro-ativo'); });
+        var idx = status === '' ? 0 : status === 'hoje' ? 1 : status === 'aguardando_pagamento' ? 2 : status === 'confirmado' ? 3 : -1;
+        if (idx >= 0) document.querySelectorAll('#statsContainer .stat-card')[idx].classList.add('filtro-ativo');
+        window.aplicarFiltros();
     }
 
     var filtroRelMotel = 'todos';
@@ -2349,6 +2431,10 @@
         const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
         document.getElementById('mesAno').textContent = `${meses[mesAtual]} ${anoAtual}`;
 
+        const filterMotor = document.getElementById('filterMotel')?.value || '';
+        const filterStatus = document.getElementById('filterStatus')?.value || '';
+        const filterDataV = document.getElementById('filterData')?.value || '';
+
         let h = '';
         nomes.forEach(n => h += `<div class="day-header">${n}</div>`);
 
@@ -2360,9 +2446,12 @@
 
         for (let d = 1; d <= u.getDate(); d++) {
             const data = `${anoAtual}-${String(mesAtual + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-            const evs = filtroMotelAtual === 'todos'
-                ? reservas.filter(r => r.data_reserva === data)
-                : reservas.filter(r => r.data_reserva === data && r.motel === filtroMotelAtual);
+            let evs = reservas.filter(function(r) {
+                if (r.data_reserva !== data) return false;
+                if (filterMotor && r.motel !== filterMotor) return false;
+                if (filterStatus && r.status !== filterStatus) return false;
+                return true;
+            });
             const hj = new Date().toDateString() === new Date(anoAtual, mesAtual, d).toDateString();
             h += `<div class="day-cell${hj ? ' today' : ''}" onclick="window.mostrarDia('${data}')">
                 <div>${d}</div>
@@ -2385,7 +2474,7 @@
     }
 
     // ====== FILTROS ======
-    window.aplicarFiltros = function() { popularFiltrosTabela(); renderTabela(); }
+    window.aplicarFiltros = function() { popularFiltrosTabela(); renderTabela(); renderCalendario(); }
 
     // ====== TABELA ======
     function renderTabela() {
@@ -2456,6 +2545,8 @@
     // ====== GERENCIAR ======
     let motelAberto = null;
 
+    const TAGS = [{v:'hidro',l:'🛁 Hidro'},{v:'piscina',l:'🏊 Piscina'}];
+
     function renderGerenciar() {
         const w = document.getElementById('gerenciarWrapper');
         if (!w) return;
@@ -2477,6 +2568,8 @@
                     <span class="p-label">Qtde</span>
                     <input class="preco-input" type="number" value="${s.qtde || 1}" data-motelin="${n}" data-idx="${i}" data-field="qtde" min="1" style="width:40px">
                     <button class="btn-del-suite" onclick="window.removerSuite('${n}',${i})">✕</button>
+                    <input class="descricao-input" value="${s.descricao||''}" data-motelin="${n}" data-idx="${i}" data-field="descricao" placeholder="Descrição da suíte" style="grid-column:1/-1;flex:1 1 100%">
+                    <div class="suite-tags" style="display:flex;gap:4px;flex-wrap:wrap;grid-column:1/-1">${TAGS.map(t => '<label style="font-size:.7rem;display:flex;align-items:center;gap:2px;color:var(--text-tertiary);cursor:pointer"><input type="checkbox" ' + ((s.tags||[]).includes(t.v)?'checked':'') + ' data-motelin="' + n + '" data-idx="' + i + '" data-tag="' + t.v + '" onchange="window.toggleTag(this)">' + t.l + '</label>').join('')}</div>
                 </div>
             `).join('');
             html += `<div class="motel-cardx" style="--cor:${m.cor}">
@@ -2495,7 +2588,7 @@
         w.querySelectorAll('.suite-row input').forEach(inp => {
             inp.oninput = () => {
                 const n = inp.dataset.motelin, i = parseInt(inp.dataset.idx), f = inp.dataset.field;
-                if (dadosMotels[n]?.suites[i]) dadosMotels[n].suites[i][f] = f === 'nome' ? inp.value : Number(inp.value);
+                if (dadosMotels[n]?.suites[i]) dadosMotels[n].suites[i][f] = (f === 'nome' || f === 'descricao') ? inp.value : Number(inp.value);
                 document.getElementById('saveFeedback').textContent = '✏️ Editando...';
             };
         });
@@ -2515,8 +2608,19 @@
         e.textContent = ok ? '✓ Configurado' : (inp.value ? '✕ Inválido' : '✕ Vazio');
         document.getElementById('saveFeedback').textContent = '✏️ Editando...';
     }
+    window.toggleTag = function(chk) {
+        const n = chk.dataset.motelin, i = parseInt(chk.dataset.idx), t = chk.dataset.tag;
+        const suite = dadosMotels[n]?.suites[i];
+        if (!suite) return;
+        if (!suite.tags) suite.tags = [];
+        const idx = suite.tags.indexOf(t);
+        if (chk.checked && idx < 0) suite.tags.push(t);
+        else if (!chk.checked && idx >= 0) suite.tags.splice(idx, 1);
+        document.getElementById('saveFeedback').textContent = '✏️ Editando...';
+    };
+
     window.adicionarSuite = function(n) {
-        dadosMotels[n].suites.push({ nome: "Nova Suíte", preco3: 100, preco12: 180, preco24: 350, fracao: 10, qtde: 1 });
+        dadosMotels[n].suites.push({ nome: "Nova Suíte", descricao: "", preco3: 100, preco12: 180, preco24: 350, fracao: 10, qtde: 1, tags: [] });
         renderGerenciar();
         document.getElementById('saveFeedback').textContent = '✏️ Editando...';
     }
