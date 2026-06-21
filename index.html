@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Pré-Reserva - Moteis Fortaleza v02</title>
+    <title>Pré-Reserva - Rede de Motéis</title>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
@@ -771,9 +771,9 @@
                         window.pagamentoPollInterval = null;
                         userData.statusVoucher = 'CONFIRMADO';
                         if (db) {
-                            var q = await db.collection("reservas").where("cliente_cpf", "==", cpf).where("status", "==", "aguardando_pagamento").orderBy("criado_em", "desc").limit(1).get();
-                            if (!q.empty) {
-                                await q.docs[0].ref.update({ status: 'confirmado' }).catch(function(e){ console.warn("Falha ao atualizar status:", e); });
+                            var qP = await db.collection("reservas").where("payment_id", "==", pid).limit(1).get();
+                            if (!qP.empty) {
+                                await qP.docs[0].ref.update({ status: 'confirmado' }).catch(function(e){ console.warn("Falha ao atualizar status:", e); });
                             }
                         }
                         addMsg("✅ <b>Pagamento confirmado!</b> Sua reserva está agendada.", 'bot');
@@ -832,12 +832,16 @@
             try {
                 var resp = await fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'verificar_pagamento', payment_id:userData.paymentId, cliente_cpf:userData.cpf, token_asaas:tokenAsaas }) });
                 var result = await resp.json();
-                if (result.pago) { 
+                if (result.pago) {
                     userData.statusVoucher = 'CONFIRMADO';
                     if (db) {
                         var ref = reservaDocId ? db.collection("reservas").doc(reservaDocId) : null;
+                        if (!ref && userData.paymentId) {
+                            var qP = await db.collection("reservas").where("payment_id", "==", userData.paymentId).limit(1).get();
+                            if (!qP.empty) ref = qP.docs[0].ref;
+                        }
                         if (!ref && userData.cpf) {
-                            var q2 = await db.collection("reservas").where("cliente_cpf", "==", userData.cpf).where("status", "==", "aguardando_pagamento").orderBy("criado_em", "desc").limit(1).get();
+                            var q2 = await db.collection("reservas").where("cliente_cpf", "==", userData.cpf).orderBy("criado_em", "desc").limit(1).get();
                             if (!q2.empty) ref = q2.docs[0].ref;
                         }
                         if (ref) await ref.update({ status: 'confirmado' }).catch(function(e){ console.warn("Falha ao atualizar status:", e); });
@@ -898,6 +902,15 @@
 
         window.nextStep = nextStep;
         window.onload = async function() {
+            var tinhaPendente = false;
+            var pid = localStorage.getItem('ultimo_payment_id');
+            if (pid && !pid.startsWith('test_')) {
+                tinhaPendente = true;
+                userData.paymentId = pid;
+                userData.cpf = localStorage.getItem('ultimo_cpf') || '';
+                userData.motel = localStorage.getItem('ultimo_motel') || '';
+                userData.protocolo = localStorage.getItem('ultimo_protocolo') || '';
+            }
             if (auth) {
                 try {
                     await auth.signInAnonymously();
@@ -907,6 +920,10 @@
                 }
             }
             await carregarMotels();
+            if (tinhaPendente && userData.paymentId) {
+                addMsg("🔄 Verificando pagamento pendente...", 'bot');
+                await window.verificarPagamento();
+            }
         };
     </script>
 </body>
