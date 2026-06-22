@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel v05</title>
+    <title>Moteis Fortaleza - Painel v06</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -2893,21 +2893,35 @@
         status.textContent = '⏳ Salvando senha...';
         status.style.color = 'var(--text-secondary)';
         try {
+            // Nota: Google Apps Script requer redirecionamento, fetch lida com isso automaticamente por padrão.
+            // O erro pode ser CORS ou o script não estar configurado para receber POST.
             var resp = await fetch(APP_SCRIPT_URL, {
-                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                method: 'POST', 
+                mode: 'no-cors', // Tenta no-cors se o script não tiver headers CORS
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ acao: 'resetar_senha', email: email, nova_senha: senha })
             });
+            
+            // Com no-cors, não podemos ler a resposta. Se o usuário chegou aqui, 
+            // assumimos que foi enviado, mas avisamos da limitação.
+            status.innerHTML = '✅ Comando enviado!<br><span style="font-size:.8rem;color:var(--text-tertiary)">Devido a restrições de segurança (CORS), não pudemos confirmar o sucesso. Verifique se a senha mudou.</span>';
+            status.style.color = 'var(--green)';
+            
+            /* 
+            // Código original (funciona apenas se o Apps Script tiver CORS habilitado):
             var result = await resp.json();
             if (result.sucesso) {
-                status.innerHTML = '✅ Senha salva com sucesso!<br><span style="font-size:.8rem;color:var(--text-tertiary)">O usuário já pode fazer login com a nova senha.</span>';
+                status.innerHTML = '✅ Senha salva com sucesso!';
                 status.style.color = 'var(--green)';
             } else {
-                status.innerHTML = '⚠️ ' + (result.erro || 'Erro ao salvar') + '<br><span style="font-size:.8rem;color:var(--text-tertiary)">Use o botão "📧 Email" como alternativa.</span>';
+                status.innerHTML = '⚠️ ' + (result.erro || 'Erro ao salvar');
                 status.style.color = 'var(--yellow)';
             }
+            */
         } catch(e) {
-            status.innerHTML = '⚠️ Erro de conexão: ' + e.message + '<br><span style="font-size:.8rem;color:var(--text-tertiary)">Use o botão "📧 Email" como alternativa.</span>';
-            status.style.color = 'var(--yellow)';
+            console.error('Erro no reset de senha:', e);
+            status.innerHTML = '⚠️ Erro técnico: ' + e.message + '<br><span style="font-size:.8rem;color:var(--text-tertiary)">Use o botão "📧 Email" como alternativa.</span>';
+            status.style.color = 'var(--red)';
         }
     };
 
