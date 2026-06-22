@@ -2025,17 +2025,18 @@
 
     async function entrarSistema(usuarioAuth, role, nome) {
         uidAtual = usuarioAuth.uid;
-        uidAtual = usuarioAuth.uid;
         userRole = role;
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('app').className = 'app logado';
         document.getElementById('userAvatar').textContent = (nome || 'U').charAt(0).toUpperCase();
         document.getElementById('userNome').textContent = nome || 'Usuário';
-        document.getElementById('userRole').textContent = role === 'admin' ? 'Acesso total' : 'Acesso limitado';
-        document.getElementById('navGerenciar').style.display = role === 'admin' ? '' : 'none';
-        document.getElementById('navAPI').style.display = role === 'admin' ? '' : 'none';
-        document.getElementById('navUsuarios').style.display = role === 'admin' ? '' : 'none';
-        document.getElementById('navRelatorios').style.display = role === 'admin' ? '' : 'none';
+        var label = role === 'superadmin' ? 'Super Admin' : role === 'admin' ? 'Administrador' : 'Atendimento';
+        document.getElementById('userRole').textContent = label;
+        var acessoTotal = role === 'superadmin' || role === 'admin';
+        document.getElementById('navGerenciar').style.display = '';
+        document.getElementById('navAPI').style.display = acessoTotal ? '' : 'none';
+        document.getElementById('navUsuarios').style.display = acessoTotal ? '' : 'none';
+        document.getElementById('navRelatorios').style.display = acessoTotal ? '' : 'none';
         await iniciar();
     }
 
@@ -2050,8 +2051,8 @@
             if (modoAuth === 'setup') {
                 const cred = await createUserWithEmailAndPassword(auth, email, senha);
                 await setDoc(doc(db, "config", "admin_exists"), { exists: true });
-                await setDoc(doc(db, "usuarios", cred.user.uid), { nome: 'Administrador', email: email, role: 'admin' });
-                await entrarSistema(cred.user, 'admin', 'Administrador');
+                await setDoc(doc(db, "usuarios", cred.user.uid), { nome: 'Administrador', email: email, role: 'superadmin' });
+                await entrarSistema(cred.user, 'superadmin', 'Administrador');
             } else {
                 const cred = await signInWithEmailAndPassword(auth, email, senha);
                 const snap = await getDoc(doc(db, "usuarios", cred.user.uid));
@@ -2679,14 +2680,17 @@
         var lista = snap.docs.map(function(d) { return { uid: d.id, ...d.data() }; });
         var h = '<div style="font-size:.8rem;color:var(--text-tertiary);margin-bottom:12px">Os usuários fazem login com e-mail + senha via Firebase Auth. A senha do master é gerenciada pelo próprio Firebase.</div>';
         lista.forEach(function(u) {
+            var isSuper = u.role === 'superadmin';
+            var roleLabel = isSuper ? 'Super Admin' : u.role === 'admin' ? 'Admin' : 'Funcionário';
             h += '<div class="user-row">'
                 + '<input class="unome" value="' + (u.nome || '') + '" placeholder="Nome" data-uid="' + u.uid + '" data-campo="nome" onchange="window.atualizarUserFirebase(this)">'
                 + '<span class="uuser" style="padding:8px 10px;flex:1;font-size:.8rem;color:var(--text-secondary)">' + u.email + '</span>'
-                + '<select class="urole" data-uid="' + u.uid + '" onchange="window.atualizarUserFirebase(this)">'
+                + (isSuper ? '<span class="urole" style="padding:8px 10px;color:var(--accent-primary);font-weight:600">Super Admin</span>'
+                : '<select class="urole" data-uid="' + u.uid + '" onchange="window.atualizarUserFirebase(this)">'
                 + '<option value="funcionario"' + (u.role === 'funcionario' ? ' selected' : '') + '>Funcionário</option>'
                 + '<option value="admin"' + (u.role === 'admin' ? ' selected' : '') + '>Admin</option>'
-                + '</select>'
-                + (u.role === 'admin' && lista.length <= 1 ? '' : '<button class="udel" onclick="window.removerUserFirebase(\'' + u.uid + '\')">✕</button>')
+                + '</select>')
+                + (isSuper ? '' : '<button class="udel" onclick="window.removerUserFirebase(\'' + u.uid + '\')">✕</button>')
                 + '</div>';
         });
         h += '<div style="margin-top:12px"><button class="btn-salvar" onclick="window.adicionarUserFirebase()">➕ Convidar Usuário</button></div>';
@@ -2695,7 +2699,11 @@
 
     window.atualizarUserFirebase = async function(el) {
         var uid = el.dataset.uid, campo = el.dataset.campo || 'role', valor = el.value;
-        try { await updateDoc(doc(db, "usuarios", uid), { [campo]: campo === 'role' ? valor : valor }); } catch(e) { console.warn(e); }
+        try {
+            var uSnap = await getDoc(doc(db, "usuarios", uid));
+            if (uSnap.exists() && uSnap.data().role === 'superadmin') return;
+            await updateDoc(doc(db, "usuarios", uid), { [campo]: valor });
+        } catch(e) { console.warn(e); }
     };
 
     window.adicionarUserFirebase = function() {
@@ -2719,10 +2727,16 @@
     };
 
     window.removerUserFirebase = async function(uid) {
+        try {
+            var uSnap = await getDoc(doc(db, "usuarios", uid));
+            if (uSnap.exists() && uSnap.data().role === 'superadmin') {
+                alert('O Super Admin não pode ser removido.');
+                return;
+            }
+        } catch(e) {}
         if (!confirm('Remover este usuário?')) return;
         try { await setDoc(doc(db, "config", "deleted_users"), { uid: uid, removido_em: new Date().toISOString() }, { merge: true }); } catch(e) {}
         try {
-            // delete from Firestore
             await setDoc(doc(db, "usuarios", uid), { role: 'removido' });
             renderUsuarios();
         } catch(e) { console.warn(e); }
