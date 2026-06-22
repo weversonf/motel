@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel v04</title>
+    <title>Moteis Fortaleza - Painel v05</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -1958,20 +1958,36 @@
     const collection = (d, p) => d.collection(p);
     const doc = (d, p, ...ids) => ids.length > 0 ? d.collection(p).doc(ids[0]) : d.doc(p);
     const addDoc = (c, data) => c.add(data);
-    function _normalizeSnap(snap) {
-        if (snap && typeof snap.exists !== 'function') {
-            // No SDK compat, exists é uma propriedade booleana, não uma função
-            var existsValue = !!snap.exists;
-            snap.exists = function() { return existsValue; };
-        }
-        return snap;
+    function _wrapSnap(snap) {
+        if (!snap) return snap;
+        // Se já for uma função, não faz nada
+        if (typeof snap.exists === 'function') return snap;
+        
+        // Se for booleano (Firebase Compat), cria um wrapper
+        const existsVal = !!snap.exists;
+        return {
+            exists: () => existsVal,
+            data: () => snap.data ? snap.data() : {},
+            id: snap.id,
+            ref: snap.ref,
+            _original: snap // referência caso precise do original
+        };
     }
-    const getDoc = (r) => r.get().then(function(snap) { return _normalizeSnap(snap); });
-    const getDocs = (r) => r.get().then(function(querySnap) {
-        if (querySnap && querySnap.docs) {
-            querySnap.docs.forEach(_normalizeSnap);
+    const getDoc = (r) => r.get().then(_wrapSnap);
+    const getDocs = (r) => r.get().then(qs => {
+        if (qs && qs.docs) {
+            // Criamos uma nova lista de docs "embrulhados"
+            const wrappedDocs = qs.docs.map(_wrapSnap);
+            // Retornamos um objeto que imita o QuerySnapshot
+            return {
+                docs: wrappedDocs,
+                empty: qs.empty,
+                size: qs.size,
+                forEach: (cb) => wrappedDocs.forEach(cb),
+                _original: qs
+            };
         }
-        return querySnap;
+        return qs;
     });
     const setDoc = (r, data, ...o) => o.length > 0 ? r.set(data, o[0]) : r.set(data);
     const updateDoc = (r, data) => r.update(data);
