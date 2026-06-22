@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel</title>
+    <title>Moteis Fortaleza - Painel v02</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -1958,7 +1958,16 @@
     const collection = (d, p) => d.collection(p);
     const doc = (d, p, ...ids) => ids.length > 0 ? d.collection(p).doc(ids[0]) : d.doc(p);
     const addDoc = (c, data) => c.add(data);
-    const getDoc = (r) => r.get();
+    const _normalizeSnap = (snap) => {
+        // SDK compat: exists é propriedade booleana, não função.
+        // Adicionamos exists() como função para compatibilidade com o restante do código.
+        if (snap && typeof snap.exists !== 'function') {
+            const _existsVal = snap.exists;
+            snap.exists = () => _existsVal;
+        }
+        return snap;
+    };
+    const getDoc = (r) => r.get().then(_normalizeSnap);
     const getDocs = (r) => r.get();
     const setDoc = (r, data, ...o) => o.length > 0 ? r.set(data, o[0]) : r.set(data);
     const updateDoc = (r, data) => r.update(data);
@@ -2032,12 +2041,14 @@
     }
 
     onAuthStateChanged(auth, async function(user) {
+        console.log('onAuthStateChanged:', user ? user.uid : 'null', 'init:', authInitialized);
         if (user) {
             if (authInitialized) return;
             authInitialized = true;
             uidAtual = user.uid;
             try {
                 var snap = await getDoc(doc(db, "usuarios", user.uid));
+                console.log('User doc exists:', snap.exists());
                 var data = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
                 await entrarSistema(user, data.role, data.nome);
             } catch(e) {
@@ -2084,14 +2095,18 @@
         const erro = document.getElementById('loginError');
         erro.style.display = 'none';
         if (!email || !senha) { erro.textContent = 'Preencha e-mail e senha'; erro.style.display = 'block'; return; }
+        console.log('fazerLogin: tentando login', email);
         mostrarCarregando(true);
         try {
             const cred = await signInWithEmailAndPassword(auth, email, senha);
+            console.log('fazerLogin: signIn OK, uid:', cred.user.uid);
             const snap = await getDoc(doc(db, "usuarios", cred.user.uid));
+            console.log('fazerLogin: user doc exists:', snap.exists());
             var userData = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
             await entrarSistema(cred.user, userData.role, userData.nome);
             authInitialized = true;
         } catch(e) {
+            console.warn('fazerLogin: erro:', e.code, e.message);
             mostrarCarregando(false);
             var msg = e.code === 'auth/user-not-found' ? 'E-mail não encontrado.' :
                       e.code === 'auth/wrong-password' ? 'Senha incorreta.' :
