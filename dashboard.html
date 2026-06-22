@@ -1916,10 +1916,13 @@
     </div>
     <div class="modal-box" id="modalResetBox" style="display:none">
         <h3 id="modalResetTitle">🔑 Resetar Senha</h3>
-        <p id="modalResetSub">Gerar nova senha para <strong id="resetEmailDisplay"></strong></p>
-        <div style="font-size:.8rem;color:var(--text-secondary);margin-bottom:4px">Nova senha gerada:</div>
-        <div class="senha-display" id="resetSenhaDisplay"></div>
-        <div class="modal-actions" style="gap:8px;flex-wrap:wrap">
+        <p id="modalResetSub">Nova senha para <strong id="resetEmailDisplay"></strong></p>
+        <div style="font-size:.8rem;color:var(--text-secondary);margin-bottom:4px">Digite ou gere uma nova senha:</div>
+        <div style="display:flex;gap:8px">
+            <input type="text" id="resetSenhaInput" style="flex:1;padding:12px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-main);color:var(--text-primary);font-family:monospace;font-size:1rem;letter-spacing:1px" placeholder="Nova senha">
+            <button class="btn-copy" onclick="window.gerarSenhaReset()" style="white-space:nowrap" title="Gerar senha">🎲 Gerar</button>
+        </div>
+        <div class="modal-actions" style="gap:8px;flex-wrap:wrap;margin-top:12px">
             <button class="btn-copy" id="btnCopyResetSenha" onclick="window.copiarResetSenha()" style="flex:1">📋 Copiar Senha</button>
             <button class="modal-btn-primary" id="btnSalvarReset" onclick="window.salvarResetSenha()" style="flex:1">📧 Enviar Email de Redefinição</button>
         </div>
@@ -2840,10 +2843,6 @@
     window.resetarSenhaUsuario = function(uid, email) {
         uidResetando = uid;
         document.getElementById('resetEmailDisplay').textContent = email;
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&';
-        var senha = '';
-        for (var i = 0; i < 16; i++) senha += chars.charAt(Math.floor(Math.random() * chars.length));
-        document.getElementById('resetSenhaDisplay').textContent = senha;
         document.getElementById('resetStatus').textContent = '';
         document.getElementById('btnCopyResetSenha').textContent = '📋 Copiar Senha';
         document.getElementById('btnCopyResetSenha').className = 'btn-copy';
@@ -2855,10 +2854,21 @@
         document.getElementById('modalResultBox').style.display = 'none';
         document.getElementById('modalResetBox').style.display = '';
         document.getElementById('modalOverlay').classList.add('mostrar');
+        window.gerarSenhaReset();
+        setTimeout(function() { document.getElementById('resetSenhaInput').select(); }, 200);
+    };
+
+    window.gerarSenhaReset = function() {
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&';
+        var senha = '';
+        for (var i = 0; i < 16; i++) senha += chars.charAt(Math.floor(Math.random() * chars.length));
+        document.getElementById('resetSenhaInput').value = senha;
+        document.getElementById('btnCopyResetSenha').textContent = '📋 Copiar Senha';
+        document.getElementById('btnCopyResetSenha').className = 'btn-copy';
     };
 
     window.copiarResetSenha = function() {
-        var senha = document.getElementById('resetSenhaDisplay').textContent;
+        var senha = document.getElementById('resetSenhaInput').value;
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(senha).then(function() {
                 document.getElementById('btnCopyResetSenha').textContent = '✅ Copiado!';
@@ -2876,7 +2886,12 @@
 
     window.salvarResetSenha = async function() {
         var email = document.getElementById('resetEmailDisplay').textContent;
-        var senha = document.getElementById('resetSenhaDisplay').textContent;
+        var senha = document.getElementById('resetSenhaInput').value.trim();
+        if (!senha || senha.length < 6) {
+            document.getElementById('resetStatus').textContent = '⚠️ A senha deve ter no mínimo 6 caracteres';
+            document.getElementById('resetStatus').style.color = 'var(--red)';
+            return;
+        }
         var status = document.getElementById('resetStatus');
         var btn = document.getElementById('btnSalvarReset');
         btn.disabled = true;
