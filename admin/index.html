@@ -1684,7 +1684,7 @@
             <input type="password" id="senhaInput" placeholder="Senha" onkeypress="if(event.key==='Enter') window.fazerLogin()">
             <button id="loginBtn" onclick="window.fazerLogin()">Entrar</button>
             <div style="text-align:center;margin-top:8px">
-                <span id="authLink" onclick="window.trocarModoAuth()" style="color:var(--accent-primary);font-size:.8rem;cursor:pointer;text-decoration:underline"></span>
+                <span id="authLink" style="display:none"></span>
             </div>
             <div class="login-error" id="loginError"></div>
             <div id="esqueciSenha" style="text-align:center;margin-top:4px;display:none">
@@ -2038,14 +2038,10 @@
                 modoAuth = 'setup';
                 document.querySelector('#loginSubtitulo').textContent = 'Primeiro acesso — crie o administrador master';
                 document.querySelector('#loginBtn').textContent = 'Criar Conta Master';
-                document.querySelector('#authLink').textContent = '';
                 document.querySelector('#esqueciSenha').style.display = 'none';
                 mostrarLogin();
             } else {
                 modoAuth = 'login';
-                document.querySelector('#authLink').textContent = 'Primeiro acesso? Configurar';
-                // Wait for onAuthStateChanged to handle auto-login.
-                // If still not logged in after a short delay, show login form.
                 setTimeout(function() {
                     if (!auth.currentUser && !authInitialized) {
                         mostrarLogin();
@@ -2057,33 +2053,10 @@
             modoAuth = 'setup';
             document.querySelector('#loginSubtitulo').textContent = 'Primeiro acesso — crie o administrador master';
             document.querySelector('#loginBtn').textContent = 'Criar Conta Master';
-            document.querySelector('#authLink').textContent = '';
             document.querySelector('#esqueciSenha').style.display = 'none';
             mostrarLogin();
         }
     })();
-
-    // ====== AUTH ======
-    window.trocarModoAuth = function() {
-        const c = document.getElementById('loginConteudo');
-        const erro = document.getElementById('loginError');
-        erro.style.display = 'none';
-        if (modoAuth === 'login') {
-            modoAuth = 'setup';
-            document.querySelector('#loginSubtitulo').textContent = 'Primeiro acesso — crie o administrador master';
-            document.querySelector('#loginBtn').textContent = 'Criar Conta Master';
-            document.querySelector('#authLink').textContent = 'Já tem conta? Entrar';
-            document.querySelector('#esqueciSenha').style.display = 'none';
-        } else {
-            modoAuth = 'login';
-            document.querySelector('#loginSubtitulo').textContent = 'Painel de gerenciamento de reservas';
-            document.querySelector('#loginBtn').textContent = 'Entrar';
-            document.querySelector('#authLink').textContent = 'Primeiro acesso? Configurar';
-            document.querySelector('#esqueciSenha').style.display = '';
-        }
-        document.getElementById('emailInput').value = '';
-        document.getElementById('senhaInput').value = '';
-    };
 
     function mostrarCarregando(v) {
         document.getElementById('loginConteudo').style.display = v ? 'none' : '';
