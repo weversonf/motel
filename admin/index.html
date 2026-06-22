@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel v03</title>
+    <title>Moteis Fortaleza - Painel v04</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -1960,13 +1960,19 @@
     const addDoc = (c, data) => c.add(data);
     function _normalizeSnap(snap) {
         if (snap && typeof snap.exists !== 'function') {
-            var _v = snap.exists;
-            snap.exists = function() { return _v; };
+            // No SDK compat, exists é uma propriedade booleana, não uma função
+            var existsValue = !!snap.exists;
+            snap.exists = function() { return existsValue; };
         }
         return snap;
     }
     const getDoc = (r) => r.get().then(function(snap) { return _normalizeSnap(snap); });
-    const getDocs = (r) => r.get();
+    const getDocs = (r) => r.get().then(function(querySnap) {
+        if (querySnap && querySnap.docs) {
+            querySnap.docs.forEach(_normalizeSnap);
+        }
+        return querySnap;
+    });
     const setDoc = (r, data, ...o) => o.length > 0 ? r.set(data, o[0]) : r.set(data);
     const updateDoc = (r, data) => r.update(data);
     const deleteDoc = (r) => r.delete();
