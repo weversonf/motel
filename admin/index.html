@@ -1914,12 +1914,28 @@
             <button class="modal-btn-primary" onclick="window.fecharModal()">Fechar</button>
         </div>
     </div>
+    <div class="modal-box" id="modalResetBox" style="display:none">
+        <h3 id="modalResetTitle">🔑 Resetar Senha</h3>
+        <p id="modalResetSub">Gerar nova senha para <strong id="resetEmailDisplay"></strong></p>
+        <div style="font-size:.8rem;color:var(--text-secondary);margin-bottom:4px">Nova senha gerada:</div>
+        <div class="senha-display" id="resetSenhaDisplay"></div>
+        <div class="modal-actions" style="gap:8px;flex-wrap:wrap">
+            <button class="btn-copy" id="btnCopyResetSenha" onclick="window.copiarResetSenha()" style="flex:1">📋 Copiar Senha</button>
+            <button class="modal-btn-primary" id="btnSalvarReset" onclick="window.salvarResetSenha()" style="flex:1">💾 Salvar nova senha</button>
+        </div>
+        <div id="resetStatus" style="font-size:.8rem;margin-top:8px;color:var(--text-secondary)"></div>
+        <div class="modal-actions" style="margin-top:12px">
+            <button class="modal-btn-secondary" onclick="window.fecharModal()">Fechar</button>
+        </div>
+    </div>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getFirestore, collection, addDoc, query, orderBy, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+
+    var APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAVBD7ReZHQN-vLMEQem8HhnOuAobesEq3OI4W78y1lRAUHhDT_FOUoZg7nV-p9GYV1w/exec";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCln4mcb1j46UcmG-sTVb3bUudTQCpdfvY",
@@ -2740,7 +2756,8 @@
                 + '<option value="funcionario"' + (u.role === 'funcionario' ? ' selected' : '') + '>Funcionário</option>'
                 + '<option value="admin"' + (u.role === 'admin' ? ' selected' : '') + '>Admin</option>'
                 + '</select>')
-                + (isSuper ? '' : '<button class="udel" onclick="window.removerUserFirebase(\'' + u.uid + '\')">✕</button>')
+                + (isSuper ? '' : '<button class="udel" onclick="window.removerUserFirebase(\'' + u.uid + '\')" title="Remover">✕</button>')
+                + (isSuper ? '' : '<button class="udel" style="background:var(--orange-soft);color:var(--accent-primary)" onclick="window.resetarSenhaUsuario(\'' + u.uid + '\',\'' + u.email + '\')" title="Resetar senha">🔑</button>')
                 + '</div>';
         });
         h += '<div style="margin-top:12px"><button class="btn-salvar" onclick="window.adicionarUsuario()">➕ Adicionar Usuário</button></div>';
@@ -2818,6 +2835,84 @@
             document.getElementById('btnCopySenha').textContent = '✅ Copiado!';
             document.getElementById('btnCopySenha').className = 'btn-copy copiado';
         }
+    };
+
+    var uidResetando = null;
+
+    window.resetarSenhaUsuario = function(uid, email) {
+        uidResetando = uid;
+        document.getElementById('resetEmailDisplay').textContent = email;
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&';
+        var senha = '';
+        for (var i = 0; i < 16; i++) senha += chars.charAt(Math.floor(Math.random() * chars.length));
+        document.getElementById('resetSenhaDisplay').textContent = senha;
+        document.getElementById('resetStatus').textContent = '';
+        document.getElementById('btnCopyResetSenha').textContent = '📋 Copiar Senha';
+        document.getElementById('btnCopyResetSenha').className = 'btn-copy';
+        document.getElementById('btnSalvarReset').disabled = false;
+        document.getElementById('modalFormBox').style.display = 'none';
+        document.getElementById('modalResultBox').style.display = 'none';
+        document.getElementById('modalResetBox').style.display = '';
+        document.getElementById('modalOverlay').classList.add('mostrar');
+    };
+
+    window.copiarResetSenha = function() {
+        var senha = document.getElementById('resetSenhaDisplay').textContent;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(senha).then(function() {
+                document.getElementById('btnCopyResetSenha').textContent = '✅ Copiado!';
+                document.getElementById('btnCopyResetSenha').className = 'btn-copy copiado';
+            }).catch(function() {});
+        } else {
+            var ta = document.createElement('textarea');
+            ta.value = senha; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); document.body.removeChild(ta);
+            document.getElementById('btnCopyResetSenha').textContent = '✅ Copiado!';
+            document.getElementById('btnCopyResetSenha').className = 'btn-copy copiado';
+        }
+    };
+
+    window.salvarResetSenha = async function() {
+        var email = document.getElementById('resetEmailDisplay').textContent;
+        var senha = document.getElementById('resetSenhaDisplay').textContent;
+        var status = document.getElementById('resetStatus');
+        document.getElementById('btnSalvarReset').disabled = true;
+        status.textContent = '⏳ Enviando email de redefinição...';
+        status.style.color = 'var(--text-secondary)';
+        try {
+            await sendPasswordResetEmail(auth, email);
+            status.textContent = '✅ Email de redefinição enviado para ' + email;
+            status.style.color = 'var(--green)';
+        } catch(e) {
+            status.textContent = '⚠️ Erro ao enviar email: ' + e.message;
+            status.style.color = 'var(--red)';
+        }
+        try {
+            status.textContent = '⏳ Tentando salvar senha via Admin API...';
+            var resp = await fetch(APP_SCRIPT_URL, {
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ acao: 'resetar_senha', email: email, nova_senha: senha })
+            });
+            var result = await resp.json();
+            if (result.sucesso) {
+                status.textContent = '✅ Senha atualizada com sucesso!';
+                status.style.color = 'var(--green)';
+                document.getElementById('btnSalvarReset').textContent = '✅ Salvo';
+            } else {
+                status.textContent = '⚠️ ' + (result.erro || 'Erro ao salvar via Admin API');
+                status.style.color = 'var(--yellow)';
+            }
+        } catch(e) {
+            var msg = status.textContent;
+            status.textContent = msg + ' | Admin API: ' + e.message;
+        }
+        document.getElementById('btnSalvarReset').disabled = false;
+    };
+
+    window.fecharModal = function() {
+        document.getElementById('modalOverlay').classList.remove('mostrar');
+        document.getElementById('modalResetBox').style.display = 'none';
     };
 
     window.removerUserFirebase = async function(uid) {
