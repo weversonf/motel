@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel v02</title>
+    <title>Moteis Fortaleza - Painel v03</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -1958,16 +1958,14 @@
     const collection = (d, p) => d.collection(p);
     const doc = (d, p, ...ids) => ids.length > 0 ? d.collection(p).doc(ids[0]) : d.doc(p);
     const addDoc = (c, data) => c.add(data);
-    const _normalizeSnap = (snap) => {
-        // SDK compat: exists é propriedade booleana, não função.
-        // Adicionamos exists() como função para compatibilidade com o restante do código.
+    function _normalizeSnap(snap) {
         if (snap && typeof snap.exists !== 'function') {
-            const _existsVal = snap.exists;
-            snap.exists = () => _existsVal;
+            var _v = snap.exists;
+            snap.exists = function() { return _v; };
         }
         return snap;
-    };
-    const getDoc = (r) => r.get().then(_normalizeSnap);
+    }
+    const getDoc = (r) => r.get().then(function(snap) { return _normalizeSnap(snap); });
     const getDocs = (r) => r.get();
     const setDoc = (r, data, ...o) => o.length > 0 ? r.set(data, o[0]) : r.set(data);
     const updateDoc = (r, data) => r.update(data);
