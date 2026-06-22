@@ -771,6 +771,11 @@
                         clearInterval(window.pagamentoPollInterval);
                         window.pagamentoPollInterval = null;
                         userData.statusVoucher = 'CONFIRMADO';
+                        localStorage.removeItem('ultimo_payment_id');
+                        localStorage.removeItem('ultimo_cpf');
+                        localStorage.removeItem('ultimo_motel');
+                        localStorage.removeItem('ultimo_protocolo');
+                        localStorage.removeItem('ultimo_token_asaas');
                         if (db) {
                             var qP = await db.collection("reservas").where("payment_id", "==", pid).limit(1).get();
                             if (!qP.empty) {
@@ -835,6 +840,11 @@
                 var result = await resp.json();
                 if (result.pago) {
                     userData.statusVoucher = 'CONFIRMADO';
+                    localStorage.removeItem('ultimo_payment_id');
+                    localStorage.removeItem('ultimo_cpf');
+                    localStorage.removeItem('ultimo_motel');
+                    localStorage.removeItem('ultimo_protocolo');
+                    localStorage.removeItem('ultimo_token_asaas');
                     if (db) {
                         var ref = reservaDocId ? db.collection("reservas").doc(reservaDocId) : null;
                         if (!ref && userData.paymentId) {
