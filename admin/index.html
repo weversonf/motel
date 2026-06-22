@@ -1916,12 +1916,15 @@
     </div>
     <div class="modal-box" id="modalResetBox" style="display:none">
         <h3 id="modalResetTitle">🔑 Resetar Senha</h3>
-        <p id="modalResetSub">Gerar nova senha para <strong id="resetEmailDisplay"></strong></p>
-        <div style="font-size:.8rem;color:var(--text-secondary);margin-bottom:4px">Nova senha gerada:</div>
-        <div class="senha-display" id="resetSenhaDisplay"></div>
-        <div class="modal-actions" style="gap:8px;flex-wrap:wrap">
+        <p id="modalResetSub">Nova senha para <strong id="resetEmailDisplay"></strong></p>
+        <div style="font-size:.8rem;color:var(--text-secondary);margin-bottom:4px">Digite ou gere uma nova senha:</div>
+        <div style="display:flex;gap:8px">
+            <input type="text" id="resetSenhaInput" style="flex:1;padding:12px;border:1px solid var(--border-color);border-radius:10px;background:var(--bg-main);color:var(--text-primary);font-family:monospace;font-size:1rem;letter-spacing:1px" placeholder="Nova senha">
+            <button class="btn-copy" onclick="window.gerarSenhaReset()" style="white-space:nowrap" title="Gerar senha">🎲 Gerar</button>
+        </div>
+        <div class="modal-actions" style="gap:8px;flex-wrap:wrap;margin-top:12px">
             <button class="btn-copy" id="btnCopyResetSenha" onclick="window.copiarResetSenha()" style="flex:1">📋 Copiar Senha</button>
-            <button class="modal-btn-primary" id="btnSalvarReset" onclick="window.salvarResetSenha()" style="flex:1">💾 Salvar nova senha</button>
+            <button class="modal-btn-primary" id="btnSalvarReset" onclick="window.salvarResetSenha()" style="flex:1">📧 Enviar Email de Redefinição</button>
         </div>
         <div id="resetStatus" style="font-size:.8rem;margin-top:8px;color:var(--text-secondary)"></div>
         <div class="modal-actions" style="margin-top:12px">
@@ -1934,8 +1937,6 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getFirestore, collection, addDoc, query, orderBy, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
-
-    var APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAVBD7ReZHQN-vLMEQem8HhnOuAobesEq3OI4W78y1lRAUHhDT_FOUoZg7nV-p9GYV1w/exec";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCln4mcb1j46UcmG-sTVb3bUudTQCpdfvY",
@@ -2842,22 +2843,32 @@
     window.resetarSenhaUsuario = function(uid, email) {
         uidResetando = uid;
         document.getElementById('resetEmailDisplay').textContent = email;
-        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&';
-        var senha = '';
-        for (var i = 0; i < 16; i++) senha += chars.charAt(Math.floor(Math.random() * chars.length));
-        document.getElementById('resetSenhaDisplay').textContent = senha;
         document.getElementById('resetStatus').textContent = '';
         document.getElementById('btnCopyResetSenha').textContent = '📋 Copiar Senha';
         document.getElementById('btnCopyResetSenha').className = 'btn-copy';
-        document.getElementById('btnSalvarReset').disabled = false;
+        var btn = document.getElementById('btnSalvarReset');
+        btn.disabled = false;
+        btn.textContent = '📧 Enviar Email de Redefinição';
+        btn.style.opacity = '1';
         document.getElementById('modalFormBox').style.display = 'none';
         document.getElementById('modalResultBox').style.display = 'none';
         document.getElementById('modalResetBox').style.display = '';
         document.getElementById('modalOverlay').classList.add('mostrar');
+        window.gerarSenhaReset();
+        setTimeout(function() { document.getElementById('resetSenhaInput').select(); }, 200);
+    };
+
+    window.gerarSenhaReset = function() {
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&';
+        var senha = '';
+        for (var i = 0; i < 16; i++) senha += chars.charAt(Math.floor(Math.random() * chars.length));
+        document.getElementById('resetSenhaInput').value = senha;
+        document.getElementById('btnCopyResetSenha').textContent = '📋 Copiar Senha';
+        document.getElementById('btnCopyResetSenha').className = 'btn-copy';
     };
 
     window.copiarResetSenha = function() {
-        var senha = document.getElementById('resetSenhaDisplay').textContent;
+        var senha = document.getElementById('resetSenhaInput').value;
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(senha).then(function() {
                 document.getElementById('btnCopyResetSenha').textContent = '✅ Copiado!';
@@ -2875,39 +2886,28 @@
 
     window.salvarResetSenha = async function() {
         var email = document.getElementById('resetEmailDisplay').textContent;
-        var senha = document.getElementById('resetSenhaDisplay').textContent;
+        var senha = document.getElementById('resetSenhaInput').value.trim();
+        if (!senha || senha.length < 6) {
+            document.getElementById('resetStatus').textContent = '⚠️ A senha deve ter no mínimo 6 caracteres';
+            document.getElementById('resetStatus').style.color = 'var(--red)';
+            return;
+        }
         var status = document.getElementById('resetStatus');
-        document.getElementById('btnSalvarReset').disabled = true;
+        var btn = document.getElementById('btnSalvarReset');
+        btn.disabled = true;
         status.textContent = '⏳ Enviando email de redefinição...';
         status.style.color = 'var(--text-secondary)';
         try {
             await sendPasswordResetEmail(auth, email);
-            status.textContent = '✅ Email de redefinição enviado para ' + email;
+            status.innerHTML = '✅ Email enviado para <strong>' + email + '</strong><br><span style="font-size:.8rem;color:var(--text-tertiary)">Compartilhe a senha gerada com o usuário. Ele precisará clicar no link do email para confirmar a nova senha.</span>';
             status.style.color = 'var(--green)';
+            btn.textContent = '✅ Email Enviado';
+            btn.style.opacity = '0.6';
         } catch(e) {
-            status.textContent = '⚠️ Erro ao enviar email: ' + e.message;
+            status.textContent = '⚠️ Erro: ' + e.message;
             status.style.color = 'var(--red)';
+            btn.disabled = false;
         }
-        try {
-            status.textContent = '⏳ Tentando salvar senha via Admin API...';
-            var resp = await fetch(APP_SCRIPT_URL, {
-                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ acao: 'resetar_senha', email: email, nova_senha: senha })
-            });
-            var result = await resp.json();
-            if (result.sucesso) {
-                status.textContent = '✅ Senha atualizada com sucesso!';
-                status.style.color = 'var(--green)';
-                document.getElementById('btnSalvarReset').textContent = '✅ Salvo';
-            } else {
-                status.textContent = '⚠️ ' + (result.erro || 'Erro ao salvar via Admin API');
-                status.style.color = 'var(--yellow)';
-            }
-        } catch(e) {
-            var msg = status.textContent;
-            status.textContent = msg + ' | Admin API: ' + e.message;
-        }
-        document.getElementById('btnSalvarReset').disabled = false;
     };
 
     window.fecharModal = function() {
