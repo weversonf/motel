@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motéis em Fortaleza - Sua melhor experiência</title>
+  <meta name="description" content="Encontre os melhores motéis em Fortaleza. Dragon Motel, Assahi Motel, Dreams Motel e Spa Urbano. Reserve agora e aproveite momentos inesquecíveis.">
+  <meta property="og:title" content="Motéis em Fortaleza - Sua melhor experiência">
+  <meta property="og:description" content="Encontre os melhores motéis em Fortaleza. Conforto, privacidade e momentos inesquecíveis.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://moteisfortaleza.com.br">
+  <meta property="og:image" content="https://moteisfortaleza.com.br/img/moteis/dragon-motel.jpg">
+  <meta property="og:locale" content="pt_BR">
+  <meta name="robots" content="index, follow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+</head>
+<body>
+
+  <!-- ===== TOP BAR ===== -->
+  <div class="topbar">
+    <div class="container">
+      <div class="topbar-left">
+        <span>📞 (85) 8774-0048</span>
+        <span>📍 Fortaleza - CE</span>
+      </div>
+      <div class="topbar-right">
+        <a href="#" aria-label="Facebook">📘</a>
+        <a href="#" aria-label="Instagram">📷</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container">
+      <a href="index.html" class="header-logo"><img src="img/logo.png" alt="Motéis Fortaleza"></a>
+      <button class="nav-toggle" aria-label="Abrir menu">
+        <span></span><span></span><span></span>
+      </button>
+      <nav>
+        <ul class="nav-list">
+          <li><a href="index.html" class="active">Início</a></li>
+          <li><a href="#moteis">Motéis</a></li>
+          <li><a href="#servicos">Serviços</a></li>
+          <li><a href="#regioes">Regiões</a></li>
+          <li><a href="contato.html">Contato</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== HERO SLIDER ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-slides">
+      <div class="hero-slide active" style="background-image: url('img/moteis/dragon-motel.jpg')"></div>
+      <div class="hero-slide" style="background-image: url('img/suites/suite-felicidade.jpg')"></div>
+      <div class="hero-slide" style="background-image: url('img/suites/suite-tahiti.jpg')"></div>
+      <div class="hero-slide" style="background-image: url('img/suites/suite-diamante.jpg')"></div>
+      <div class="hero-slide" style="background-image: url('img/suites/suite-esmeralda.jpg')"></div>
+    </div>
+    <div class="hero-content">
+      <div class="label">A melhor experiência de Fortaleza</div>
+      <h1>Motéis em<br>Fortaleza</h1>
+      <p>Conforto, privacidade e momentos inesquecíveis. Escolha o motel ideal para você.</p>
+      <div class="hero-buttons">
+        <a href="#moteis" class="btn btn-primary">VER MOTÉIS</a>
+        <a href="https://wa.me/558587740048" target="_blank" class="btn btn-outline">FALE CONOSCO</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SEARCH BAR ===== -->
+  <div class="search-section">
+    <div class="container">
+      <div class="search-card">
+        <select id="filterMotel" aria-label="Selecionar motel">
+          <option value="">Todos os Motéis</option>
+          <option value="dragon-motel">Dragon Motel</option>
+          <option value="assahi-motel">Assahi Motel</option>
+          <option value="dreams-motel">Dreams Motel</option>
+          <option value="spa-urbano">Spa Urbano</option>
+        </select>
+        <a href="#moteis" class="btn btn-primary">BUSCAR</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ABOUT ===== -->
+  <section class="about-section">
+    <div class="container">
+      <div class="about-grid">
+        <div>
+          <div class="about-label">Sobre Nós</div>
+          <div class="section-divider"><div class="line"></div><div class="dot"></div></div>
+          <h2 class="about-title">Os melhores motéis de Fortaleza</h2>
+        </div>
+        <div>
+          <p class="about-text">Oferecemos uma seleção dos melhores motéis de Fortaleza, com suítes temáticas, ambiente privativo e atendimento de qualidade. Cada unidade foi cuidadosamente escolhida para proporcionar momentos inesquecíveis.</p>
+          <p class="about-text">Da decoração oriental do Dragon Motel ao sofisticado Spa Urbano, temos a opção perfeita para cada ocasião. Reserve agora pelo WhatsApp e garanta sua experiência.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== MOTÉIS ===== -->
+  <section class="motels-section" id="moteis">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <div class="section-label">Nossas Unidades</div>
+          <div class="section-divider"><div class="line"></div><div class="dot"></div></div>
+          <h2>Motéis</h2>
+        </div>
+        <p>Unidades selecionadas para proporcionar a melhor experiência em Fortaleza</p>
+      </div>
+
+      <div class="motel-grid" id="motelGrid">
+
+        <article class="motel-card" data-motel="dragon-motel">
+          <div class="motel-card-img">
+            <img src="img/moteis/dragon-motel.jpg" alt="Dragon Motel" loading="lazy">
+            <div class="motel-card-overlay">
+              <a href="motel/dragon-motel.html" class="btn btn-primary">RESERVAR</a>
+            </div>
+          </div>
+          <div class="motel-card-body">
+            <h3>Dragon Motel</h3>
+            <p class="motel-card-location">📍 Rua José Alencar Ramos, 50 - Luciano Cavalcante</p>
+            <div class="motel-card-price">R$ 193 <small>/ 3h</small></div>
+            <div class="motel-card-actions">
+              <a href="motel/dragon-motel.html" class="btn btn-primary">VER SUÍTES</a>
+              <a href="https://weversonf.github.io/motel/" target="_blank" class="btn btn-reservar">RESERVAR</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="motel-card" data-motel="assahi-motel">
+          <div class="motel-card-img">
+            <img src="img/suites/suite-tahiti.jpg" alt="Assahi Motel" loading="lazy">
+            <div class="motel-card-overlay">
+              <a href="motel/assahi-motel.html" class="btn btn-primary">RESERVAR</a>
+            </div>
+          </div>
+          <div class="motel-card-body">
+            <h3>Assahi Motel</h3>
+            <p class="motel-card-location">📍 Av. Luciano Carneiro, 605 - Fátima</p>
+            <div class="motel-card-price">R$ 180 <small>/ 3h</small></div>
+            <div class="motel-card-actions">
+              <a href="motel/assahi-motel.html" class="btn btn-primary">VER SUÍTES</a>
+              <a href="https://weversonf.github.io/motel/" target="_blank" class="btn btn-reservar">RESERVAR</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="motel-card" data-motel="dreams-motel">
+          <div class="motel-card-img">
+            <img src="img/suites/suite-sonho.jpg" alt="Dreams Motel" loading="lazy">
+            <div class="motel-card-overlay">
+              <a href="motel/dreams-motel.html" class="btn btn-primary">RESERVAR</a>
+            </div>
+          </div>
+          <div class="motel-card-body">
+            <h3>Dreams Motel</h3>
+            <p class="motel-card-location">📍 BR 116 KM 06, 2430 - Cajazeiras</p>
+            <div class="motel-card-price">R$ 127 <small>/ 3h</small></div>
+            <div class="motel-card-actions">
+              <a href="motel/dreams-motel.html" class="btn btn-primary">VER SUÍTES</a>
+              <a href="https://weversonf.github.io/motel/" target="_blank" class="btn btn-reservar">RESERVAR</a>
+            </div>
+          </div>
+        </article>
+
+        <article class="motel-card" data-motel="spa-urbano">
+          <div class="motel-card-img">
+            <img src="img/suites/suite-diamante.jpg" alt="Spa Urbano" loading="lazy">
+            <div class="motel-card-overlay">
+              <a href="motel/spa-urbano.html" class="btn btn-primary">RESERVAR</a>
+            </div>
+          </div>
+          <div class="motel-card-body">
+            <h3>Spa Urbano</h3>
+            <p class="motel-card-location">📍 Av. Des. Moreira, 3033 - Dionísio Torres</p>
+            <div class="motel-card-price">R$ 160 <small>/ 3h</small></div>
+            <div class="motel-card-actions">
+              <a href="motel/spa-urbano.html" class="btn btn-primary">VER SUÍTES</a>
+              <a href="https://weversonf.github.io/motel/" target="_blank" class="btn btn-reservar">RESERVAR</a>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICES ===== -->
+  <section class="services-section" id="servicos">
+    <div class="container">
+      <div class="section-header" style="text-align: center; display: block;">
+        <div class="section-label" style="text-align: center;">Por que nos escolher</div>
+        <div class="section-divider" style="justify-content: center;"><div class="line"></div><div class="dot"></div></div>
+        <h2 style="text-align: center;">Nossos Diferenciais</h2>
+      </div>
+
+      <div class="services-grid">
+        <div class="service-card">
+          <div class="service-icon">❤</div>
+          <h4>Privacidade Total</h4>
+          <p>Garagem individual e entrada discreta em todas as unidades</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">★</div>
+          <h4>Ambientes Temáticos</h4>
+          <p>Suítes decoradas com estilos únicos para cada momento</p>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">📞</div>
+          <h4>Reserva Fácil</h4>
+          <p>Reserve pelo WhatsApp e tenha seu horário garantido</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== REGIÕES ===== -->
+  <section class="regions-section" id="regioes">
+    <div class="container">
+      <div class="section-header" style="text-align: center; display: block;">
+        <div class="section-label" style="text-align: center;">Localização</div>
+        <div class="section-divider" style="justify-content: center;"><div class="line"></div><div class="dot"></div></div>
+        <h2 style="text-align: center;">Regiões</h2>
+      </div>
+
+      <div class="region-grid">
+        <div class="region-card">
+          <h4>Luciano Cavalcante</h4>
+          <p>1 motel disponível</p>
+        </div>
+        <div class="region-card">
+          <h4>Fátima</h4>
+          <p>1 motel disponível</p>
+        </div>
+        <div class="region-card">
+          <h4>Cajazeiras</h4>
+          <p>1 motel disponível</p>
+        </div>
+        <div class="region-card">
+          <h4>Dionísio Torres</h4>
+          <p>1 motel disponível</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="cta-section">
+    <div class="container">
+      <h2>Pronto para uma experiência inesquecível?</h2>
+      <p>Reserve agora pelo WhatsApp e garanta o melhor momento</p>
+      <a href="https://weversonf.github.io/motel/" target="_blank" class="btn">RESERVAR AGORA</a>
+    </div>
+  </section>
+
+  <script src="js/main.js"></script>
+  <script src="js/components.js"></script>
+  <div id="site-footer"></div>
+  <div id="site-wa-popup"></div>
+</body>
+</html>
