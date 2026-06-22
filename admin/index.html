@@ -1924,7 +1924,10 @@
         </div>
         <div class="modal-actions" style="gap:8px;flex-wrap:wrap;margin-top:12px">
             <button class="btn-copy" id="btnCopyResetSenha" onclick="window.copiarResetSenha()" style="flex:1">📋 Copiar Senha</button>
-            <button class="modal-btn-primary" id="btnSalvarReset" onclick="window.salvarResetSenha()" style="flex:1">📧 Enviar Email de Redefinição</button>
+            <button class="modal-btn-primary" onclick="window.salvarSenhaDireto()" style="flex:1;background:var(--green);border-color:var(--green)">💾 Salvar Senha</button>
+        </div>
+        <div class="modal-actions" style="gap:8px;flex-wrap:wrap;margin-top:8px">
+            <button class="modal-btn-primary" id="btnSalvarReset" onclick="window.enviarEmailReset()" style="flex:1">📧 Enviar Email de Redefinição</button>
         </div>
         <div id="resetStatus" style="font-size:.8rem;margin-top:8px;color:var(--text-secondary)"></div>
         <div class="modal-actions" style="margin-top:12px">
@@ -1937,6 +1940,8 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
     import { getFirestore, collection, addDoc, query, orderBy, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+
+    var APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAVBD7ReZHQN-vLMEQem8HhnOuAobesEq3OI4W78y1lRAUHhDT_FOUoZg7nV-p9GYV1w/exec";
 
     const firebaseConfig = {
         apiKey: "AIzaSyCln4mcb1j46UcmG-sTVb3bUudTQCpdfvY",
@@ -2857,7 +2862,37 @@
         }
     };
 
-    window.salvarResetSenha = async function() {
+    window.salvarSenhaDireto = async function() {
+        var email = document.getElementById('resetEmailDisplay').textContent;
+        var senha = document.getElementById('resetSenhaInput').value.trim();
+        if (!senha || senha.length < 6) {
+            document.getElementById('resetStatus').textContent = '⚠️ A senha deve ter no mínimo 6 caracteres';
+            document.getElementById('resetStatus').style.color = 'var(--red)';
+            return;
+        }
+        var status = document.getElementById('resetStatus');
+        status.textContent = '⏳ Salvando senha...';
+        status.style.color = 'var(--text-secondary)';
+        try {
+            var resp = await fetch(APP_SCRIPT_URL, {
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ acao: 'resetar_senha', email: email, nova_senha: senha })
+            });
+            var result = await resp.json();
+            if (result.sucesso) {
+                status.innerHTML = '✅ Senha salva com sucesso!<br><span style="font-size:.8rem;color:var(--text-tertiary)">O usuário já pode fazer login com a nova senha.</span>';
+                status.style.color = 'var(--green)';
+            } else {
+                status.innerHTML = '⚠️ ' + (result.erro || 'Erro ao salvar') + '<br><span style="font-size:.8rem;color:var(--text-tertiary)">Use o botão "📧 Email" como alternativa.</span>';
+                status.style.color = 'var(--yellow)';
+            }
+        } catch(e) {
+            status.innerHTML = '⚠️ Erro de conexão: ' + e.message + '<br><span style="font-size:.8rem;color:var(--text-tertiary)">Use o botão "📧 Email" como alternativa.</span>';
+            status.style.color = 'var(--yellow)';
+        }
+    };
+
+    window.enviarEmailReset = async function() {
         var email = document.getElementById('resetEmailDisplay').textContent;
         var senha = document.getElementById('resetSenhaInput').value.trim();
         if (!senha || senha.length < 6) {
