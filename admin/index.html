@@ -1954,8 +1954,23 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const auth = firebase.auth();
-    const { collection, addDoc, query, orderBy, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } = firebase.firestore;
-    const { signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, onAuthStateChanged, signOut } = firebase.auth;
+    // compat → modular wrappers (compat SDK não exporta essas funções)
+    const collection = (d, p) => d.collection(p);
+    const doc = (d, p, ...ids) => ids.length > 0 ? d.collection(p).doc(ids[0]) : d.doc(p);
+    const addDoc = (c, data) => c.add(data);
+    const getDoc = (r) => r.get();
+    const getDocs = (r) => r.get();
+    const setDoc = (r, data, ...o) => o.length > 0 ? r.set(data, o[0]) : r.set(data);
+    const updateDoc = (r, data) => r.update(data);
+    const deleteDoc = (r) => r.delete();
+    const orderBy = (f, d) => ({ _apply: (q) => q.orderBy(f, d) });
+    const where = (f, o, v) => ({ _apply: (q) => q.where(f, o, v) });
+    const query = (c, ...cs) => { let q = c; for (const x of cs) if (x && typeof x._apply === 'function') q = x._apply(q); return q; };
+    const signInWithEmailAndPassword = (a, e, p) => a.signInWithEmailAndPassword(e, p);
+    const createUserWithEmailAndPassword = (a, e, p) => a.createUserWithEmailAndPassword(e, p);
+    const sendPasswordResetEmail = (a, e) => a.sendPasswordResetEmail(e);
+    const onAuthStateChanged = (a, f) => a.onAuthStateChanged(f);
+    const signOut = (a) => a.signOut();
 
     let modoAuth = 'login'; // 'login' ou 'setup'
     let currentUser = null;
