@@ -2693,7 +2693,7 @@
                 + (isSuper ? '' : '<button class="udel" onclick="window.removerUserFirebase(\'' + u.uid + '\')">✕</button>')
                 + '</div>';
         });
-        h += '<div style="margin-top:12px"><button class="btn-salvar" onclick="window.adicionarUserFirebase()">➕ Convidar Usuário</button></div>';
+        h += '<div style="margin-top:12px"><button class="btn-salvar" onclick="window.adicionarUserFirebase()">➕ Adicionar Usuário</button></div>';
         w.innerHTML = h;
     };
 
@@ -2706,24 +2706,33 @@
         } catch(e) { console.warn(e); }
     };
 
-    window.adicionarUserFirebase = function() {
-        // shows a prompt to create new user
+    function gerarSenha() {
+        var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&';
+        var senha = '';
+        for (var i = 0; i < 16; i++) senha += chars.charAt(Math.floor(Math.random() * chars.length));
+        return senha;
+    }
+
+    window.adicionarUserFirebase = async function() {
         var email = prompt('E-mail do novo usuário:');
         if (!email) return;
-        var senha = prompt('Senha temporária (mín. 6 caracteres):');
-        if (!senha || senha.length < 6) { alert('Senha deve ter no mínimo 6 caracteres.'); return; }
-        var nome = prompt('Nome do usuário:') || 'Usuário';
+        var nome = prompt('Nome do usuário:') || email.split('@')[0];
         var role = confirm('OK = Admin | Cancelar = Funcionário') ? 'admin' : 'funcionario';
-        // we create via a helper approach - use Firebase Auth REST API via Apps Script or
-        // we'll create the Firestore doc and note that user must sign up
-        // Actually the simplest: create the user document, they'll log in with email/password
-        // but the account doesn't exist yet in Auth. We need to create via Admin SDK or manual.
-        // For safety, just add a note and show instructions.
-        alert('Para criar o usuário, acesse o Console Firebase > Authentication > Adicionar usuário.\n\nApós criar lá, volte aqui e clique em "Salvar" novamente.\n\nEmail: ' + email + '\nFunção: ' + role + '\nNome: ' + nome);
-        // Actually, since we can't create users client-side without Admin SDK, let's use a workaround:
-        // We'll store a "pending" user in Firestore and create via a Cloud Function or manual step.
-        // For now, just save the role info and the admin must create the auth user manually in Firebase Console.
-        alert('Por enquanto, crie o usuário manualmente no Firebase Console (Authentication > Add user) com email: ' + email + '. Depois volte aqui e configure o nível de acesso.');
+        var senha = gerarSenha();
+        try {
+            var resp = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCln4mcb1j46UcmG-sTVb3bUudTQCpdfvY', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, password: senha, returnSecureToken: false })
+            });
+            var data = await resp.json();
+            if (data.error) { alert('Erro: ' + (data.error.message || JSON.stringify(data.error))); return; }
+            if (!data.localId) { alert('Erro ao criar usuário.'); return; }
+            await setDoc(doc(db, "usuarios", data.localId), { nome: nome, email: email, role: role });
+            alert('✅ Usuário criado!\n\nEmail: ' + email + '\nSenha: ' + senha + '\nFunção: ' + (role === 'admin' ? 'Admin' : 'Funcionário') + '\n\nCompartilhe esta senha com o usuário.');
+            renderUsuarios();
+        } catch(e) {
+            alert('Erro ao criar usuário: ' + e.message);
+        }
     };
 
     window.removerUserFirebase = async function(uid) {
