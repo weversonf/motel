@@ -1967,12 +1967,10 @@
     const where = (f, o, v) => ({ _apply: (q) => q.where(f, o, v) });
     const query = (c, ...cs) => { let q = c; for (const x of cs) if (x && typeof x._apply === 'function') q = x._apply(q); return q; };
     const signInWithEmailAndPassword = (a, e, p) => a.signInWithEmailAndPassword(e, p);
-    const createUserWithEmailAndPassword = (a, e, p) => a.createUserWithEmailAndPassword(e, p);
     const sendPasswordResetEmail = (a, e) => a.sendPasswordResetEmail(e);
     const onAuthStateChanged = (a, f) => a.onAuthStateChanged(f);
     const signOut = (a) => a.signOut();
 
-    let modoAuth = 'login'; // 'login' ou 'setup'
     let currentUser = null;
 
     // ====== DADOS PADRÃO ======
@@ -2051,33 +2049,12 @@
         }
     });
 
-    // Check if first access
-    (async function() {
-        try {
-            var snap = await getDoc(doc(db, "config", "admin_exists"));
-            if (!snap.exists()) {
-                modoAuth = 'setup';
-                document.querySelector('#loginSubtitulo').textContent = 'Primeiro acesso — crie o administrador master';
-                document.querySelector('#loginBtn').textContent = 'Criar Conta Master';
-                document.querySelector('#esqueciSenha').style.display = 'none';
-                mostrarLogin();
-            } else {
-                modoAuth = 'login';
-                setTimeout(function() {
-                    if (!auth.currentUser && !authInitialized) {
-                        mostrarLogin();
-                    }
-                }, 1500);
-            }
-        } catch(e) {
-            console.warn("First access check failed:", e);
-            modoAuth = 'setup';
-            document.querySelector('#loginSubtitulo').textContent = 'Primeiro acesso — crie o administrador master';
-            document.querySelector('#loginBtn').textContent = 'Criar Conta Master';
-            document.querySelector('#esqueciSenha').style.display = 'none';
+    // Show login after timeout if not already authed
+    setTimeout(function() {
+        if (!auth.currentUser && !authInitialized) {
             mostrarLogin();
         }
-    })();
+    }, 1500);
 
     function mostrarCarregando(v) {
         document.getElementById('loginConteudo').style.display = v ? 'none' : '';
@@ -2109,25 +2086,16 @@
         if (!email || !senha) { erro.textContent = 'Preencha e-mail e senha'; erro.style.display = 'block'; return; }
         mostrarCarregando(true);
         try {
-            if (modoAuth === 'setup') {
-                const cred = await createUserWithEmailAndPassword(auth, email, senha);
-                await setDoc(doc(db, "config", "admin_exists"), { exists: true });
-                await setDoc(doc(db, "usuarios", cred.user.uid), { nome: 'Administrador', email: email, role: 'superadmin' });
-                await entrarSistema(cred.user, 'superadmin', 'Administrador');
-            } else {
-                const cred = await signInWithEmailAndPassword(auth, email, senha);
-                const snap = await getDoc(doc(db, "usuarios", cred.user.uid));
-                var userData = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
-                await entrarSistema(cred.user, userData.role, userData.nome);
-            }
+            const cred = await signInWithEmailAndPassword(auth, email, senha);
+            const snap = await getDoc(doc(db, "usuarios", cred.user.uid));
+            var userData = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
+            await entrarSistema(cred.user, userData.role, userData.nome);
             authInitialized = true;
         } catch(e) {
             mostrarCarregando(false);
-            var msg = e.code === 'auth/email-already-in-use' ? 'E-mail já cadastrado. Faça login.' :
-                      e.code === 'auth/user-not-found' ? 'E-mail não encontrado.' :
+            var msg = e.code === 'auth/user-not-found' ? 'E-mail não encontrado.' :
                       e.code === 'auth/wrong-password' ? 'Senha incorreta.' :
                       e.code === 'auth/invalid-email' ? 'E-mail inválido.' :
-                      e.code === 'auth/weak-password' ? 'Senha muito fraca (mín. 6 caracteres).' :
                       e.code === 'auth/too-many-requests' ? 'Muitas tentativas. Aguarde e tente novamente.' :
                       'Erro: ' + (e.message || 'desconhecido');
             erro.textContent = msg;
