@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel</title>
+    <title>Moteis Fortaleza - Painel v06</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -292,6 +292,15 @@
             color: var(--accent-secondary);
             font-weight: 600;
         }
+
+        .icon-picker {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+            font-size: 1.2rem; border: 2px solid var(--border); transition: all .15s;
+            background: var(--bg-secondary);
+        }
+        .icon-picker:hover { border-color: var(--accent-primary); }
+        .icon-picker.selected { border-color: var(--accent-primary); background: var(--accent-primary); }
 
         .sidebar-footer {
             margin-top: auto;
@@ -1735,6 +1744,14 @@
             <span>📊</span>
             <span>Relatórios</span>
         </button>
+        <button class="nav-item" id="navLinktree" data-view="linktree" onclick="window.alternarVisao('linktree')">
+            <span>🔗</span>
+            <span>Linktree</span>
+        </button>
+        <button class="nav-item" id="navNps" data-view="nps" onclick="window.alternarVisao('nps')">
+            <span>📝</span>
+            <span>Pesquisa NPS</span>
+        </button>
 
         <div class="sidebar-footer">
             <button class="topbar-btn" id="temaBtn" onclick="window.toggleTema()">🌙 Noturno</button>
@@ -1880,6 +1897,26 @@
                 </div>
                 <div id="usuariosWrapper"></div>
             </div>
+
+            <!-- LINKTREE -->
+            <div class="content-relatorios" id="contentLinktree">
+                <div class="gerenciar-header">
+                    <h2>🔗 Linktree</h2>
+                    <button class="btn-salvar" onclick="window.abrirModalLink()">➕ Novo Link</button>
+                </div>
+                <div class="rel-filtros" id="linktreeFiltros"></div>
+                <div id="linktreeWrapper"></div>
+            </div>
+
+            <!-- NPS -->
+            <div class="content-relatorios" id="contentNps">
+                <div class="gerenciar-header">
+                    <h2>📝 Pesquisa NPS</h2>
+                    <button class="btn-salvar" onclick="window.configurarNps()">⚙️ Configurar</button>
+                </div>
+                <div class="rel-filtros" id="npsFiltros"></div>
+                <div id="npsWrapper"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -1958,8 +1995,37 @@
     const collection = (d, p) => d.collection(p);
     const doc = (d, p, ...ids) => ids.length > 0 ? d.collection(p).doc(ids[0]) : d.doc(p);
     const addDoc = (c, data) => c.add(data);
-    const getDoc = (r) => r.get();
-    const getDocs = (r) => r.get();
+    function _wrapSnap(snap) {
+        if (!snap) return snap;
+        // Se já for uma função, não faz nada
+        if (typeof snap.exists === 'function') return snap;
+        
+        // Se for booleano (Firebase Compat), cria um wrapper
+        const existsVal = !!snap.exists;
+        return {
+            exists: () => existsVal,
+            data: () => snap.data ? snap.data() : {},
+            id: snap.id,
+            ref: snap.ref,
+            _original: snap // referência caso precise do original
+        };
+    }
+    const getDoc = (r) => r.get().then(_wrapSnap);
+    const getDocs = (r) => r.get().then(qs => {
+        if (qs && qs.docs) {
+            // Criamos uma nova lista de docs "embrulhados"
+            const wrappedDocs = qs.docs.map(_wrapSnap);
+            // Retornamos um objeto que imita o QuerySnapshot
+            return {
+                docs: wrappedDocs,
+                empty: qs.empty,
+                size: qs.size,
+                forEach: (cb) => wrappedDocs.forEach(cb),
+                _original: qs
+            };
+        }
+        return qs;
+    });
     const setDoc = (r, data, ...o) => o.length > 0 ? r.set(data, o[0]) : r.set(data);
     const updateDoc = (r, data) => r.update(data);
     const deleteDoc = (r) => r.delete();
@@ -2032,12 +2098,14 @@
     }
 
     onAuthStateChanged(auth, async function(user) {
+        console.log('onAuthStateChanged:', user ? user.uid : 'null', 'init:', authInitialized);
         if (user) {
             if (authInitialized) return;
             authInitialized = true;
             uidAtual = user.uid;
             try {
                 var snap = await getDoc(doc(db, "usuarios", user.uid));
+                console.log('User doc exists:', snap.exists());
                 var data = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
                 await entrarSistema(user, data.role, data.nome);
             } catch(e) {
@@ -2075,6 +2143,8 @@
         document.getElementById('navAPI').style.display = acessoTotal ? '' : 'none';
         document.getElementById('navUsuarios').style.display = acessoTotal ? '' : 'none';
         document.getElementById('navRelatorios').style.display = acessoTotal ? '' : 'none';
+        document.getElementById('navLinktree').style.display = '';
+        document.getElementById('navNps').style.display = '';
         await iniciar();
     }
 
@@ -2084,14 +2154,18 @@
         const erro = document.getElementById('loginError');
         erro.style.display = 'none';
         if (!email || !senha) { erro.textContent = 'Preencha e-mail e senha'; erro.style.display = 'block'; return; }
+        console.log('fazerLogin: tentando login', email);
         mostrarCarregando(true);
         try {
             const cred = await signInWithEmailAndPassword(auth, email, senha);
+            console.log('fazerLogin: signIn OK, uid:', cred.user.uid);
             const snap = await getDoc(doc(db, "usuarios", cred.user.uid));
+            console.log('fazerLogin: user doc exists:', snap.exists());
             var userData = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
             await entrarSistema(cred.user, userData.role, userData.nome);
             authInitialized = true;
         } catch(e) {
+            console.warn('fazerLogin: erro:', e.code, e.message);
             mostrarCarregando(false);
             var msg = e.code === 'auth/user-not-found' ? 'E-mail não encontrado.' :
                       e.code === 'auth/wrong-password' ? 'Senha incorreta.' :
@@ -2553,8 +2627,8 @@
             document.querySelector('.sidebar').classList.remove('aberta');
         }
         document.querySelectorAll('.nav-item').forEach(b => { b.className = 'nav-item' + (b.dataset.view === v ? ' ativo' : ''); });
-        document.getElementById('pageTitle').innerHTML = {'calendario':'📅 <span>Calendário</span>','tabela':'📋 <span>Tabela</span>','gerenciar':'🏨 <span>Configurar</span>','relatorios':'📊 <span>Relatórios</span>','api':'🔑 <span>API</span>','usuarios':'👥 <span>Usuários</span>'} [v] || '';
-        ['Calendario', 'Tabela', 'Gerenciar', 'Relatorios', 'API', 'Usuarios'].forEach(function(n) {
+        document.getElementById('pageTitle').innerHTML = {'calendario':'📅 <span>Calendário</span>','tabela':'📋 <span>Tabela</span>','gerenciar':'🏨 <span>Configurar</span>','relatorios':'📊 <span>Relatórios</span>','api':'🔑 <span>API</span>','usuarios':'👥 <span>Usuários</span>','linktree':'🔗 <span>Linktree</span>','nps':'📝 <span>NPS</span>'} [v] || '';
+        ['Calendario', 'Tabela', 'Gerenciar', 'Relatorios', 'API', 'Usuarios', 'Linktree', 'Nps'].forEach(function(n) {
             const e = document.getElementById('content' + n);
             if (!e) return;
             var ativo = v === n.toLowerCase();
@@ -2563,14 +2637,17 @@
             else if (n === 'Gerenciar') e.className = 'content-gerenciar' + (ativo ? ' ativo' : '');
             else if (n === 'API') e.className = 'content-api' + (ativo ? ' ativo' : '');
             else if (n === 'Usuarios') e.className = 'content-usuarios' + (ativo ? ' ativo' : '');
+            else if (n === 'Linktree' || n === 'Nps') e.className = 'content-relatorios' + (ativo ? ' ativo' : '');
             else e.className = 'content' + (ativo ? ' ativo' : '');
         });
         if (v === 'tabela') { popularFiltrosTabela(); renderTabela(); }
         if (v === 'relatorios') renderRelatorios();
         if (v === 'api') renderAPI();
         if (v === 'usuarios') renderUsuarios();
+        if (v === 'linktree') renderLinktree();
+        if (v === 'nps') renderNps();
         var topEls = document.querySelectorAll('.stats-container, .motel-filters');
-        topEls.forEach(function(el) { el.style.display = (v === 'relatorios' || v === 'gerenciar' || v === 'api' || v === 'usuarios') ? 'none' : ''; });
+        topEls.forEach(function(el) { el.style.display = (v === 'relatorios' || v === 'gerenciar' || v === 'api' || v === 'usuarios' || v === 'linktree' || v === 'nps') ? 'none' : ''; });
     }
 
     // ====== GERENCIAR ======
@@ -2737,18 +2814,13 @@
     };
 
     window.adicionarUsuario = function() {
-        document.getElementById('modalEmail').value = '';
-        document.getElementById('modalNome').value = '';
-        document.getElementById('modalRole').value = 'funcionario';
+        document.getElementById('modalFormBox').innerHTML = '<h3 id="modalTitle">➕ Novo Usuário</h3><p id="modalSubtitle">Preencha os dados para criar o acesso</p><input type="email" id="modalEmail" placeholder="E-mail do usuário"><input type="text" id="modalNome" placeholder="Nome do usuário"><select id="modalRole"><option value="funcionario">Funcionário (Atendimento)</option><option value="admin">Admin</option></select><div class="modal-actions"><button class="modal-btn-secondary" onclick="window.fecharModal()">Cancelar</button><button class="modal-btn-primary" onclick="window.criarUsuario()">Criar</button></div>';
         document.getElementById('modalFormBox').style.display = '';
         document.getElementById('modalResultBox').style.display = 'none';
         document.getElementById('modalOverlay').classList.add('mostrar');
         setTimeout(function() { document.getElementById('modalEmail').focus(); }, 100);
     };
 
-    window.fecharModal = function() {
-        document.getElementById('modalOverlay').classList.remove('mostrar');
-    };
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
         if (e.target === this) window.fecharModal();
     });
@@ -2858,21 +2930,35 @@
         status.textContent = '⏳ Salvando senha...';
         status.style.color = 'var(--text-secondary)';
         try {
+            // Nota: Google Apps Script requer redirecionamento, fetch lida com isso automaticamente por padrão.
+            // O erro pode ser CORS ou o script não estar configurado para receber POST.
             var resp = await fetch(APP_SCRIPT_URL, {
-                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                method: 'POST', 
+                mode: 'no-cors', // Tenta no-cors se o script não tiver headers CORS
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ acao: 'resetar_senha', email: email, nova_senha: senha })
             });
+            
+            // Com no-cors, não podemos ler a resposta. Se o usuário chegou aqui, 
+            // assumimos que foi enviado, mas avisamos da limitação.
+            status.innerHTML = '✅ Comando enviado!<br><span style="font-size:.8rem;color:var(--text-tertiary)">Devido a restrições de segurança (CORS), não pudemos confirmar o sucesso. Verifique se a senha mudou.</span>';
+            status.style.color = 'var(--green)';
+            
+            /* 
+            // Código original (funciona apenas se o Apps Script tiver CORS habilitado):
             var result = await resp.json();
             if (result.sucesso) {
-                status.innerHTML = '✅ Senha salva com sucesso!<br><span style="font-size:.8rem;color:var(--text-tertiary)">O usuário já pode fazer login com a nova senha.</span>';
+                status.innerHTML = '✅ Senha salva com sucesso!';
                 status.style.color = 'var(--green)';
             } else {
-                status.innerHTML = '⚠️ ' + (result.erro || 'Erro ao salvar') + '<br><span style="font-size:.8rem;color:var(--text-tertiary)">Use o botão "📧 Email" como alternativa.</span>';
+                status.innerHTML = '⚠️ ' + (result.erro || 'Erro ao salvar');
                 status.style.color = 'var(--yellow)';
             }
+            */
         } catch(e) {
-            status.innerHTML = '⚠️ Erro de conexão: ' + e.message + '<br><span style="font-size:.8rem;color:var(--text-tertiary)">Use o botão "📧 Email" como alternativa.</span>';
-            status.style.color = 'var(--yellow)';
+            console.error('Erro no reset de senha:', e);
+            status.innerHTML = '⚠️ Erro técnico: ' + e.message + '<br><span style="font-size:.8rem;color:var(--text-tertiary)">Use o botão "📧 Email" como alternativa.</span>';
+            status.style.color = 'var(--red)';
         }
     };
 
@@ -2921,6 +3007,328 @@
             await setDoc(doc(db, "usuarios", uid), { role: 'removido' });
             renderUsuarios();
         } catch(e) { console.warn(e); }
+    };
+
+    // ====== LINKTREE ======
+    var motelLinktreeSelecionado = null;
+
+    window.renderLinktree = async function() {
+        var w = document.getElementById('linktreeWrapper');
+        if (!w) return;
+        try {
+            var motelSnap = await getDocs(collection(db, "estabelecimentos"));
+            var moteis = motelSnap.docs.map(function(d) { return { id: d.id, ...d.data() }; });
+            if (!moteis.length) { w.innerHTML = '<p style="color:var(--text-tertiary)">Nenhum motel cadastrado.</p>'; return; }
+            if (!motelLinktreeSelecionado || !moteis.some(function(m) { return m.id === motelLinktreeSelecionado; })) {
+                motelLinktreeSelecionado = moteis[0].id;
+            }
+            var filtrosHtml = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">';
+            filtrosHtml += '<label style="font-size:.8rem;color:var(--text-secondary)">Motel:</label>';
+            filtrosHtml += '<select id="selectMotelLinktree" onchange="window.mudarMotelLinktree(this.value)" class="filter-input" style="flex:1;min-width:150px">';
+            moteis.forEach(function(m) {
+                filtrosHtml += '<option value="' + m.id + '"' + (m.id === motelLinktreeSelecionado ? ' selected' : '') + '>' + (m.nome || m.id) + '</option>';
+            });
+            filtrosHtml += '</select>';
+            var publicUrl = window.location.origin + '/link.html?id=' + motelLinktreeSelecionado;
+            filtrosHtml += '<button class="btn-salvar" onclick="window.copiarTexto(\'' + publicUrl + '\')">📋 Copiar Link Público</button>';
+            filtrosHtml += '<button class="btn-salvar" onclick="window.abrirUrl(\'' + publicUrl + '\')">👁️ Pré-visualizar</button>';
+            filtrosHtml += '<button class="btn-salvar" onclick="window.abrirModalLink()">➕ Novo Link</button>';
+            filtrosHtml += '</div>';
+            document.getElementById('linktreeFiltros').innerHTML = filtrosHtml;
+
+            var linksSnap = await getDocs(collection(db, "estabelecimentos", motelLinktreeSelecionado, "linktree"));
+            var links = linksSnap.docs.map(function(d) { return { id: d.id, ...d.data() }; });
+            links.sort(function(a, b) { return (a.ordem || 0) - (b.ordem || 0); });
+
+            var h = '';
+            if (!links.length) {
+                h = '<div style="padding:40px;text-align:center;color:var(--text-tertiary)">Nenhum link cadastrado. Clique em "➕ Novo Link" para adicionar.</div>';
+            } else {
+                h = '<div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">';
+                links.forEach(function(link, idx) {
+                    var cor = link.ativo !== false ? 'var(--accent-primary)' : 'var(--text-tertiary)';
+                    h += '<div class="user-row" style="align-items:center;gap:8px;opacity:' + (link.ativo !== false ? 1 : 0.5) + '">';
+                    h += '<span style="font-size:1.2rem;cursor:grab">☰</span>';
+                    h += '<span style="font-size:1.4rem">' + (link.icon || '🔗') + '</span>';
+                    h += '<input class="unome" value="' + (link.title || '') + '" placeholder="Título" style="flex:1" data-linkid="' + link.id + '" data-campo="title" onchange="window.atualizarLinkCampo(this)">';
+                    h += '<input class="unome" value="' + (link.url || '') + '" placeholder="URL" style="flex:2" data-linkid="' + link.id + '" data-campo="url" onchange="window.atualizarLinkCampo(this)">';
+                    h += '<select style="padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg-secondary);color:var(--text-primary);font-size:.8rem" data-linkid="' + link.id + '" onchange="window.atualizarLinkCampo(this)">';
+                    var icons = ['🔗','🌐','📸','📱','💬','📞','📍','🎬','🎵','📝','🛒','💻','📧','👤','🏠','📄','🎯','📊','⭐','❤️'];
+                    icons.forEach(function(ic) {
+                        h += '<option value="' + ic + '"' + (link.icon === ic ? ' selected' : '') + '>' + ic + '</option>';
+                    });
+                    h += '</select>';
+                    h += '<label style="font-size:.75rem;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox"' + (link.ativo !== false ? ' checked' : '') + ' onchange="window.toggleLinkAtivo(\'' + link.id + '\',this.checked)"> Ativo</label>';
+                    h += '<button class="udel" onclick="window.excluirLink(\'' + link.id + '\')" title="Excluir">✕</button>';
+                    h += '</div>';
+                });
+                h += '</div>';
+            }
+            w.innerHTML = h;
+        } catch(e) {
+            w.innerHTML = '<p style="color:var(--red)">Erro ao carregar links: ' + e.message + '</p>';
+        }
+    };
+
+    window.mudarMotelLinktree = function(id) {
+        motelLinktreeSelecionado = id;
+        renderLinktree();
+    };
+
+    window.abrirModalLink = function(linkId) {
+        var h = '<div style="padding:24px;max-width:500px;margin:0 auto">';
+        h += '<h3 style="margin-bottom:16px">' + (linkId ? 'Editar Link' : 'Novo Link') + '</h3>';
+        h += '<div style="display:flex;flex-direction:column;gap:12px">';
+        h += '<input id="linkFormTitle" class="filter-input" placeholder="Título (ex: Instagram)" style="width:100%">';
+        h += '<input id="linkFormUrl" class="filter-input" placeholder="URL (ex: https://instagram.com/..." style="width:100%">';
+        h += '<div><label style="font-size:.8rem;color:var(--text-secondary);display:block;margin-bottom:4px">Ícone:</label>';
+        h += '<div style="display:flex;gap:6px;flex-wrap:wrap" id="linkFormIcons">';
+        var icons = ['🔗','🌐','📸','📱','💬','📞','📍','🎬','🎵','📝','🛒','💻','📧','👤','🏠','📄','🎯','📊','⭐','❤️'];
+        icons.forEach(function(ic, i) {
+            h += '<span class="icon-picker' + (i === 0 ? ' selected' : '') + '" data-icon="' + ic + '" onclick="window.selecionarIconeLink(this)">' + ic + '</span>';
+        });
+        h += '</div></div>';
+        h += '<div style="display:flex;gap:8px;margin-top:8px">';
+        h += '<button class="btn-salvar" onclick="window.salvarLink(\'' + (linkId || '') + '\')">💾 Salvar</button>';
+        h += '<button class="btn-salvar" style="background:var(--bg-tertiary);color:var(--text-secondary)" onclick="window.fecharModal()">Cancelar</button>';
+        h += '</div></div></div>';
+
+        document.getElementById('modalFormBox').innerHTML = h;
+        document.getElementById('modalFormBox').style.display = '';
+        document.getElementById('modalResultBox').style.display = 'none';
+        document.getElementById('modalOverlay').classList.add('mostrar');
+        setTimeout(function() { document.getElementById('linkFormTitle').focus(); }, 100);
+    };
+
+    window.selecionarIconeLink = function(el) {
+        document.querySelectorAll('.icon-picker').forEach(function(i) { i.classList.remove('selected'); });
+        el.classList.add('selected');
+    };
+
+    window.salvarLink = async function(linkId) {
+        var title = document.getElementById('linkFormTitle').value.trim();
+        var url = document.getElementById('linkFormUrl').value.trim();
+        var icon = document.querySelector('.icon-picker.selected');
+        var iconVal = icon ? icon.dataset.icon : '🔗';
+        if (!title) { alert('Digite um título para o link.'); return; }
+        if (!url) { alert('Digite uma URL para o link.'); return; }
+
+        var linksRef = collection(db, "estabelecimentos", motelLinktreeSelecionado, "linktree");
+        try {
+            if (linkId) {
+                await updateDoc(doc(db, "estabelecimentos", motelLinktreeSelecionado, "linktree", linkId), { title: title, url: url, icon: iconVal });
+            } else {
+                var countSnap = await getDocs(linksRef);
+                var ordem = countSnap.docs.length;
+                await addDoc(linksRef, { title: title, url: url, icon: iconVal, ordem: ordem, ativo: true, createdAt: new Date().toISOString() });
+            }
+            window.fecharModal();
+            renderLinktree();
+        } catch(e) {
+            alert('Erro ao salvar: ' + e.message);
+        }
+    };
+
+    window.atualizarLinkCampo = function(el) {
+        var linkId = el.dataset.linkid;
+        var campo = el.dataset.campo;
+        var valor = el.value;
+        updateDoc(doc(db, "estabelecimentos", motelLinktreeSelecionado, "linktree", linkId), { [campo]: valor }).catch(function(e) { console.warn(e); });
+    };
+
+    window.toggleLinkAtivo = function(id, ativo) {
+        updateDoc(doc(db, "estabelecimentos", motelLinktreeSelecionado, "linktree", id), { ativo: ativo }).catch(function(e) { console.warn(e); });
+    };
+
+    window.excluirLink = async function(id) {
+        if (!confirm('Excluir este link?')) return;
+        try {
+            await deleteDoc(doc(db, "estabelecimentos", motelLinktreeSelecionado, "linktree", id));
+            renderLinktree();
+        } catch(e) {
+            alert('Erro ao excluir: ' + e.message);
+        }
+    };
+
+    // ====== NPS ======
+    var motelNpsSelecionado = null;
+
+    window.renderNps = async function() {
+        var w = document.getElementById('npsWrapper');
+        if (!w) return;
+        try {
+            var motelSnap = await getDocs(collection(db, "estabelecimentos"));
+            var moteis = motelSnap.docs.map(function(d) { return { id: d.id, ...d.data() }; });
+            if (!moteis.length) { w.innerHTML = '<p style="color:var(--text-tertiary)">Nenhum motel cadastrado.</p>'; return; }
+            if (!motelNpsSelecionado || !moteis.some(function(m) { return m.id === motelNpsSelecionado; })) {
+                motelNpsSelecionado = moteis[0].id;
+            }
+
+            // Config
+            var configSnap = await getDoc(doc(db, "estabelecimentos", motelNpsSelecionado, "config", "nps"));
+            var config = configSnap.exists() ? configSnap.data() : { ativo: true, titulo: 'Como foi sua experiência?', mensagem: 'Obrigado pela sua avaliação!' };
+
+            // Respostas
+            var respSnap = await getDocs(collection(db, "estabelecimentos", motelNpsSelecionado, "nps_respostas"));
+            var respostas = respSnap.docs.map(function(d) { return { id: d.id, ...d.data() }; });
+
+            // Calcular NPS
+            var total = respostas.length;
+            var promotores = respostas.filter(function(r) { return r.nota >= 9; }).length;
+            var detratores = respostas.filter(function(r) { return r.nota <= 6; }).length;
+            var npsScore = total > 0 ? Math.round(((promotores - detratores) / total) * 100) : 0;
+            var npsClass = npsScore >= 75 ? 'Excelente' : npsScore >= 50 ? 'Muito Bom' : npsScore >= 0 ? 'Razoável' : 'Ruim';
+
+            // Distribuição
+            var dist = [0,0,0,0,0,0,0,0,0,0,0];
+            respostas.forEach(function(r) { if (r.nota >= 0 && r.nota <= 10) dist[r.nota]++; });
+
+            var maxDist = Math.max.apply(null, dist);
+
+            var publicUrl = window.location.origin + '/nps.html?id=' + motelNpsSelecionado;
+
+            // Filtros
+            var filtrosHtml = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">';
+            filtrosHtml += '<label style="font-size:.8rem;color:var(--text-secondary)">Motel:</label>';
+            filtrosHtml += '<select id="selectMotelNps" onchange="window.mudarMotelNps(this.value)" class="filter-input" style="flex:1;min-width:150px">';
+            moteis.forEach(function(m) {
+                filtrosHtml += '<option value="' + m.id + '"' + (m.id === motelNpsSelecionado ? ' selected' : '') + '>' + (m.nome || m.id) + '</option>';
+            });
+            filtrosHtml += '</select>';
+            filtrosHtml += '<button class="btn-salvar" onclick="window.copiarTexto(\'' + publicUrl + '\')">📋 Copiar Link da Pesquisa</button>';
+            filtrosHtml += '<button class="btn-salvar" onclick="window.abrirUrl(\'' + publicUrl + '\')">👁️ Pré-visualizar</button>';
+            filtrosHtml += '<button class="btn-salvar" onclick="window.configurarNps()">⚙️ Configurar</button>';
+            filtrosHtml += '</div>';
+            document.getElementById('npsFiltros').innerHTML = filtrosHtml;
+
+            // Score card
+            var h = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0">';
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)">';
+            h += '<div style="font-size:2.5rem;font-weight:700;color:' + (npsScore >= 0 ? 'var(--green)' : 'var(--red)') + '">' + npsScore + '</div>';
+            h += '<div style="font-size:.8rem;color:var(--text-secondary)">NPS Score</div>';
+            h += '<div style="font-size:.85rem;margin-top:4px;color:var(--accent-primary)">' + npsClass + '</div>';
+            h += '</div>';
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)">';
+            h += '<div style="font-size:2rem;font-weight:700;color:var(--green)">' + promotores + '</div>';
+            h += '<div style="font-size:.8rem;color:var(--text-secondary)">Promotores (9-10)</div>';
+            h += '</div>';
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)">';
+            h += '<div style="font-size:2rem;font-weight:700;color:var(--yellow)">' + (total - promotores - detratores) + '</div>';
+            h += '<div style="font-size:.8rem;color:var(--text-secondary)">Neutros (7-8)</div>';
+            h += '</div>';
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)">';
+            h += '<div style="font-size:2rem;font-weight:700;color:var(--red)">' + detratores + '</div>';
+            h += '<div style="font-size:.8rem;color:var(--text-secondary)">Detratores (0-6)</div>';
+            h += '</div>';
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)">';
+            h += '<div style="font-size:2rem;font-weight:700;color:var(--text-primary)">' + total + '</div>';
+            h += '<div style="font-size:.8rem;color:var(--text-secondary)">Total de Respostas</div>';
+            h += '</div>';
+            h += '</div>';
+
+            // Chart
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:16px;border:1px solid var(--border);margin-bottom:16px">';
+            h += '<h4 style="margin:0 0 12px 0;font-size:.9rem">Distribuição das Notas</h4>';
+            h += '<div style="display:flex;align-items:flex-end;gap:4px;height:120px;padding:0 4px">';
+            for (var i = 0; i <= 10; i++) {
+                var pct = maxDist > 0 ? (dist[i] / maxDist) * 100 : 0;
+                var cor2 = i <= 6 ? 'var(--red)' : i <= 8 ? 'var(--yellow)' : 'var(--green)';
+                h += '<div style="flex:1;display:flex;flex-direction:column;align-items:center">';
+                h += '<div style="width:100%;background:' + cor2 + ';border-radius:4px 4px 0 0;height:' + Math.max(pct, dist[i] > 0 ? 8 : 0) + 'px;min-height:' + (dist[i] > 0 ? '8px' : '0px') + ';transition:height .3s"></div>';
+                h += '<span style="font-size:.65rem;margin-top:4px;color:var(--text-tertiary)">' + i + '</span>';
+                h += '<span style="font-size:.65rem;color:var(--text-secondary)">' + dist[i] + '</span>';
+                h += '</div>';
+            }
+            h += '</div></div>';
+
+            // Status config
+            h += '<div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">';
+            h += '<div><span style="font-weight:600">Pesquisa:</span> ' + (config.ativo !== false ? '✅ Ativa' : '⏸️ Pausada') + '</div>';
+            h += '<div><span style="font-size:.8rem;color:var(--text-secondary)">Pergunta:</span> "' + (config.titulo || 'Como foi sua experiência?') + '"</div>';
+            h += '</div>';
+
+            // Respostas individuais
+            if (respostas.length) {
+                h += '<h4 style="margin:16px 0 8px 0;font-size:.9rem">Respostas (' + respostas.length + ')</h4>';
+                respostas.sort(function(a, b) { return (b.createdAt || '').localeCompare(a.createdAt || ''); });
+                respostas.forEach(function(r) {
+                    var rc = r.nota <= 6 ? 'var(--red)' : r.nota <= 8 ? 'var(--yellow)' : 'var(--green)';
+                    var dataStr = r.createdAt ? r.createdAt.split('T')[0].split('-').reverse().join('/') : '-';
+                    h += '<div class="user-row" style="align-items:center;gap:8px">';
+                    h += '<span style="font-size:1.2rem;font-weight:700;color:' + rc + ';min-width:30px;text-align:center">' + r.nota + '</span>';
+                    h += '<span style="flex:1;font-size:.85rem">' + (r.comentario || '<span style="color:var(--text-tertiary)">Sem comentário</span>') + '</span>';
+                    h += '<span style="font-size:.7rem;color:var(--text-tertiary)">' + dataStr + '</span>';
+                    h += '</div>';
+                });
+            } else {
+                h += '<div style="padding:24px;text-align:center;color:var(--text-tertiary)">Nenhuma resposta recebida ainda. Compartilhe o link da pesquisa com seus clientes.</div>';
+            }
+
+            w.innerHTML = h;
+        } catch(e) {
+            w.innerHTML = '<p style="color:var(--red)">Erro ao carregar NPS: ' + e.message + '</p>';
+        }
+    };
+
+    window.mudarMotelNps = function(id) {
+        motelNpsSelecionado = id;
+        renderNps();
+    };
+
+    window.configurarNps = function() {
+        (async function() {
+            var configSnap = await getDoc(doc(db, "estabelecimentos", motelNpsSelecionado, "config", "nps"));
+            var config = configSnap.exists() ? configSnap.data() : { ativo: true, titulo: 'Como foi sua experiência?', mensagem: 'Obrigado pela sua avaliação!' };
+            var h = '<div style="padding:24px;max-width:500px;margin:0 auto">';
+            h += '<h3 style="margin-bottom:16px">⚙️ Configurar NPS</h3>';
+            h += '<div style="display:flex;flex-direction:column;gap:12px">';
+            h += '<label style="display:flex;align-items:center;gap:8px;font-size:.9rem"><input type="checkbox" id="npsFormAtivo"' + (config.ativo !== false ? ' checked' : '') + '> Pesquisa ativa</label>';
+            h += '<label style="font-size:.8rem;color:var(--text-secondary)">Título da pesquisa:</label>';
+            h += '<input id="npsFormTitulo" class="filter-input" value="' + (config.titulo || 'Como foi sua experiência?') + '" style="width:100%">';
+            h += '<label style="font-size:.8rem;color:var(--text-secondary)">Mensagem de agradecimento:</label>';
+            h += '<textarea id="npsFormMensagem" class="filter-input" style="width:100%;min-height:80px;resize:vertical">' + (config.mensagem || 'Obrigado pela sua avaliação!') + '</textarea>';
+            h += '<div style="display:flex;gap:8px;margin-top:8px">';
+            h += '<button class="btn-salvar" onclick="window.salvarConfigNps()">💾 Salvar</button>';
+            h += '<button class="btn-salvar" style="background:var(--bg-tertiary);color:var(--text-secondary)" onclick="window.fecharModal()">Cancelar</button>';
+            h += '</div></div></div>';
+
+            document.getElementById('modalFormBox').innerHTML = h;
+            document.getElementById('modalFormBox').style.display = '';
+            document.getElementById('modalResultBox').style.display = 'none';
+            document.getElementById('modalOverlay').classList.add('mostrar');
+        })();
+    };
+
+    window.salvarConfigNps = function() {
+        (async function() {
+            var ativo = document.getElementById('npsFormAtivo').checked;
+            var titulo = document.getElementById('npsFormTitulo').value.trim() || 'Como foi sua experiência?';
+            var mensagem = document.getElementById('npsFormMensagem').value.trim() || 'Obrigado pela sua avaliação!';
+            try {
+                await setDoc(doc(db, "estabelecimentos", motelNpsSelecionado, "config", "nps"), { ativo: ativo, titulo: titulo, mensagem: mensagem });
+                window.fecharModal();
+                renderNps();
+            } catch(e) {
+                alert('Erro ao salvar: ' + e.message);
+            }
+        })();
+    };
+
+    // ====== UTILITÁRIOS ======
+    window.copiarTexto = function(texto) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(texto).catch(function() {});
+        } else {
+            var ta = document.createElement('textarea');
+            ta.value = texto; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); document.body.removeChild(ta);
+        }
+        alert('Link copiado!');
+    };
+
+    window.abrirUrl = function(url) {
+        window.open(url, '_blank');
     };
 
     window.exportarCSV = function() {

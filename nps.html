@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pesquisa de Satisfação</title>
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+        }
+        .container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 24px;
+            padding: 40px 24px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        h1 { font-size: 1.1rem; color: #1a1a2e; margin-bottom: 8px; font-weight: 600; }
+        .question { font-size: 1.3rem; color: #1a1a2e; margin: 24px 0; font-weight: 700; line-height: 1.4; }
+        .labels { display: flex; justify-content: space-between; font-size: .7rem; color: #999; margin: 4px 12px 16px; }
+        .notas {
+            display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;
+        }
+        .nota-btn {
+            width: 38px; height: 38px; border-radius: 50%; border: 2px solid #ddd;
+            background: #fff; color: #555; font-size: .85rem; font-weight: 700;
+            cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center;
+        }
+        .nota-btn:hover { border-color: #667eea; color: #667eea; transform: scale(1.1); }
+        .nota-btn.selected { border-color: #667eea; background: #667eea; color: #fff; transform: scale(1.1); }
+        .nota-btn.selected-detrator { border-color: #e74c3c; background: #e74c3c; color: #fff; }
+        .nota-btn.selected-neutro { border-color: #f39c12; background: #f39c12; color: #fff; }
+        .nota-btn.selected-promotor { border-color: #2ecc71; background: #2ecc71; color: #fff; }
+        .legenda { display: flex; justify-content: space-between; font-size: .65rem; color: #aaa; margin-bottom: 20px; padding: 0 4px; }
+        .legenda span { display: flex; align-items: center; gap: 4px; }
+        .legenda .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        textarea {
+            width: 100%; padding: 12px 14px; border: 2px solid #eee; border-radius: 12px;
+            font-family: inherit; font-size: .9rem; resize: vertical; min-height: 80px;
+            outline: none; transition: border-color .2s; margin-bottom: 16px;
+        }
+        textarea:focus { border-color: #667eea; }
+        .btn-submit {
+            width: 100%; padding: 14px; border: none; border-radius: 14px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer;
+            transition: all .2s; opacity: .6;
+        }
+        .btn-submit.active { opacity: 1; }
+        .btn-submit.active:hover { transform: translateY(-1px); box-shadow: 0 4px 15px rgba(102,126,234,.4); }
+        .btn-submit:disabled { opacity: .4; cursor: default; }
+        .obrigado {
+            display: none; padding: 20px 0;
+        }
+        .obrigado .check {
+            font-size: 4rem; margin-bottom: 16px;
+        }
+        .obrigado h2 { font-size: 1.5rem; color: #1a1a2e; margin-bottom: 8px; }
+        .obrigado p { color: #888; font-size: .95rem; line-height: 1.5; }
+        .loading { text-align: center; padding: 40px 0; color: #888; }
+        .spinner { width: 32px; height: 32px; border: 3px solid #eee; border-top-color: #667eea; border-radius: 50%; animation: spin .8s linear infinite; margin: 0 auto 12px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error { color: #e74c3c; padding: 20px; text-align: center; }
+        .pausada { padding: 40px 0; }
+        .pausada h2 { font-size: 1.3rem; color: #1a1a2e; margin-bottom: 8px; }
+        .pausada p { color: #888; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <div>Carregando...</div>
+        </div>
+        <div id="error" class="error" style="display:none"></div>
+        <div id="pausada" class="pausada" style="display:none">
+            <h2>😴 Pesquisa indisponível</h2>
+            <p>A pesquisa de satisfação está temporariamente desativada.</p>
+        </div>
+        <div id="survey" style="display:none">
+            <h1>📝 Pesquisa de Satisfação</h1>
+            <div class="question" id="pergunta">Como foi sua experiência?</div>
+            <div class="labels">
+                <span>😡 Muito Ruim</span>
+                <span>😐 Regular</span>
+                <span>😊 Excelente</span>
+            </div>
+            <div class="notas" id="notasContainer"></div>
+            <div class="legenda">
+                <span><span class="dot" style="background:#e74c3c"></span> Detrator</span>
+                <span><span class="dot" style="background:#f39c12"></span> Neutro</span>
+                <span><span class="dot" style="background:#2ecc71"></span> Promotor</span>
+            </div>
+            <textarea id="comentario" placeholder="Quer deixar um comentário? (opcional)"></textarea>
+            <button class="btn-submit" id="btnEnviar" onclick="window.enviarNps()" disabled>
+                ⭐ Enviar Avaliação
+            </button>
+        </div>
+        <div class="obrigado" id="obrigado">
+            <div class="check">🎉</div>
+            <h2 id="obrigadoTitulo">Obrigado!</h2>
+            <p id="obrigadoMensagem">Sua opinião é muito importante para nós.</p>
+        </div>
+    </div>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCln4mcb1j46UcmG-sTVb3bUudTQCpdfvY",
+            authDomain: "moteisfortaleza-9dadd.firebaseapp.com",
+            projectId: "moteisfortaleza-9dadd",
+            storageBucket: "moteisfortaleza-9dadd.firebasestorage.app",
+            messagingSenderId: "285292896374",
+            appId: "1:285292896374:web:ef6d3ad37e94313ad3bf57"
+        };
+        try { firebase.initializeApp(firebaseConfig); } catch(e) {}
+        const db = firebase.firestore();
+
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+        var notaSelecionada = null;
+
+        (async function() {
+            if (!id) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = '';
+                document.getElementById('error').textContent = 'Link inválido.';
+                return;
+            }
+            try {
+                var configSnap = await db.collection("estabelecimentos").doc(id).collection("config").doc("nps").get();
+                if (!configSnap.exists) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('survey').style.display = '';
+                    return;
+                }
+                var config = configSnap.data();
+
+                if (config.ativo === false) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('pausada').style.display = '';
+                    return;
+                }
+
+                document.getElementById('pergunta').textContent = config.titulo || 'Como foi sua experiência?';
+                document.getElementById('obrigadoTitulo').textContent = 'Obrigado!';
+                document.getElementById('obrigadoMensagem').textContent = config.mensagem || 'Sua opinião é muito importante para nós.';
+
+                var notasHtml = '';
+                for (var i = 0; i <= 10; i++) {
+                    notasHtml += '<button class="nota-btn" data-nota="' + i + '" onclick="window.selecionarNota(this, ' + i + ')">' + i + '</button>';
+                }
+                document.getElementById('notasContainer').innerHTML = notasHtml;
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('survey').style.display = '';
+            } catch(e) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = '';
+                document.getElementById('error').textContent = 'Erro ao carregar: ' + e.message;
+            }
+        })();
+
+        window.selecionarNota = function(el, nota) {
+            document.querySelectorAll('.nota-btn').forEach(function(b) {
+                b.className = 'nota-btn';
+            });
+            var cls = nota <= 6 ? 'selected-detrator' : nota <= 8 ? 'selected-neutro' : 'selected-promotor';
+            el.classList.add('selected', cls);
+            notaSelecionada = nota;
+            document.getElementById('btnEnviar').disabled = false;
+            document.getElementById('btnEnviar').classList.add('active');
+        };
+
+        window.enviarNps = async function() {
+            if (notaSelecionada === null) return;
+            var btn = document.getElementById('btnEnviar');
+            btn.disabled = true;
+            btn.textContent = '⏳ Enviando...';
+            var comentario = document.getElementById('comentario').value.trim();
+            try {
+                await db.collection("estabelecimentos").doc(id).collection("nps_respostas").add({
+                    nota: notaSelecionada,
+                    comentario: comentario,
+                    createdAt: new Date().toISOString()
+                });
+                document.getElementById('survey').style.display = 'none';
+                document.getElementById('obrigado').style.display = '';
+            } catch(e) {
+                alert('Erro ao enviar: ' + e.message);
+                btn.disabled = false;
+                btn.textContent = '⭐ Enviar Avaliação';
+            }
+        };
+    </script>
+</body>
+</html>
