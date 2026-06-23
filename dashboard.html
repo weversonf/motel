@@ -293,6 +293,48 @@
             font-weight: 600;
         }
 
+        .nav-parent {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        .nav-parent:hover {
+            background: var(--accent-light);
+            color: var(--accent-primary);
+            transform: translateX(4px);
+        }
+        .nav-parent .arrow {
+            margin-left: auto;
+            font-size: .7rem;
+            transition: transform .2s;
+        }
+        .nav-parent.aberto .arrow {
+            transform: rotate(90deg);
+        }
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .3s ease;
+        }
+        .submenu.aberto {
+            max-height: 300px;
+        }
+        .nav-child {
+            padding-left: 40px !important;
+            font-size: 0.8rem !important;
+        }
+
         .icon-picker {
             display: inline-flex; align-items: center; justify-content: center;
             width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
@@ -1728,30 +1770,46 @@
             <span>📋</span>
             <span>Tabela</span>
         </button>
-        <button class="nav-item" id="navGerenciar" data-view="gerenciar" style="display:none" onclick="window.alternarVisao('gerenciar')">
-            <span>🏨</span>
-            <span>Configurar</span>
-        </button>
-        <button class="nav-item" id="navAPI" data-view="api" style="display:none" onclick="window.alternarVisao('api')">
-            <span>🔑</span>
-            <span>API</span>
-        </button>
-        <button class="nav-item" id="navUsuarios" data-view="usuarios" style="display:none" onclick="window.alternarVisao('usuarios')">
-            <span>👥</span>
-            <span>Usuários</span>
-        </button>
         <button class="nav-item" id="navRelatorios" data-view="relatorios" onclick="window.alternarVisao('relatorios')">
             <span>📊</span>
             <span>Relatórios</span>
         </button>
-<button class="nav-item" id="navEncurtador" data-view="encurtador" onclick="window.alternarVisao('encurtador')">
-    <span>🔗</span>
-    <span>Encurtador</span>
-</button>
-        <button class="nav-item" id="navNps" data-view="nps" onclick="window.alternarVisao('nps')">
-            <span>📝</span>
-            <span>Pesquisa NPS</span>
+
+        <button class="nav-parent" id="navParentSistema" onclick="window.toggleSubmenu(this)">
+            <span>⚙️</span>
+            <span>Sistema</span>
+            <span class="arrow">▶</span>
         </button>
+        <div class="submenu" id="submenuSistema">
+            <button class="nav-item nav-child" id="navGerenciar" data-view="gerenciar" style="display:none" onclick="window.alternarVisao('gerenciar')">
+                <span>🏨</span>
+                <span>Configurações</span>
+            </button>
+            <button class="nav-item nav-child" id="navUsuarios" data-view="usuarios" style="display:none" onclick="window.alternarVisao('usuarios')">
+                <span>👥</span>
+                <span>Usuários</span>
+            </button>
+            <button class="nav-item nav-child" id="navAPI" data-view="api" style="display:none" onclick="window.alternarVisao('api')">
+                <span>🔑</span>
+                <span>API</span>
+            </button>
+        </div>
+
+        <button class="nav-parent" id="navParentFerramentas" onclick="window.toggleSubmenu(this)">
+            <span>🧰</span>
+            <span>Ferramentas</span>
+            <span class="arrow">▶</span>
+        </button>
+        <div class="submenu" id="submenuFerramentas">
+            <button class="nav-item nav-child" data-view="encurtador" onclick="window.alternarVisao('encurtador')">
+                <span>🔗</span>
+                <span>Encurtador de Links</span>
+            </button>
+            <button class="nav-item nav-child" data-view="nps" onclick="window.alternarVisao('nps')">
+                <span>📝</span>
+                <span>Pesquisa NPS</span>
+            </button>
+        </div>
 
         <div class="sidebar-footer">
             <button class="topbar-btn" id="temaBtn" onclick="window.toggleTema()">🌙 Noturno</button>
@@ -2139,12 +2197,16 @@
         var label = role === 'superadmin' ? 'Super Admin' : role === 'admin' ? 'Administrador' : 'Atendimento';
         document.getElementById('userRole').textContent = label;
         var acessoTotal = role === 'superadmin' || role === 'admin';
+        document.getElementById('navRelatorios').style.display = '';
         document.getElementById('navGerenciar').style.display = '';
         document.getElementById('navAPI').style.display = acessoTotal ? '' : 'none';
         document.getElementById('navUsuarios').style.display = acessoTotal ? '' : 'none';
-        document.getElementById('navRelatorios').style.display = acessoTotal ? '' : 'none';
-        document.getElementById('navEncurtador').style.display = '';
-        document.getElementById('navNps').style.display = '';
+        // Esconde Sistema parent se nao tiver nenhum filho visivel
+        var temFilhoSistema = ['navGerenciar','navUsuarios','navAPI'].some(function(id) {
+            return document.getElementById(id).style.display !== 'none';
+        });
+        document.getElementById('navParentSistema').style.display = temFilhoSistema ? '' : 'none';
+        document.getElementById('submenuSistema').style.display = temFilhoSistema ? '' : 'none';
         await iniciar();
     }
 
@@ -2626,8 +2688,19 @@
         if (window.innerWidth <= 768) {
             document.querySelector('.sidebar').classList.remove('aberta');
         }
-        document.querySelectorAll('.nav-item').forEach(b => { b.className = 'nav-item' + (b.dataset.view === v ? ' ativo' : ''); });
-        document.getElementById('pageTitle').innerHTML = {'calendario':'📅 <span>Calendário</span>','tabela':'📋 <span>Tabela</span>','gerenciar':'🏨 <span>Configurar</span>','relatorios':'📊 <span>Relatórios</span>','api':'🔑 <span>API</span>','usuarios':'👥 <span>Usuários</span>','encurtador':'🔗 <span>Encurtador</span>','nps':'📝 <span>NPS</span>'} [v] || '';
+        document.querySelectorAll('.nav-item').forEach(b => { b.className = 'nav-item nav-child' + (b.dataset.view === v ? ' ativo' : ''); });
+        // Expandir submenu pai quando um filho for ativado
+        document.querySelectorAll('.nav-parent').forEach(function(p) {
+            var sub = p.nextElementSibling;
+            if (sub && sub.classList.contains('submenu')) {
+                var temAtivo = sub.querySelector('.nav-item.ativo');
+                if (temAtivo) {
+                    p.classList.add('aberto');
+                    sub.classList.add('aberto');
+                }
+            }
+        });
+        document.getElementById('pageTitle').innerHTML = {'calendario':'📅 <span>Calendário</span>','tabela':'📋 <span>Tabela</span>','gerenciar':'🏨 <span>Configurações</span>','relatorios':'📊 <span>Relatórios</span>','api':'🔑 <span>API</span>','usuarios':'👥 <span>Usuários</span>','encurtador':'🔗 <span>Encurtador de Links</span>','nps':'📝 <span>Pesquisa NPS</span>'} [v] || '';
         ['Calendario', 'Tabela', 'Gerenciar', 'Relatorios', 'API', 'Usuarios', 'Encurtador', 'Nps'].forEach(function(n) {
             const e = document.getElementById('content' + n);
             if (!e) return;
@@ -3343,6 +3416,14 @@
         a.href = URL.createObjectURL(b);
         a.download = `reservas_${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
+    }
+
+    window.toggleSubmenu = function(btn) {
+        btn.classList.toggle('aberto');
+        var sub = btn.nextElementSibling;
+        if (sub && sub.classList.contains('submenu')) {
+            sub.classList.toggle('aberto');
+        }
     }
 
     window.toggleSidebar = function() {
