@@ -1805,7 +1805,7 @@
                 <span>🔗</span>
                 <span>Encurtador de Links</span>
             </button>
-            <button class="nav-item nav-child" data-view="nps" onclick="window.alternarVisao('nps')">
+            <button class="nav-item nav-child" id="navNps" data-view="nps" onclick="window.alternarVisao('nps')">
                 <span>📝</span>
                 <span>Pesquisa NPS</span>
             </button>
@@ -2201,12 +2201,15 @@
         document.getElementById('navGerenciar').style.display = '';
         document.getElementById('navAPI').style.display = acessoTotal ? '' : 'none';
         document.getElementById('navUsuarios').style.display = acessoTotal ? '' : 'none';
-        // Esconde Sistema parent se nao tiver nenhum filho visivel
         var temFilhoSistema = ['navGerenciar','navUsuarios','navAPI'].some(function(id) {
             return document.getElementById(id).style.display !== 'none';
         });
         document.getElementById('navParentSistema').style.display = temFilhoSistema ? '' : 'none';
         document.getElementById('submenuSistema').style.display = temFilhoSistema ? '' : 'none';
+        document.getElementById('navNps').style.display = acessoTotal ? '' : 'none';
+        var temFilhoFerramentas = true;
+        document.getElementById('navParentFerramentas').style.display = temFilhoFerramentas ? '' : 'none';
+        document.getElementById('submenuFerramentas').style.display = temFilhoFerramentas ? '' : 'none';
         await iniciar();
     }
 
