@@ -810,7 +810,24 @@
             }
             if (!userData.paymentId) {
                 var cpfBusca = cpfForcado || userData.cpf || localStorage.getItem('ultimo_cpf');
-                if (cpfBusca && db) {
+                var protocoloBusca = userData.protocolo || localStorage.getItem('ultimo_protocolo') || '';
+                if (protocoloBusca && db) {
+                    var q = await db.collection("reservas").where("protocolo", "==", protocoloBusca).limit(1).get();
+                    if (!q.empty) {
+                        reservaDocId = q.docs[0].id;
+                        var d = q.docs[0].data();
+                        if (d.payment_id) {
+                            userData.paymentId = d.payment_id;
+                            userData.cpf = d.cliente_cpf || cpfBusca;
+                            userData.motel = d.motel || '';
+                            userData.protocolo = d.protocolo || '';
+                            localStorage.setItem('ultimo_payment_id', d.payment_id);
+                            localStorage.setItem('ultimo_cpf', userData.cpf);
+                            localStorage.setItem('ultimo_motel', userData.motel);
+                            localStorage.setItem('ultimo_protocolo', userData.protocolo);
+                        }
+                    }
+                } else if (cpfBusca && db) {
                     var q = await db.collection("reservas").where("cliente_cpf", "==", cpfBusca).orderBy("criado_em", "desc").limit(1).get();
                     if (!q.empty) {
                         reservaDocId = q.docs[0].id;
@@ -852,8 +869,8 @@
                             var qP = await db.collection("reservas").where("payment_id", "==", userData.paymentId).limit(1).get();
                             if (!qP.empty) ref = qP.docs[0].ref;
                         }
-                        if (!ref && userData.cpf) {
-                            var q2 = await db.collection("reservas").where("cliente_cpf", "==", userData.cpf).orderBy("criado_em", "desc").limit(1).get();
+                        if (!ref && userData.protocolo) {
+                            var q2 = await db.collection("reservas").where("protocolo", "==", userData.protocolo).limit(1).get();
                             if (!q2.empty) ref = q2.docs[0].ref;
                         }
                         if (ref) await ref.update({ status: 'confirmado' }).catch(function(e){ console.warn("Falha ao atualizar status:", e); });

@@ -2829,13 +2829,21 @@
             const cor = dadosMotels[ev.motel]?.cor || '#999';
             const criado = ev.criado_em ? (function(d){ var dt=new Date(d); return ('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+' '+('0'+dt.getHours()).slice(-2)+':'+('0'+dt.getMinutes()).slice(-2); })(ev.criado_em) : '-';
             var labelPromo = ev.promocao === '30%_OFF' ? '🔥 -30%' : ev.promocao === '3h+3h' ? '⏱️ +3h' : ev.promocao === 'recepcao' ? '🏨' : '';
-            h += `<tr data-id="${ev.id}" style="cursor:pointer" onclick="window.verDetalhesReserva('${ev.id}')"><td><span class="status ${sc}">${sl}</span></td><td><span class="motel-tag" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${ev.motel || '-'}</span></td><td>${ev.suite || '-'}</td><td>${ev.cliente_nome || '-'}</td><td style="color:var(--text-tertiary);font-size:0.75rem">${ev.cliente_cpf || '-'}</td><td>${ev.data_reserva ? ev.data_reserva.split('-').reverse().join('/') : '-'}</td><td style="color:var(--text-secondary)">${ev.hora_chegada || ev.horaRes || '-'}</td><td style="font-weight:600">R$ ${ev.preco || 0}${labelPromo ? ' ' + labelPromo : ''}</td><td style="font-size:.8rem">${ev.duracao || '-'}</td><td style="font-size:0.75rem;color:var(--text-tertiary)">${criado}</td><td style="font-size:0.7rem;color:var(--text-tertiary);letter-spacing:0.5px;font-family:monospace">${ev.protocolo || '-'}</td><td><button class="btn-icon confirm" onclick="event.stopPropagation();window.alterarStatus('${ev.id}','confirmado')">✓</button><button class="btn-icon cancel" onclick="event.stopPropagation();window.alterarStatus('${ev.id}','cancelado')" style="margin-left:4px">✕</button><button class="btn-icon delete" onclick="event.stopPropagation();window.excluirReserva('${ev.id}')" style="margin-left:4px" title="Excluir">🗑</button></td></tr>`;
+            var btnConfirmar = ev.status === 'pendente_cartao' ? '<button class="btn-icon confirm" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'confirmado\')">✓</button>' : '';
+            h += `<tr data-id="${ev.id}" style="cursor:pointer" onclick="window.verDetalhesReserva('${ev.id}')"><td><span class="status ${sc}">${sl}</span></td><td><span class="motel-tag" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${ev.motel || '-'}</span></td><td>${ev.suite || '-'}</td><td>${ev.cliente_nome || '-'}</td><td style="color:var(--text-tertiary);font-size:0.75rem">${ev.cliente_cpf || '-'}</td><td>${ev.data_reserva ? ev.data_reserva.split('-').reverse().join('/') : '-'}</td><td style="color:var(--text-secondary)">${ev.hora_chegada || ev.horaRes || '-'}</td><td style="font-weight:600">R$ ${ev.preco || 0}${labelPromo ? ' ' + labelPromo : ''}</td><td style="font-size:.8rem">${ev.duracao || '-'}</td><td style="font-size:0.75rem;color:var(--text-tertiary)">${criado}</td><td style="font-size:0.7rem;color:var(--text-tertiary);letter-spacing:0.5px;font-family:monospace">${ev.protocolo || '-'}</td><td>${btnConfirmar}<button class="btn-icon cancel" onclick="event.stopPropagation();window.alterarStatus('${ev.id}','cancelado')" style="margin-left:4px">✕</button><button class="btn-icon delete" onclick="event.stopPropagation();window.excluirReserva('${ev.id}')" style="margin-left:4px" title="Excluir">🗑</button></td></tr>`;
         });
         h += '</tbody></table>';
         w.innerHTML = h;
     }
 
     window.alterarStatus = async function(id, s) {
+        if (s === 'confirmado') {
+            var r = reservas.find(function(x) { return x.id === id; });
+            if (r && r.status === 'aguardando_pagamento') {
+                alert('Confirmação manual não permitida para PIX. A reserva deve ser confirmada pelo Asaas.');
+                return;
+            }
+        }
         try {
             await updateDoc(doc(db, "reservas", id), { status: s });
             await carregarReservas();
