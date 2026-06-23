@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Moteis Fortaleza - Painel v06</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -293,6 +293,57 @@
             color: var(--accent-secondary);
             font-weight: 600;
         }
+
+        .nav-parent {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            transition: 0.2s;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+        .nav-parent:hover {
+            background: var(--accent-light);
+            color: var(--accent-primary);
+            transform: translateX(4px);
+        }
+        .nav-parent .arrow {
+            margin-left: auto;
+            font-size: .7rem;
+            transition: transform .2s;
+        }
+        .nav-parent.aberto .arrow {
+            transform: rotate(90deg);
+        }
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height .3s ease;
+        }
+        .submenu.aberto {
+            max-height: 300px;
+        }
+        .nav-child {
+            padding-left: 40px !important;
+            font-size: 0.8rem !important;
+        }
+
+        .icon-picker {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 36px; height: 36px; border-radius: 8px; cursor: pointer;
+            font-size: 1.2rem; border: 2px solid var(--border); transition: all .15s;
+            background: var(--bg-secondary);
+        }
+        .icon-picker:hover { border-color: var(--accent-primary); }
+        .icon-picker.selected { border-color: var(--accent-primary); background: var(--accent-primary); }
 
         .sidebar-footer {
             margin-top: auto;
@@ -1057,6 +1108,74 @@
             border-radius: 50%;
         }
 
+        /* Agenda */
+        .agenda-container {
+            overflow: auto;
+            max-height: 500px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-main);
+        }
+        .agenda-grid {
+            display: table;
+            width: 100%;
+            border-collapse: collapse;
+            font-size: .75rem;
+        }
+        .agenda-grid th {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            z-index: 2;
+            padding: 8px 6px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-primary);
+            min-width: 90px;
+        }
+        .agenda-grid th:first-child {
+            min-width: 50px;
+            z-index: 3;
+            left: 0;
+        }
+        .agenda-grid td {
+            border: 1px solid var(--border-color);
+            padding: 4px;
+            vertical-align: top;
+            height: 36px;
+            position: relative;
+        }
+        .agenda-grid td.hora-label {
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            font-size: .7rem;
+            white-space: nowrap;
+            width: 50px;
+            position: sticky;
+            left: 0;
+            background: var(--bg-card);
+            z-index: 1;
+        }
+        .agenda-block {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            border-radius: 4px;
+            padding: 2px 4px;
+            font-size: .65rem;
+            font-weight: 600;
+            overflow: hidden;
+            cursor: pointer;
+            z-index: 1;
+            border: 1px solid rgba(255,255,255,.2);
+        }
+        .agenda-block:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
+        }
+
         .save-feedback {
             position: fixed;
             bottom: 32px;
@@ -1657,10 +1776,14 @@
         .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:1000; }
         .modal-overlay.mostrar { display:flex; }
         .modal-box { background:var(--bg-card); border:1px solid var(--border-color); border-radius:20px; padding:32px; width:420px; max-width:94vw; box-shadow:0 16px 48px rgba(0,0,0,.3); text-align:center; }
-        .modal-box h3 { font-size:1.2rem; margin-bottom:6px; color:var(--text-primary); }
-        .modal-box p { color:var(--text-secondary); font-size:.85rem; margin-bottom:20px; }
-        .modal-box input,.modal-box select { width:100%; padding:12px 16px; border:1px solid var(--border-color); border-radius:10px; background:var(--bg-main); color:var(--text-primary); font-size:.95rem; outline:none; margin-bottom:12px; }
-        .modal-box input:focus,.modal-box select:focus { border-color:var(--accent-primary); }
+        .modal-box-wide { background:var(--bg-card); border:1px solid var(--border-color); border-radius:20px; padding:32px; width:680px; max-width:94vw; box-shadow:0 16px 48px rgba(0,0,0,.3); }
+        .modal-box h3, .modal-box-wide h3 { font-size:1.2rem; margin-bottom:6px; color:var(--text-primary); }
+        .modal-box p, .modal-box-wide p { color:var(--text-secondary); font-size:.85rem; margin-bottom:20px; }
+        .modal-box input,.modal-box select, .modal-box-wide input, .modal-box-wide select { width:100%; padding:12px 16px; border:1px solid var(--border-color); border-radius:10px; background:var(--bg-main); color:var(--text-primary); font-size:.95rem; outline:none; margin-bottom:12px; }
+        .modal-box input:focus,.modal-box select:focus, .modal-box-wide input:focus, .modal-box-wide select:focus { border-color:var(--accent-primary); }
+        .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px 24px; text-align:left; }
+        .detail-grid .detail-label { font-size:.75rem; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:.5px; }
+        .detail-grid .detail-value { font-size:.9rem; color:var(--text-primary); font-weight:500; word-break:break-all; }
         .modal-actions { display:flex; gap:10px; margin-top:8px; }
         .modal-actions button { flex:1; padding:12px; border:none; border-radius:10px; font-weight:600; font-size:.9rem; cursor:pointer; transition:.2s; }
         .modal-btn-primary { background:var(--accent-primary); color:#fff; }
@@ -1720,22 +1843,46 @@
             <span>📋</span>
             <span>Tabela</span>
         </button>
-        <button class="nav-item" id="navGerenciar" data-view="gerenciar" style="display:none" onclick="window.alternarVisao('gerenciar')">
-            <span>🏨</span>
-            <span>Configurar</span>
-        </button>
-        <button class="nav-item" id="navAPI" data-view="api" style="display:none" onclick="window.alternarVisao('api')">
-            <span>🔑</span>
-            <span>API</span>
-        </button>
-        <button class="nav-item" id="navUsuarios" data-view="usuarios" style="display:none" onclick="window.alternarVisao('usuarios')">
-            <span>👥</span>
-            <span>Usuários</span>
-        </button>
         <button class="nav-item" id="navRelatorios" data-view="relatorios" onclick="window.alternarVisao('relatorios')">
             <span>📊</span>
             <span>Relatórios</span>
         </button>
+
+        <button class="nav-parent" id="navParentSistema" onclick="window.toggleSubmenu(this)">
+            <span>⚙️</span>
+            <span>Sistema</span>
+            <span class="arrow">▶</span>
+        </button>
+        <div class="submenu" id="submenuSistema">
+            <button class="nav-item nav-child" id="navGerenciar" data-view="gerenciar" style="display:none" onclick="window.alternarVisao('gerenciar')">
+                <span>🏨</span>
+                <span>Configurações</span>
+            </button>
+            <button class="nav-item nav-child" id="navUsuarios" data-view="usuarios" style="display:none" onclick="window.alternarVisao('usuarios')">
+                <span>👥</span>
+                <span>Usuários</span>
+            </button>
+            <button class="nav-item nav-child" id="navAPI" data-view="api" style="display:none" onclick="window.alternarVisao('api')">
+                <span>🔑</span>
+                <span>API</span>
+            </button>
+        </div>
+
+        <button class="nav-parent" id="navParentFerramentas" onclick="window.toggleSubmenu(this)">
+            <span>🧰</span>
+            <span>Ferramentas</span>
+            <span class="arrow">▶</span>
+        </button>
+        <div class="submenu" id="submenuFerramentas">
+            <button class="nav-item nav-child" data-view="encurtador" onclick="window.alternarVisao('encurtador')">
+                <span>🔗</span>
+                <span>Encurtador de Links</span>
+            </button>
+            <button class="nav-item nav-child" id="navNps" data-view="nps" onclick="window.alternarVisao('nps')">
+                <span>📝</span>
+                <span>Pesquisa NPS <span style="font-size:.6rem;background:var(--yellow);color:#000;padding:2px 6px;border-radius:8px;font-weight:600">EM BREVE</span></span>
+            </button>
+        </div>
 
         <div class="sidebar-footer">
             <button class="topbar-btn" id="temaBtn" onclick="window.toggleTema()">🌙 Noturno</button>
@@ -1821,6 +1968,7 @@
                         <button class="cal-btn" onclick="window.mudarMes(-1)">← Anterior</button>
                         <button class="cal-btn" onclick="window.mudarMes(0)">Hoje</button>
                         <button class="cal-btn active" onclick="window.mudarMes(1)">Próximo →</button>
+                        <button class="cal-btn" onclick="window.mostrarAgenda()">📋 Agenda</button>
                     </div>
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
@@ -1888,6 +2036,26 @@
                     <button class="btn-salvar" onclick="window.adicionarUsuario()">➕ Novo Usuário</button>
                 </div>
                 <div id="usuariosWrapper"></div>
+            </div>
+
+            <!-- ENCURTADOR -->
+            <div class="content-relatorios" id="contentEncurtador">
+                <div class="gerenciar-header">
+                    <h2>🔗 Encurtador</h2>
+                    <button class="btn-salvar" onclick="window.abrirModalLink()">➕ Novo Link</button>
+                </div>
+                <div class="rel-filtros" id="encurtadorFiltros"></div>
+                <div id="encurtadorWrapper"></div>
+            </div>
+
+            <!-- NPS -->
+            <div class="content-relatorios" id="contentNps">
+                <div class="gerenciar-header">
+                    <h2>📝 Pesquisa NPS</h2>
+                    <button class="btn-salvar" onclick="window.configurarNps()">⚙️ Configurar</button>
+                </div>
+                <div class="rel-filtros" id="npsFiltros"></div>
+                <div id="npsWrapper"></div>
             </div>
         </div>
     </div>
@@ -2111,10 +2279,19 @@
         var label = role === 'superadmin' ? 'Super Admin' : role === 'admin' ? 'Administrador' : 'Atendimento';
         document.getElementById('userRole').textContent = label;
         var acessoTotal = role === 'superadmin' || role === 'admin';
+        document.getElementById('navRelatorios').style.display = '';
         document.getElementById('navGerenciar').style.display = '';
         document.getElementById('navAPI').style.display = acessoTotal ? '' : 'none';
         document.getElementById('navUsuarios').style.display = acessoTotal ? '' : 'none';
-        document.getElementById('navRelatorios').style.display = acessoTotal ? '' : 'none';
+        var temFilhoSistema = ['navGerenciar','navUsuarios','navAPI'].some(function(id) {
+            return document.getElementById(id).style.display !== 'none';
+        });
+        document.getElementById('navParentSistema').style.display = temFilhoSistema ? '' : 'none';
+        document.getElementById('submenuSistema').style.display = temFilhoSistema ? '' : 'none';
+        document.getElementById('navNps').style.display = role === 'superadmin' ? '' : 'none';
+        var temFilhoFerramentas = true;
+        document.getElementById('navParentFerramentas').style.display = temFilhoFerramentas ? '' : 'none';
+        document.getElementById('submenuFerramentas').style.display = temFilhoFerramentas ? '' : 'none';
         await iniciar();
     }
 
@@ -2431,7 +2608,9 @@
         document.querySelectorAll('.motel-filter-btn').forEach(btn => {
             btn.classList.toggle('active', btn.dataset.motel === motel);
         });
-        renderCalendario();
+        var sel = document.getElementById('filterMotel');
+        if (sel) sel.value = motel === 'todos' ? '' : motel;
+        window.aplicarFiltros();
     }
 
     function popularFiltrosTabela() {
@@ -2548,6 +2727,95 @@
         window.alternarVisao('tabela');
     }
 
+    window.mostrarAgenda = function(data) {
+        if (!data) {
+            var hoje = new Date();
+            data = hoje.getFullYear() + '-' + String(hoje.getMonth()+1).padStart(2,'0') + '-' + String(hoje.getDate()).padStart(2,'0');
+        }
+        var reservasDia = reservas.filter(function(r) { return r.data_reserva === data && r.status !== 'cancelado'; });
+        if (!reservasDia.length) {
+            var dStr = data.split('-').reverse().join('/');
+            alert('Nenhuma reserva ativa para ' + dStr + '.');
+            return;
+        }
+        // Agrupar por motel, depois por suite
+        var grupos = {};
+        reservasDia.forEach(function(r) {
+            if (!grupos[r.motel]) grupos[r.motel] = {};
+            if (!grupos[r.motel][r.suite]) grupos[r.motel][r.suite] = [];
+            grupos[r.motel][r.suite].push(r);
+        });
+
+        function parseHora(str) {
+            if (!str) return 0;
+            var p = str.split(':');
+            return parseInt(p[0]) + parseInt(p[1]) / 60;
+        }
+
+        function parseDuracao(str) {
+            if (!str) return 3;
+            var m = str.match(/(\d+)h/);
+            return m ? parseInt(m[1]) : 3;
+        }
+
+        var horas = [];
+        for (var h = 0; h < 24; h++) horas.push(h);
+
+        var hCompleto = '<div style="padding:16px;max-width:95vw">';
+        hCompleto += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">';
+        hCompleto += '<h3 style="margin:0">📋 Agenda — ' + data.split('-').reverse().join('/') + '</h3>';
+        hCompleto += '<button class="btn-salvar" onclick="window.fecharModal()" style="padding:8px 16px;font-size:.8rem">Fechar</button>';
+        hCompleto += '</div>';
+
+        Object.keys(grupos).forEach(function(motel) {
+            var suites = Object.keys(grupos[motel]);
+            var corMotel = dadosMotels[motel]?.cor || '#999';
+            hCompleto += '<h4 style="margin:12px 0 6px;color:' + corMotel + '">' + (dadosMotels[motel]?.icone || '🏨') + ' ' + motel + '</h4>';
+            hCompleto += '<div class="agenda-container"><table class="agenda-grid">';
+            hCompleto += '<thead><tr><th></th>';
+            suites.forEach(function(s) { hCompleto += '<th>' + s + '</th>'; });
+            hCompleto += '</tr></thead><tbody>';
+
+            horas.forEach(function(h) {
+                var hh = String(h).padStart(2,'0') + ':00';
+                hCompleto += '<tr><td class="hora-label">' + hh + '</td>';
+                suites.forEach(function(suite) {
+                    var reservasSuite = grupos[motel][suite];
+                    var bloco = '';
+                    reservasSuite.forEach(function(r) {
+                        var inicio = Math.floor(parseHora(r.hora_chegada || r.horaRes || '00:00'));
+                        var duracao = parseDuracao(r.duracao);
+                        var fim = inicio + duracao;
+                        if (h >= inicio && h < fim) {
+                            var horasRest = 24 - h;
+                            var alturaReal = Math.min(duracao, fim - h, horasRest);
+                            var topReal = (h === inicio) ? 2 : 0;
+                            if (h === inicio) {
+                                var cls = r.status === 'confirmado' ? '' : r.status === 'aguardando_pagamento' ? 'background:var(--yellow)' : 'opacity:.7';
+                                var corStatus = r.status === 'confirmado' ? corMotel : r.status === 'pendente_cartao' ? '#9b59b6' : r.status === 'aguardando_pagamento' ? '#f39c12' : '#999';
+                                bloco += '<div class="agenda-block" style="top:' + topReal + 'px;height:' + (alturaReal * 36 - 4) + 'px;background:' + corStatus + ';color:#fff" onclick="event.stopPropagation();window.verDetalhesReserva(\'' + r.id + '\')">';
+                                bloco += '<div style="font-weight:700">' + (r.cliente_nome || '?') + '</div>';
+                                bloco += '<div>R$ ' + r.preco + ' · ' + r.duracao + '</div>';
+                                bloco += '</div>';
+                            }
+                        }
+                    });
+                    hCompleto += '<td>' + (bloco || '') + '</td>';
+                });
+                hCompleto += '</tr>';
+            });
+
+            hCompleto += '</tbody></table></div>';
+        });
+        hCompleto += '</div>';
+
+        document.getElementById('modalFormBox').innerHTML = hCompleto;
+        document.getElementById('modalFormBox').className = 'modal-box-wide';
+        document.getElementById('modalFormBox').style.display = '';
+        document.getElementById('modalResultBox').style.display = 'none';
+        document.getElementById('modalOverlay').classList.add('mostrar');
+    }
+
     // ====== FILTROS ======
     window.aplicarFiltros = function() { popularFiltrosTabela(); renderTabela(); renderCalendario(); }
 
@@ -2555,14 +2823,15 @@
     function renderTabela() {
         const w = document.getElementById('tabelaWrapper'), r = getFiltradas();
         if (!r.length) { w.innerHTML = '<div class="empty"><p style="font-size:2rem;margin-bottom:12px">📭</p><p>Nenhuma reserva encontrada</p></div>'; return; }
-        let h = '<table><thead><tr><th>Status</th><th>Motel</th><th>Suíte</th><th>Cliente</th><th>CPF</th><th>Data</th><th>Horário</th><th>Criação</th><th>Protocolo</th><th>Ações</th></tr></thead><tbody>';
+        let h = '<table><thead><tr><th>Status</th><th>Motel</th><th>Suíte</th><th>Cliente</th><th>CPF</th><th>Data</th><th>Horário</th><th>Valor</th><th>Duração</th><th>Criação</th><th>Protocolo</th><th>Ações</th></tr></thead><tbody>';
         r.forEach(ev => {
             const sc = ev.status === 'confirmado' ? 'status-confirmado' : ev.status === 'aguardando_pagamento' ? 'status-aguardando' : ev.status === 'pendente_cartao' ? 'status-aguardando' : ev.status === 'cancelado' ? 'status-cancelado' : 'status-pendente';
             const sl = ev.status === 'confirmado' ? 'Confirmado' : ev.status === 'aguardando_pagamento' ? 'Aguardando Pagto' : ev.status === 'pendente_cartao' ? 'Pendente Cartão' : ev.status === 'cancelado' ? 'Cancelado' : 'Pendente';
             const cor = dadosMotels[ev.motel]?.cor || '#999';
             const criado = ev.criado_em ? (function(d){ var dt=new Date(d); return ('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+' '+('0'+dt.getHours()).slice(-2)+':'+('0'+dt.getMinutes()).slice(-2); })(ev.criado_em) : '-';
-            var btnConfirmar = ev.status === 'pendente_cartao' ? '<button class="btn-icon confirm" onclick="window.alterarStatus(\'' + ev.id + '\',\'confirmado\')">✓</button>' : '';
-            h += `<tr><td><span class="status ${sc}">${sl}</span></td><td><span class="motel-tag" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${ev.motel || '-'}</span></td><td>${ev.suite || '-'}</td><td>${ev.cliente_nome || '-'}</td><td style="color:var(--text-tertiary);font-size:0.75rem">${ev.cliente_cpf || '-'}</td><td>${ev.data_reserva ? ev.data_reserva.split('-').reverse().join('/') : '-'}</td><td style="color:var(--text-secondary)">${ev.hora_chegada || ev.horaRes || '-'}</td><td style="font-size:0.75rem;color:var(--text-tertiary)">${criado}</td><td style="font-size:0.7rem;color:var(--text-tertiary);letter-spacing:0.5px;font-family:monospace">${ev.protocolo || '-'}</td><td>${btnConfirmar}<button class="btn-icon cancel" onclick="window.alterarStatus('${ev.id}','cancelado')" style="margin-left:6px">✕</button><button class="btn-icon delete" onclick="window.excluirReserva('${ev.id}')" style="margin-left:6px" title="Excluir">🗑</button></td></tr>`;
+            var labelPromo = ev.promocao === '30%_OFF' ? '🔥 -30%' : ev.promocao === '3h+3h' ? '⏱️ +3h' : ev.promocao === 'recepcao' ? '🏨' : '';
+            var btnConfirmar = ev.status === 'pendente_cartao' ? '<button class="btn-icon confirm" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'confirmado\')">✓</button>' : '';
+            h += `<tr data-id="${ev.id}" style="cursor:pointer" onclick="window.verDetalhesReserva('${ev.id}')"><td><span class="status ${sc}">${sl}</span></td><td><span class="motel-tag" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${ev.motel || '-'}</span></td><td>${ev.suite || '-'}</td><td>${ev.cliente_nome || '-'}</td><td style="color:var(--text-tertiary);font-size:0.75rem">${ev.cliente_cpf || '-'}</td><td>${ev.data_reserva ? ev.data_reserva.split('-').reverse().join('/') : '-'}</td><td style="color:var(--text-secondary)">${ev.hora_chegada || ev.horaRes || '-'}</td><td style="font-weight:600">R$ ${ev.preco || 0}${labelPromo ? ' ' + labelPromo : ''}</td><td style="font-size:.8rem">${ev.duracao || '-'}</td><td style="font-size:0.75rem;color:var(--text-tertiary)">${criado}</td><td style="font-size:0.7rem;color:var(--text-tertiary);letter-spacing:0.5px;font-family:monospace">${ev.protocolo || '-'}</td><td>${btnConfirmar}<button class="btn-icon cancel" onclick="event.stopPropagation();window.alterarStatus('${ev.id}','cancelado')" style="margin-left:4px">✕</button><button class="btn-icon delete" onclick="event.stopPropagation();window.excluirReserva('${ev.id}')" style="margin-left:4px" title="Excluir">🗑</button></td></tr>`;
         });
         h += '</tbody></table>';
         w.innerHTML = h;
@@ -2588,6 +2857,10 @@
     }
 
     window.excluirReserva = async function(id) {
+        if (userRole !== 'superadmin' && userRole !== 'admin') {
+            alert('Apenas administradores podem excluir reservas.');
+            return;
+        }
         if (!confirm("Tem certeza que deseja excluir permanentemente esta reserva?")) return;
         try {
             await deleteDoc(doc(db, "reservas", id));
@@ -2600,14 +2873,80 @@
         }
     }
 
+    window.verDetalhesReserva = function(id) {
+        var r = reservas.find(function(x) { return x.id === id; });
+        if (!r) return;
+        var labelPromo = r.promocao === '30%_OFF' ? '🔥 30% de desconto' :
+                         r.promocao === '3h+3h' ? '⏱️ +3 horas grátis' :
+                         r.promocao === 'recepcao' ? '🏨 Recepção' :
+                         (r.promocao && r.promocao !== 'nenhuma') ? r.promocao : 'Nenhuma';
+        var statusLabel = r.status === 'confirmado' ? '✅ Confirmado' :
+                          r.status === 'aguardando_pagamento' ? '⏳ Aguardando Pagto' :
+                          r.status === 'pendente_cartao' ? '💳 Pendente Cartão' :
+                          r.status === 'pendente_recepcao' ? '🏨 Pendente Recepção' :
+                          r.status === 'cancelado' ? '❌ Cancelado' : (r.status || '-');
+        var h = '<div style="padding:0">';
+        h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">';
+        h += '<h3 style="margin:0">📋 Detalhes da Reserva</h3>';
+        h += '<span style="font-size:.75rem;color:var(--text-tertiary)">ID: ' + (r.protocolo || r.id || '-') + '</span>';
+        h += '</div>';
+        h += '<div class="detail-grid">';
+        h += '<div><div class="detail-label">Cliente</div><div class="detail-value">' + (r.cliente_nome || '-') + '</div></div>';
+        h += '<div><div class="detail-label">CPF</div><div class="detail-value">' + (r.cliente_cpf || '-') + '</div></div>';
+        h += '<div><div class="detail-label">Motel</div><div class="detail-value">' + (r.motel || '-') + '</div></div>';
+        h += '<div><div class="detail-label">Suíte</div><div class="detail-value">' + (r.suite || '-') + '</div></div>';
+        h += '<div><div class="detail-label">Data</div><div class="detail-value">' + (r.data_reserva ? r.data_reserva.split('-').reverse().join('/') : '-') + '</div></div>';
+        h += '<div><div class="detail-label">Horário</div><div class="detail-value">' + (r.hora_chegada || r.horaRes || '-') + '</div></div>';
+        h += '<div><div class="detail-label">Duração</div><div class="detail-value">' + (r.duracao || '-') + '</div></div>';
+        h += '<div><div class="detail-label">Valor pago</div><div class="detail-value" style="font-weight:700;color:var(--green)">R$ ' + (r.preco || 0) + ',00</div></div>';
+        if (r.preco_original && Number(r.preco_original) !== Number(r.preco)) {
+            h += '<div><div class="detail-label">Valor original</div><div class="detail-value" style="text-decoration:line-through;color:var(--text-tertiary)">R$ ' + r.preco_original + ',00</div></div>';
+        }
+        h += '<div><div class="detail-label">Promoção</div><div class="detail-value">' + labelPromo + '</div></div>';
+        h += '<div><div class="detail-label">Protocolo</div><div class="detail-value" style="font-family:monospace;font-size:.8rem">' + (r.protocolo || '-') + '</div></div>';
+        h += '<div><div class="detail-label">Status</div><div class="detail-value">' + statusLabel + '</div></div>';
+        h += '<div><div class="detail-label">Origem</div><div class="detail-value">' + (r.origem || '-') + '</div></div>';
+        h += '</div>';
+        if (r.preco_original && Number(r.preco_original) !== Number(r.preco)) {
+            h += '<div style="margin-top:12px;padding:8px 12px;background:#f39c1215;border:1px solid #f39c1230;border-radius:8px;font-size:.8rem;color:#f39c12;text-align:center">💰 ' + labelPromo + '</div>';
+        }
+        h += '<div style="margin-top:16px;text-align:right"><button class="btn-salvar" onclick="window.fecharModal()">Fechar</button></div>';
+        h += '</div>';
+
+        document.getElementById('modalFormBox').innerHTML = h;
+        document.getElementById('modalFormBox').className = 'modal-box-wide';
+        document.getElementById('modalFormBox').style.display = '';
+        document.getElementById('modalResultBox').style.display = 'none';
+        document.getElementById('modalOverlay').classList.add('mostrar');
+    }
+
+    window.abrirModalLargo = function(conteudo) {
+        document.getElementById('modalFormBox').innerHTML = conteudo;
+        document.getElementById('modalFormBox').className = 'modal-box-wide';
+        document.getElementById('modalFormBox').style.display = '';
+        document.getElementById('modalResultBox').style.display = 'none';
+        document.getElementById('modalOverlay').classList.add('mostrar');
+    }
+
     window.alternarVisao = function(v) {
         // Fecha sidebar no mobile
         if (window.innerWidth <= 768) {
             document.querySelector('.sidebar').classList.remove('aberta');
         }
-        document.querySelectorAll('.nav-item').forEach(b => { b.className = 'nav-item' + (b.dataset.view === v ? ' ativo' : ''); });
-        document.getElementById('pageTitle').innerHTML = {'calendario':'📅 <span>Calendário</span>','tabela':'📋 <span>Tabela</span>','gerenciar':'🏨 <span>Configurar</span>','relatorios':'📊 <span>Relatórios</span>','api':'🔑 <span>API</span>','usuarios':'👥 <span>Usuários</span>'} [v] || '';
-        ['Calendario', 'Tabela', 'Gerenciar', 'Relatorios', 'API', 'Usuarios'].forEach(function(n) {
+        document.querySelectorAll('.nav-item').forEach(b => { b.className = 'nav-item nav-child' + (b.dataset.view === v ? ' ativo' : ''); });
+        // Expandir submenu pai quando um filho for ativado
+        document.querySelectorAll('.nav-parent').forEach(function(p) {
+            var sub = p.nextElementSibling;
+            if (sub && sub.classList.contains('submenu')) {
+                var temAtivo = sub.querySelector('.nav-item.ativo');
+                if (temAtivo) {
+                    p.classList.add('aberto');
+                    sub.classList.add('aberto');
+                }
+            }
+        });
+        document.getElementById('pageTitle').innerHTML = {'calendario':'📅 <span>Calendário</span>','tabela':'📋 <span>Tabela</span>','gerenciar':'🏨 <span>Configurações</span>','relatorios':'📊 <span>Relatórios</span>','api':'🔑 <span>API</span>','usuarios':'👥 <span>Usuários</span>','encurtador':'🔗 <span>Encurtador de Links</span>','nps':'📝 <span>Pesquisa NPS</span>'} [v] || '';
+        ['Calendario', 'Tabela', 'Gerenciar', 'Relatorios', 'API', 'Usuarios', 'Encurtador', 'Nps'].forEach(function(n) {
             const e = document.getElementById('content' + n);
             if (!e) return;
             var ativo = v === n.toLowerCase();
@@ -2616,14 +2955,17 @@
             else if (n === 'Gerenciar') e.className = 'content-gerenciar' + (ativo ? ' ativo' : '');
             else if (n === 'API') e.className = 'content-api' + (ativo ? ' ativo' : '');
             else if (n === 'Usuarios') e.className = 'content-usuarios' + (ativo ? ' ativo' : '');
+            else if (n === 'Encurtador' || n === 'Nps') e.className = 'content-relatorios' + (ativo ? ' ativo' : '');
             else e.className = 'content' + (ativo ? ' ativo' : '');
         });
         if (v === 'tabela') { popularFiltrosTabela(); renderTabela(); }
         if (v === 'relatorios') renderRelatorios();
         if (v === 'api') renderAPI();
         if (v === 'usuarios') renderUsuarios();
+        if (v === 'encurtador') renderEncurtador();
+        if (v === 'nps') renderNps();
         var topEls = document.querySelectorAll('.stats-container, .motel-filters');
-        topEls.forEach(function(el) { el.style.display = (v === 'relatorios' || v === 'gerenciar' || v === 'api' || v === 'usuarios') ? 'none' : ''; });
+        topEls.forEach(function(el) { el.style.display = (v === 'relatorios' || v === 'gerenciar' || v === 'api' || v === 'usuarios' || v === 'encurtador' || v === 'nps') ? 'none' : ''; });
     }
 
     // ====== GERENCIAR ======
@@ -2790,18 +3132,14 @@
     };
 
     window.adicionarUsuario = function() {
-        document.getElementById('modalEmail').value = '';
-        document.getElementById('modalNome').value = '';
-        document.getElementById('modalRole').value = 'funcionario';
+        document.getElementById('modalFormBox').className = 'modal-box';
+        document.getElementById('modalFormBox').innerHTML = '<h3 id="modalTitle">➕ Novo Usuário</h3><p id="modalSubtitle">Preencha os dados para criar o acesso</p><input type="email" id="modalEmail" placeholder="E-mail do usuário"><input type="text" id="modalNome" placeholder="Nome do usuário"><select id="modalRole"><option value="funcionario">Funcionário (Atendimento)</option><option value="admin">Admin</option></select><div class="modal-actions"><button class="modal-btn-secondary" onclick="window.fecharModal()">Cancelar</button><button class="modal-btn-primary" onclick="window.criarUsuario()">Criar</button></div>';
         document.getElementById('modalFormBox').style.display = '';
         document.getElementById('modalResultBox').style.display = 'none';
         document.getElementById('modalOverlay').classList.add('mostrar');
         setTimeout(function() { document.getElementById('modalEmail').focus(); }, 100);
     };
 
-    window.fecharModal = function() {
-        document.getElementById('modalOverlay').classList.remove('mostrar');
-    };
     document.getElementById('modalOverlay').addEventListener('click', function(e) {
         if (e.target === this) window.fecharModal();
     });
@@ -2972,6 +3310,7 @@
     window.fecharModal = function() {
         document.getElementById('modalOverlay').classList.remove('mostrar');
         document.getElementById('modalResetBox').style.display = 'none';
+        document.getElementById('modalFormBox').className = 'modal-box';
     };
 
     window.removerUserFirebase = async function(uid) {
@@ -2990,6 +3329,330 @@
         } catch(e) { console.warn(e); }
     };
 
+    // ====== ENCURTADOR ======
+    var motelEncurtadorSelecionado = null;
+
+    window.renderEncurtador = async function() {
+        var w = document.getElementById('encurtadorWrapper');
+        if (!w) return;
+        try {
+            var motelSnap = await getDocs(collection(db, "estabelecimentos"));
+            var moteis = motelSnap.docs.map(function(d) { return { id: d.id, ...d.data() }; });
+            if (!moteis.length) { w.innerHTML = '<p style="color:var(--text-tertiary)">Nenhum motel cadastrado.</p>'; return; }
+            if (!motelEncurtadorSelecionado || !moteis.some(function(m) { return m.id === motelEncurtadorSelecionado; })) {
+                motelEncurtadorSelecionado = moteis[0].id;
+            }
+            var filtrosHtml = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">';
+            filtrosHtml += '<label style="font-size:.8rem;color:var(--text-secondary)">Motel:</label>';
+            filtrosHtml += '<select id="selectMotelEncurtador" onchange="window.mudarMotelEncurtador(this.value)" class="filter-input" style="flex:1;min-width:150px">';
+            moteis.forEach(function(m) {
+                filtrosHtml += '<option value="' + m.id + '"' + (m.id === motelEncurtadorSelecionado ? ' selected' : '') + '>' + (m.nome || m.id) + '</option>';
+            });
+            filtrosHtml += '</select>';
+            var publicUrl = window.location.origin + '/link.html?id=' + motelEncurtadorSelecionado;
+            filtrosHtml += '<button class="btn-salvar" onclick="window.copiarTexto(\'' + publicUrl + '\')">📋 Copiar Link Público</button>';
+            filtrosHtml += '<button class="btn-salvar" onclick="window.abrirUrl(\'' + publicUrl + '\')">👁️ Pré-visualizar</button>';
+            filtrosHtml += '<button class="btn-salvar" onclick="window.abrirModalLink()">➕ Novo Link</button>';
+            filtrosHtml += '</div>';
+            document.getElementById('encurtadorFiltros').innerHTML = filtrosHtml;
+
+            var linksSnap = await getDocs(collection(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree"));
+            var links = linksSnap.docs.map(function(d) { return { id: d.id, ...d.data() }; });
+            links.sort(function(a, b) { return (a.ordem || 0) - (b.ordem || 0); });
+
+            var h = '';
+            if (!links.length) {
+                h = '<div style="padding:40px;text-align:center;color:var(--text-tertiary)">Nenhum link cadastrado. Clique em "➕ Novo Link" para adicionar.</div>';
+            } else {
+                h = '<div style="display:flex;flex-direction:column;gap:8px;margin-top:16px">';
+                links.forEach(function(link, idx) {
+                    var cor = link.ativo !== false ? 'var(--accent-primary)' : 'var(--text-tertiary)';
+                    h += '<div class="user-row" style="align-items:center;gap:8px;opacity:' + (link.ativo !== false ? 1 : 0.5) + '">';
+                    h += '<span style="font-size:1.2rem;cursor:grab">☰</span>';
+                    h += '<span style="font-size:1.4rem">' + (link.icon || '🔗') + '</span>';
+                    h += '<input class="unome" value="' + (link.title || '') + '" placeholder="Título" style="flex:1" data-linkid="' + link.id + '" data-campo="title" onchange="window.atualizarLinkCampo(this)">';
+                    h += '<input class="unome" value="' + (link.url || '') + '" placeholder="URL" style="flex:2" data-linkid="' + link.id + '" data-campo="url" onchange="window.atualizarLinkCampo(this)">';
+                    h += '<select style="padding:6px 8px;border-radius:6px;border:1px solid var(--border);background:var(--bg-secondary);color:var(--text-primary);font-size:.8rem" data-linkid="' + link.id + '" onchange="window.atualizarLinkCampo(this)">';
+                    var icons = ['🔗','🌐','📸','📱','💬','📞','📍','🎬','🎵','📝','🛒','💻','📧','👤','🏠','📄','🎯','📊','⭐','❤️'];
+                    icons.forEach(function(ic) {
+                        h += '<option value="' + ic + '"' + (link.icon === ic ? ' selected' : '') + '>' + ic + '</option>';
+                    });
+                    h += '</select>';
+                    h += '<label style="font-size:.75rem;display:flex;align-items:center;gap:4px;cursor:pointer"><input type="checkbox"' + (link.ativo !== false ? ' checked' : '') + ' onchange="window.toggleLinkAtivo(\'' + link.id + '\',this.checked)"> Ativo</label>';
+                    h += '<button class="udel" onclick="window.excluirLink(\'' + link.id + '\')" title="Excluir">✕</button>';
+                    h += '</div>';
+                });
+                h += '</div>';
+            }
+            w.innerHTML = h;
+        } catch(e) {
+            w.innerHTML = '<p style="color:var(--red)">Erro ao carregar links: ' + e.message + '</p>';
+        }
+    };
+
+    window.mudarMotelEncurtador = function(id) {
+        motelEncurtadorSelecionado = id;
+        renderEncurtador();
+    };
+
+    window.abrirModalLink = function(linkId) {
+        var h = '<div style="padding:24px;max-width:500px;margin:0 auto">';
+        h += '<h3 style="margin-bottom:16px">' + (linkId ? 'Editar Link' : 'Novo Link') + '</h3>';
+        h += '<div style="display:flex;flex-direction:column;gap:12px">';
+        h += '<input id="linkFormTitle" class="filter-input" placeholder="Título (ex: Instagram)" style="width:100%">';
+        h += '<input id="linkFormUrl" class="filter-input" placeholder="URL (ex: https://instagram.com/..." style="width:100%">';
+        h += '<div><label style="font-size:.8rem;color:var(--text-secondary);display:block;margin-bottom:4px">Ícone:</label>';
+        h += '<div style="display:flex;gap:6px;flex-wrap:wrap" id="linkFormIcons">';
+        var icons = ['🔗','🌐','📸','📱','💬','📞','📍','🎬','🎵','📝','🛒','💻','📧','👤','🏠','📄','🎯','📊','⭐','❤️'];
+        icons.forEach(function(ic, i) {
+            h += '<span class="icon-picker' + (i === 0 ? ' selected' : '') + '" data-icon="' + ic + '" onclick="window.selecionarIconeLink(this)">' + ic + '</span>';
+        });
+        h += '</div></div>';
+        h += '<div style="display:flex;gap:8px;margin-top:8px">';
+        h += '<button class="btn-salvar" onclick="window.salvarLink(\'' + (linkId || '') + '\')">💾 Salvar</button>';
+        h += '<button class="btn-salvar" style="background:var(--bg-tertiary);color:var(--text-secondary)" onclick="window.fecharModal()">Cancelar</button>';
+        h += '</div></div></div>';
+
+        document.getElementById('modalFormBox').className = 'modal-box';
+        document.getElementById('modalFormBox').innerHTML = h;
+        document.getElementById('modalFormBox').style.display = '';
+        document.getElementById('modalResultBox').style.display = 'none';
+        document.getElementById('modalOverlay').classList.add('mostrar');
+        setTimeout(function() { document.getElementById('linkFormTitle').focus(); }, 100);
+    };
+
+    window.selecionarIconeLink = function(el) {
+        document.querySelectorAll('.icon-picker').forEach(function(i) { i.classList.remove('selected'); });
+        el.classList.add('selected');
+    };
+
+    window.salvarLink = async function(linkId) {
+        var title = document.getElementById('linkFormTitle').value.trim();
+        var url = document.getElementById('linkFormUrl').value.trim();
+        var icon = document.querySelector('.icon-picker.selected');
+        var iconVal = icon ? icon.dataset.icon : '🔗';
+        if (!title) { alert('Digite um título para o link.'); return; }
+        if (!url) { alert('Digite uma URL para o link.'); return; }
+
+        var linksRef = collection(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree");
+        try {
+            if (linkId) {
+                await updateDoc(doc(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree", linkId), { title: title, url: url, icon: iconVal });
+            } else {
+                var countSnap = await getDocs(linksRef);
+                var ordem = countSnap.docs.length;
+                await addDoc(linksRef, { title: title, url: url, icon: iconVal, ordem: ordem, ativo: true, createdAt: new Date().toISOString() });
+            }
+            window.fecharModal();
+            renderEncurtador();
+        } catch(e) {
+            alert('Erro ao salvar: ' + e.message);
+        }
+    };
+
+    window.atualizarLinkCampo = function(el) {
+        var linkId = el.dataset.linkid;
+        var campo = el.dataset.campo;
+        var valor = el.value;
+        updateDoc(doc(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree", linkId), { [campo]: valor }).catch(function(e) { console.warn(e); });
+    };
+
+    window.toggleLinkAtivo = function(id, ativo) {
+        updateDoc(doc(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree", id), { ativo: ativo }).catch(function(e) { console.warn(e); });
+    };
+
+    window.excluirLink = async function(id) {
+        if (!confirm('Excluir este link?')) return;
+        try {
+            await deleteDoc(doc(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree", id));
+            renderEncurtador();
+        } catch(e) {
+            alert('Erro ao excluir: ' + e.message);
+        }
+    };
+
+    // ====== NPS ======
+    var motelNpsSelecionado = null;
+
+    window.renderNps = async function() {
+        var w = document.getElementById('npsWrapper');
+        if (!w) return;
+        try {
+            var motelSnap = await getDocs(collection(db, "estabelecimentos"));
+            var moteis = motelSnap.docs.map(function(d) { return { id: d.id, ...d.data() }; });
+            if (!moteis.length) { w.innerHTML = '<p style="color:var(--text-tertiary)">Nenhum motel cadastrado.</p>'; return; }
+            if (!motelNpsSelecionado || !moteis.some(function(m) { return m.id === motelNpsSelecionado; })) {
+                motelNpsSelecionado = moteis[0].id;
+            }
+
+            // Config
+            var configSnap = await getDoc(doc(db, "estabelecimentos", motelNpsSelecionado, "config", "nps"));
+            var config = configSnap.exists() ? configSnap.data() : { ativo: true, titulo: 'Como foi sua experiência?', mensagem: 'Obrigado pela sua avaliação!' };
+
+            // Respostas
+            var respSnap = await getDocs(collection(db, "estabelecimentos", motelNpsSelecionado, "nps_respostas"));
+            var respostas = respSnap.docs.map(function(d) { return { id: d.id, ...d.data() }; });
+
+            // Calcular NPS
+            var total = respostas.length;
+            var promotores = respostas.filter(function(r) { return r.nota >= 9; }).length;
+            var detratores = respostas.filter(function(r) { return r.nota <= 6; }).length;
+            var npsScore = total > 0 ? Math.round(((promotores - detratores) / total) * 100) : 0;
+            var npsClass = npsScore >= 75 ? 'Excelente' : npsScore >= 50 ? 'Muito Bom' : npsScore >= 0 ? 'Razoável' : 'Ruim';
+
+            // Distribuição
+            var dist = [0,0,0,0,0,0,0,0,0,0,0];
+            respostas.forEach(function(r) { if (r.nota >= 0 && r.nota <= 10) dist[r.nota]++; });
+
+            var maxDist = Math.max.apply(null, dist);
+
+            var publicUrl = window.location.origin + '/nps.html?id=' + motelNpsSelecionado;
+
+            // Filtros
+            var filtrosHtml = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">';
+            filtrosHtml += '<label style="font-size:.8rem;color:var(--text-secondary)">Motel:</label>';
+            filtrosHtml += '<select id="selectMotelNps" onchange="window.mudarMotelNps(this.value)" class="filter-input" style="flex:1;min-width:150px">';
+            moteis.forEach(function(m) {
+                filtrosHtml += '<option value="' + m.id + '"' + (m.id === motelNpsSelecionado ? ' selected' : '') + '>' + (m.nome || m.id) + '</option>';
+            });
+            filtrosHtml += '</select>';
+            filtrosHtml += '<button class="btn-salvar" onclick="window.copiarTexto(\'' + publicUrl + '\')">📋 Copiar Link da Pesquisa</button>';
+            filtrosHtml += '<button class="btn-salvar" onclick="window.abrirUrl(\'' + publicUrl + '\')">👁️ Pré-visualizar</button>';
+            filtrosHtml += '<button class="btn-salvar" onclick="window.configurarNps()">⚙️ Configurar</button>';
+            filtrosHtml += '</div>';
+            document.getElementById('npsFiltros').innerHTML = filtrosHtml;
+
+            // Score card
+            var h = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0">';
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)">';
+            h += '<div style="font-size:2.5rem;font-weight:700;color:' + (npsScore >= 0 ? 'var(--green)' : 'var(--red)') + '">' + npsScore + '</div>';
+            h += '<div style="font-size:.8rem;color:var(--text-secondary)">NPS Score</div>';
+            h += '<div style="font-size:.85rem;margin-top:4px;color:var(--accent-primary)">' + npsClass + '</div>';
+            h += '</div>';
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)">';
+            h += '<div style="font-size:2rem;font-weight:700;color:var(--green)">' + promotores + '</div>';
+            h += '<div style="font-size:.8rem;color:var(--text-secondary)">Promotores (9-10)</div>';
+            h += '</div>';
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)">';
+            h += '<div style="font-size:2rem;font-weight:700;color:var(--yellow)">' + (total - promotores - detratores) + '</div>';
+            h += '<div style="font-size:.8rem;color:var(--text-secondary)">Neutros (7-8)</div>';
+            h += '</div>';
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)">';
+            h += '<div style="font-size:2rem;font-weight:700;color:var(--red)">' + detratores + '</div>';
+            h += '<div style="font-size:.8rem;color:var(--text-secondary)">Detratores (0-6)</div>';
+            h += '</div>';
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:20px;text-align:center;border:1px solid var(--border)">';
+            h += '<div style="font-size:2rem;font-weight:700;color:var(--text-primary)">' + total + '</div>';
+            h += '<div style="font-size:.8rem;color:var(--text-secondary)">Total de Respostas</div>';
+            h += '</div>';
+            h += '</div>';
+
+            // Chart
+            h += '<div style="background:var(--bg-secondary);border-radius:12px;padding:16px;border:1px solid var(--border);margin-bottom:16px">';
+            h += '<h4 style="margin:0 0 12px 0;font-size:.9rem">Distribuição das Notas</h4>';
+            h += '<div style="display:flex;align-items:flex-end;gap:4px;height:120px;padding:0 4px">';
+            for (var i = 0; i <= 10; i++) {
+                var pct = maxDist > 0 ? (dist[i] / maxDist) * 100 : 0;
+                var cor2 = i <= 6 ? 'var(--red)' : i <= 8 ? 'var(--yellow)' : 'var(--green)';
+                h += '<div style="flex:1;display:flex;flex-direction:column;align-items:center">';
+                h += '<div style="width:100%;background:' + cor2 + ';border-radius:4px 4px 0 0;height:' + Math.max(pct, dist[i] > 0 ? 8 : 0) + 'px;min-height:' + (dist[i] > 0 ? '8px' : '0px') + ';transition:height .3s"></div>';
+                h += '<span style="font-size:.65rem;margin-top:4px;color:var(--text-tertiary)">' + i + '</span>';
+                h += '<span style="font-size:.65rem;color:var(--text-secondary)">' + dist[i] + '</span>';
+                h += '</div>';
+            }
+            h += '</div></div>';
+
+            // Status config
+            h += '<div style="background:var(--bg-secondary);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between">';
+            h += '<div><span style="font-weight:600">Pesquisa:</span> ' + (config.ativo !== false ? '✅ Ativa' : '⏸️ Pausada') + '</div>';
+            h += '<div><span style="font-size:.8rem;color:var(--text-secondary)">Pergunta:</span> "' + (config.titulo || 'Como foi sua experiência?') + '"</div>';
+            h += '</div>';
+
+            // Respostas individuais
+            if (respostas.length) {
+                h += '<h4 style="margin:16px 0 8px 0;font-size:.9rem">Respostas (' + respostas.length + ')</h4>';
+                respostas.sort(function(a, b) { return (b.createdAt || '').localeCompare(a.createdAt || ''); });
+                respostas.forEach(function(r) {
+                    var rc = r.nota <= 6 ? 'var(--red)' : r.nota <= 8 ? 'var(--yellow)' : 'var(--green)';
+                    var dataStr = r.createdAt ? r.createdAt.split('T')[0].split('-').reverse().join('/') : '-';
+                    h += '<div class="user-row" style="align-items:center;gap:8px">';
+                    h += '<span style="font-size:1.2rem;font-weight:700;color:' + rc + ';min-width:30px;text-align:center">' + r.nota + '</span>';
+                    h += '<span style="flex:1;font-size:.85rem">' + (r.comentario || '<span style="color:var(--text-tertiary)">Sem comentário</span>') + '</span>';
+                    h += '<span style="font-size:.7rem;color:var(--text-tertiary)">' + dataStr + '</span>';
+                    h += '</div>';
+                });
+            } else {
+                h += '<div style="padding:24px;text-align:center;color:var(--text-tertiary)">Nenhuma resposta recebida ainda. Compartilhe o link da pesquisa com seus clientes.</div>';
+            }
+
+            w.innerHTML = h;
+        } catch(e) {
+            w.innerHTML = '<p style="color:var(--red)">Erro ao carregar NPS: ' + e.message + '</p>';
+        }
+    };
+
+    window.mudarMotelNps = function(id) {
+        motelNpsSelecionado = id;
+        renderNps();
+    };
+
+    window.configurarNps = function() {
+        (async function() {
+            var configSnap = await getDoc(doc(db, "estabelecimentos", motelNpsSelecionado, "config", "nps"));
+            var config = configSnap.exists() ? configSnap.data() : { ativo: true, titulo: 'Como foi sua experiência?', mensagem: 'Obrigado pela sua avaliação!' };
+            var h = '<div style="padding:24px;max-width:500px;margin:0 auto">';
+            h += '<h3 style="margin-bottom:16px">⚙️ Configurar NPS</h3>';
+            h += '<div style="display:flex;flex-direction:column;gap:12px">';
+            h += '<label style="display:flex;align-items:center;gap:8px;font-size:.9rem"><input type="checkbox" id="npsFormAtivo"' + (config.ativo !== false ? ' checked' : '') + '> Pesquisa ativa</label>';
+            h += '<label style="font-size:.8rem;color:var(--text-secondary)">Título da pesquisa:</label>';
+            h += '<input id="npsFormTitulo" class="filter-input" value="' + (config.titulo || 'Como foi sua experiência?') + '" style="width:100%">';
+            h += '<label style="font-size:.8rem;color:var(--text-secondary)">Mensagem de agradecimento:</label>';
+            h += '<textarea id="npsFormMensagem" class="filter-input" style="width:100%;min-height:80px;resize:vertical">' + (config.mensagem || 'Obrigado pela sua avaliação!') + '</textarea>';
+            h += '<div style="display:flex;gap:8px;margin-top:8px">';
+            h += '<button class="btn-salvar" onclick="window.salvarConfigNps()">💾 Salvar</button>';
+            h += '<button class="btn-salvar" style="background:var(--bg-tertiary);color:var(--text-secondary)" onclick="window.fecharModal()">Cancelar</button>';
+            h += '</div></div></div>';
+
+            document.getElementById('modalFormBox').className = 'modal-box';
+            document.getElementById('modalFormBox').innerHTML = h;
+            document.getElementById('modalFormBox').style.display = '';
+            document.getElementById('modalResultBox').style.display = 'none';
+            document.getElementById('modalOverlay').classList.add('mostrar');
+        })();
+    };
+
+    window.salvarConfigNps = function() {
+        (async function() {
+            var ativo = document.getElementById('npsFormAtivo').checked;
+            var titulo = document.getElementById('npsFormTitulo').value.trim() || 'Como foi sua experiência?';
+            var mensagem = document.getElementById('npsFormMensagem').value.trim() || 'Obrigado pela sua avaliação!';
+            try {
+                await setDoc(doc(db, "estabelecimentos", motelNpsSelecionado, "config", "nps"), { ativo: ativo, titulo: titulo, mensagem: mensagem });
+                window.fecharModal();
+                renderNps();
+            } catch(e) {
+                alert('Erro ao salvar: ' + e.message);
+            }
+        })();
+    };
+
+    // ====== UTILITÁRIOS ======
+    window.copiarTexto = function(texto) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(texto).catch(function() {});
+        } else {
+            var ta = document.createElement('textarea');
+            ta.value = texto; ta.style.position = 'fixed'; ta.style.opacity = '0';
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); document.body.removeChild(ta);
+        }
+        alert('Link copiado!');
+    };
+
+    window.abrirUrl = function(url) {
+        window.open(url, '_blank');
+    };
+
     window.exportarCSV = function() {
         const r = getFiltradas();
         if (!r.length) return;
@@ -3002,6 +3665,14 @@
         a.href = URL.createObjectURL(b);
         a.download = `reservas_${new Date().toISOString().split('T')[0]}.csv`;
         a.click();
+    }
+
+    window.toggleSubmenu = function(btn) {
+        btn.classList.toggle('aberto');
+        var sub = btn.nextElementSibling;
+        if (sub && sub.classList.contains('submenu')) {
+            sub.classList.toggle('aberto');
+        }
     }
 
     window.toggleSidebar = function() {
