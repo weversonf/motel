@@ -1787,7 +1787,14 @@
                 <div class="stat-icon">⏳</div>
                 <div class="stat-content">
                     <div class="stat-number" id="pendentes">7</div>
-                    <div class="stat-label">Pendentes</div>
+                    <div class="stat-label">PIX Pendente</div>
+                </div>
+            </div>
+            <div class="stat-card" onclick="window.filtrarPorStatus('pendente_cartao')">
+                <div class="stat-icon">💳</div>
+                <div class="stat-content">
+                    <div class="stat-number" id="pendentesCartao">0</div>
+                    <div class="stat-label">Cartão Pendente</div>
                 </div>
             </div>
             <div class="stat-card" onclick="window.filtrarPorStatus('confirmado')">
@@ -1831,6 +1838,7 @@
                         <select id="filterStatus" class="filter-input" onchange="window.aplicarFiltros()">
                             <option value="">Status</option>
                             <option value="aguardando_pagamento">Aguardando Pagto</option>
+                            <option value="pendente_cartao">Pendente Cartão</option>
                             <option value="confirmado">Confirmado</option>
                             <option value="pendente_recepcao">Pendente</option>
                             <option value="cancelado">Cancelado</option>
@@ -2242,6 +2250,7 @@
         document.getElementById('totalReservas').textContent = t.length;
         document.getElementById('reservasHoje').textContent = t.filter(r => r.data_reserva === hoje).length;
         document.getElementById('pendentes').textContent = t.filter(r => r.status === 'aguardando_pagamento').length;
+        document.getElementById('pendentesCartao').textContent = t.filter(r => r.status === 'pendente_cartao').length;
         document.getElementById('confirmados').textContent = t.filter(r => r.status === 'confirmado').length;
     }
 
@@ -2253,8 +2262,7 @@
             document.getElementById('filterData').value = '';
         }
         document.querySelectorAll('#statsContainer .stat-card').forEach(function(c) { c.classList.remove('filtro-ativo'); });
-        var idx = status === '' ? 0 : status === 'hoje' ? 1 : status === 'aguardando_pagamento' ? 2 : status === 'confirmado' ? 3 : -1;
-        if (idx >= 0) document.querySelectorAll('#statsContainer .stat-card')[idx].classList.add('filtro-ativo');
+        document.querySelectorAll('#statsContainer .stat-card[onclick*="' + status + '"]').forEach(function(c) { c.classList.add('filtro-ativo'); });
         window.aplicarFiltros();
     }
 
@@ -2352,7 +2360,7 @@
             (dadosMotels[n].suites || []).forEach(function(s) {
                 var qtde = s.qtde || 1;
                 totalVagas += qtde;
-                var ocup = filtradas.filter(function(r) { return r.motel === n && r.suite === s.nome && ['confirmado','aguardando_pagamento','pendente_recepcao'].includes(r.status); }).length;
+                var ocup = filtradas.filter(function(r) { return r.motel === n && r.suite === s.nome && ['confirmado','aguardando_pagamento','pendente_cartao','pendente_recepcao'].includes(r.status); }).length;
                 totalOcupadas += ocup;
             });
             var pct = totalVagas > 0 ? Math.round((totalOcupadas / totalVagas) * 100) : 0;
@@ -2374,9 +2382,10 @@
         var taxaCancel = total > 0 ? Math.round((canceladas.length / total) * 100) : 0;
         var confirmadas = filtradas.filter(function(r) { return r.status === 'confirmado'; }).length;
         var aguardando = filtradas.filter(function(r) { return r.status === 'aguardando_pagamento'; }).length;
+        var cartoes = filtradas.filter(function(r) { return r.status === 'pendente_cartao'; }).length;
         var pendentes = filtradas.filter(function(r) { return r.status === 'pendente_recepcao'; }).length;
         h += '<div class="relatorio-card"><h3>❌ Cancelamentos</h3>'
-            + '<div class="relatorio-stats">' + stat(canceladas.length, 'Canceladas') + stat(taxaCancel + '%', 'Taxa') + stat(confirmadas, 'Confirmadas') + stat(aguardando, 'Aguard.') + stat(pendentes, 'Pendentes') + '</div>';
+            + '<div class="relatorio-stats">' + stat(canceladas.length, 'Canceladas') + stat(taxaCancel + '%', 'Taxa') + stat(confirmadas, 'Confirmadas') + stat(aguardando, 'Aguard.') + stat(cartoes, 'Cartão') + stat(pendentes, 'Recepção') + '</div>';
         var cancelPorMotel = {};
         canceladas.forEach(function(r) { cancelPorMotel[r.motel] = (cancelPorMotel[r.motel] || 0) + 1; });
         var ordenadosCancel = Object.entries(cancelPorMotel).sort(function(a, b) { return b[1] - a[1]; });
@@ -2547,8 +2556,8 @@
         if (!r.length) { w.innerHTML = '<div class="empty"><p style="font-size:2rem;margin-bottom:12px">📭</p><p>Nenhuma reserva encontrada</p></div>'; return; }
         let h = '<table><thead><tr><th>Status</th><th>Motel</th><th>Suíte</th><th>Cliente</th><th>CPF</th><th>Data</th><th>Horário</th><th>Criação</th><th>Protocolo</th><th>Ações</th></tr></thead><tbody>';
         r.forEach(ev => {
-            const sc = ev.status === 'confirmado' ? 'status-confirmado' : ev.status === 'aguardando_pagamento' ? 'status-aguardando' : ev.status === 'cancelado' ? 'status-cancelado' : 'status-pendente';
-            const sl = ev.status === 'confirmado' ? 'Confirmado' : ev.status === 'aguardando_pagamento' ? 'Aguardando Pagto' : ev.status === 'cancelado' ? 'Cancelado' : 'Pendente';
+            const sc = ev.status === 'confirmado' ? 'status-confirmado' : ev.status === 'aguardando_pagamento' ? 'status-aguardando' : ev.status === 'pendente_cartao' ? 'status-aguardando' : ev.status === 'cancelado' ? 'status-cancelado' : 'status-pendente';
+            const sl = ev.status === 'confirmado' ? 'Confirmado' : ev.status === 'aguardando_pagamento' ? 'Aguardando Pagto' : ev.status === 'pendente_cartao' ? 'Pendente Cartão' : ev.status === 'cancelado' ? 'Cancelado' : 'Pendente';
             const cor = dadosMotels[ev.motel]?.cor || '#999';
             const criado = ev.criado_em ? (function(d){ var dt=new Date(d); return ('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+' '+('0'+dt.getHours()).slice(-2)+':'+('0'+dt.getMinutes()).slice(-2); })(ev.criado_em) : '-';
             h += `<tr><td><span class="status ${sc}">${sl}</span></td><td><span class="motel-tag" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${ev.motel || '-'}</span></td><td>${ev.suite || '-'}</td><td>${ev.cliente_nome || '-'}</td><td style="color:var(--text-tertiary);font-size:0.75rem">${ev.cliente_cpf || '-'}</td><td>${ev.data_reserva ? ev.data_reserva.split('-').reverse().join('/') : '-'}</td><td style="color:var(--text-secondary)">${ev.hora_chegada || ev.horaRes || '-'}</td><td style="font-size:0.75rem;color:var(--text-tertiary)">${criado}</td><td style="font-size:0.7rem;color:var(--text-tertiary);letter-spacing:0.5px;font-family:monospace">${ev.protocolo || '-'}</td><td><button class="btn-icon confirm" onclick="window.alterarStatus('${ev.id}','confirmado')">✓</button><button class="btn-icon cancel" onclick="window.alterarStatus('${ev.id}','cancelado')" style="margin-left:6px">✕</button><button class="btn-icon delete" onclick="window.excluirReserva('${ev.id}')" style="margin-left:6px" title="Excluir">🗑</button></td></tr>`;

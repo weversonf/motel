@@ -411,7 +411,7 @@
                 var snap = await db.collection("reservas").get();
                 var docs = snap.docs;
                 var todas = docs.map(function(d){ var o = d.data(); o._id = d.id; return o; });
-                var statusAtivos = ['pendente_recepcao', 'aguardando_pagamento', 'confirmado'];
+                var statusAtivos = ['pendente_recepcao', 'pendente_cartao', 'aguardando_pagamento', 'confirmado'];
                 var reservasData = todas.filter(function(r){ return r.data_reserva === data && statusAtivos.indexOf(r.status) >= 0; });
                 var motelInfo = motels[userData.motel];
                 var qtdeTotal = 1;
@@ -635,7 +635,7 @@
             chat.scrollTop = chat.scrollHeight;
         };
 
-        window.confirmarCartao = function() { prepararFinalizar('recepcao'); };
+        window.confirmarCartao = function() { prepararFinalizar('cartao'); };
 
         function prepararFinalizar(tipo) {
             userData.promocao = tipo;
@@ -662,8 +662,9 @@
             if (userData.promocao === 'desconto30') promoInfo = '30%_OFF';
             else if (userData.promocao === 'mais3h') promoInfo = '3h+3h';
             var isRecepcao = userData.promocao === 'recepcao';
-            var isPix = !isRecepcao && !modoTeste;
-            userData.statusVoucher = isRecepcao ? 'PENDENTE' : isPix ? 'AGUARDANDO PAGAMENTO' : 'CONFIRMADO';
+            var isCartao = userData.promocao === 'cartao';
+            var isPix = !isRecepcao && !isCartao && !modoTeste;
+            userData.statusVoucher = isRecepcao ? 'PENDENTE' : isCartao ? 'PENDENTE CARTAO' : isPix ? 'AGUARDANDO PAGAMENTO' : 'CONFIRMADO';
             var payload = {
                 motel: userData.motel,
                 suite: userData.suite,
@@ -676,7 +677,7 @@
                 data_reserva: userData.dataRes,
                 hora_chegada: userData.horaRes,
                 protocolo: userData.protocolo,
-                status: isRecepcao ? 'pendente_recepcao' : 'aguardando_pagamento',
+                status: isRecepcao ? 'pendente_recepcao' : isCartao ? 'pendente_cartao' : 'aguardando_pagamento',
                 origem: 'chat_web',
                 criado_em: new Date().toISOString(),
                 token_asaas: motelAtual ? (motelAtual.token_asaas || '') : ''
@@ -697,12 +698,12 @@
             var isAlteracao = userData.alterandoReserva === true;
             var tituloSucesso = isAlteracao ? "✅ <b>Pré-Reserva Alterada!</b>" : "✅ <b>Pré-Reserva Registrada!</b>";
 
-            if (isRecepcao) {
+            if (isRecepcao || isCartao) {
                 addMsg(tituloSucesso, 'bot');
-                addMsg((isAlteracao ? '✏️ Sua reserva foi atualizada. ' : '💵 Sua reserva foi enviada para a recepção. ') + 'Apresente seu CPF no check-in.', 'bot');
+                addMsg((isAlteracao ? '✏️ Sua reserva foi atualizada. ' : '💵 Sua reserva foi enviada para a recepção. ') + (isCartao ? 'Pagamento com cartão será confirmado na recepção.' : 'Apresente seu CPF no check-in.'), 'bot');
                 addMsg('<div style="font-size:.8rem;color:#888;text-align:center">Protocolo: ' + userData.protocolo + '</div>', 'bot');
                 addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
-                fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'notificar', motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:'pendente_recepcao' }) }).catch(function(){});
+                fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'notificar', motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:isCartao ? 'pendente_cartao' : 'pendente_recepcao' }) }).catch(function(){});
                 return;
             }
 
