@@ -11,7 +11,7 @@ Sistema → Configurações   |     ✅      |   ✅  |     ✅
 Sistema → Usuários        |     ❌      |   ✅  |     ✅
 Sistema → API             |     ❌      |   ✅  |     ✅
 Ferramentas → Encurtador  |     ✅      |   ✅  |     ✅
-Ferramentas → Pesquisa NPS|     ❌      |   ✅  |     ✅
+Ferramentas → Pesquisa NPS (EM BREVE)| ❌ | ❌ | ✅
 
 PÁGINAS PÚBLICAS
 ----------------

@@ -1807,7 +1807,7 @@
             </button>
             <button class="nav-item nav-child" id="navNps" data-view="nps" onclick="window.alternarVisao('nps')">
                 <span>📝</span>
-                <span>Pesquisa NPS</span>
+                <span>Pesquisa NPS <span style="font-size:.6rem;background:var(--yellow);color:#000;padding:2px 6px;border-radius:8px;font-weight:600">EM BREVE</span></span>
             </button>
         </div>
 
@@ -2206,7 +2206,7 @@
         });
         document.getElementById('navParentSistema').style.display = temFilhoSistema ? '' : 'none';
         document.getElementById('submenuSistema').style.display = temFilhoSistema ? '' : 'none';
-        document.getElementById('navNps').style.display = acessoTotal ? '' : 'none';
+        document.getElementById('navNps').style.display = role === 'superadmin' ? '' : 'none';
         var temFilhoFerramentas = true;
         document.getElementById('navParentFerramentas').style.display = temFilhoFerramentas ? '' : 'none';
         document.getElementById('submenuFerramentas').style.display = temFilhoFerramentas ? '' : 'none';
