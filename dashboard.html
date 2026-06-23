@@ -1744,10 +1744,10 @@
             <span>📊</span>
             <span>Relatórios</span>
         </button>
-        <button class="nav-item" id="navLinktree" data-view="linktree" onclick="window.alternarVisao('linktree')">
-            <span>🔗</span>
-            <span>Linktree</span>
-        </button>
+<button class="nav-item" id="navEncurtador" data-view="encurtador" onclick="window.alternarVisao('encurtador')">
+    <span>🔗</span>
+    <span>Encurtador</span>
+</button>
         <button class="nav-item" id="navNps" data-view="nps" onclick="window.alternarVisao('nps')">
             <span>📝</span>
             <span>Pesquisa NPS</span>
@@ -1898,14 +1898,14 @@
                 <div id="usuariosWrapper"></div>
             </div>
 
-            <!-- LINKTREE -->
-            <div class="content-relatorios" id="contentLinktree">
+            <!-- ENCURTADOR -->
+            <div class="content-relatorios" id="contentEncurtador">
                 <div class="gerenciar-header">
-                    <h2>🔗 Linktree</h2>
+                    <h2>🔗 Encurtador</h2>
                     <button class="btn-salvar" onclick="window.abrirModalLink()">➕ Novo Link</button>
                 </div>
-                <div class="rel-filtros" id="linktreeFiltros"></div>
-                <div id="linktreeWrapper"></div>
+                <div class="rel-filtros" id="encurtadorFiltros"></div>
+                <div id="encurtadorWrapper"></div>
             </div>
 
             <!-- NPS -->
@@ -2143,7 +2143,7 @@
         document.getElementById('navAPI').style.display = acessoTotal ? '' : 'none';
         document.getElementById('navUsuarios').style.display = acessoTotal ? '' : 'none';
         document.getElementById('navRelatorios').style.display = acessoTotal ? '' : 'none';
-        document.getElementById('navLinktree').style.display = '';
+        document.getElementById('navEncurtador').style.display = '';
         document.getElementById('navNps').style.display = '';
         await iniciar();
     }
@@ -2627,8 +2627,8 @@
             document.querySelector('.sidebar').classList.remove('aberta');
         }
         document.querySelectorAll('.nav-item').forEach(b => { b.className = 'nav-item' + (b.dataset.view === v ? ' ativo' : ''); });
-        document.getElementById('pageTitle').innerHTML = {'calendario':'📅 <span>Calendário</span>','tabela':'📋 <span>Tabela</span>','gerenciar':'🏨 <span>Configurar</span>','relatorios':'📊 <span>Relatórios</span>','api':'🔑 <span>API</span>','usuarios':'👥 <span>Usuários</span>','linktree':'🔗 <span>Linktree</span>','nps':'📝 <span>NPS</span>'} [v] || '';
-        ['Calendario', 'Tabela', 'Gerenciar', 'Relatorios', 'API', 'Usuarios', 'Linktree', 'Nps'].forEach(function(n) {
+        document.getElementById('pageTitle').innerHTML = {'calendario':'📅 <span>Calendário</span>','tabela':'📋 <span>Tabela</span>','gerenciar':'🏨 <span>Configurar</span>','relatorios':'📊 <span>Relatórios</span>','api':'🔑 <span>API</span>','usuarios':'👥 <span>Usuários</span>','encurtador':'🔗 <span>Encurtador</span>','nps':'📝 <span>NPS</span>'} [v] || '';
+        ['Calendario', 'Tabela', 'Gerenciar', 'Relatorios', 'API', 'Usuarios', 'Encurtador', 'Nps'].forEach(function(n) {
             const e = document.getElementById('content' + n);
             if (!e) return;
             var ativo = v === n.toLowerCase();
@@ -2637,17 +2637,17 @@
             else if (n === 'Gerenciar') e.className = 'content-gerenciar' + (ativo ? ' ativo' : '');
             else if (n === 'API') e.className = 'content-api' + (ativo ? ' ativo' : '');
             else if (n === 'Usuarios') e.className = 'content-usuarios' + (ativo ? ' ativo' : '');
-            else if (n === 'Linktree' || n === 'Nps') e.className = 'content-relatorios' + (ativo ? ' ativo' : '');
+            else if (n === 'Encurtador' || n === 'Nps') e.className = 'content-relatorios' + (ativo ? ' ativo' : '');
             else e.className = 'content' + (ativo ? ' ativo' : '');
         });
         if (v === 'tabela') { popularFiltrosTabela(); renderTabela(); }
         if (v === 'relatorios') renderRelatorios();
         if (v === 'api') renderAPI();
         if (v === 'usuarios') renderUsuarios();
-        if (v === 'linktree') renderLinktree();
+        if (v === 'encurtador') renderEncurtador();
         if (v === 'nps') renderNps();
         var topEls = document.querySelectorAll('.stats-container, .motel-filters');
-        topEls.forEach(function(el) { el.style.display = (v === 'relatorios' || v === 'gerenciar' || v === 'api' || v === 'usuarios' || v === 'linktree' || v === 'nps') ? 'none' : ''; });
+        topEls.forEach(function(el) { el.style.display = (v === 'relatorios' || v === 'gerenciar' || v === 'api' || v === 'usuarios' || v === 'encurtador' || v === 'nps') ? 'none' : ''; });
     }
 
     // ====== GERENCIAR ======
@@ -3009,34 +3009,34 @@
         } catch(e) { console.warn(e); }
     };
 
-    // ====== LINKTREE ======
-    var motelLinktreeSelecionado = null;
+    // ====== ENCURTADOR ======
+    var motelEncurtadorSelecionado = null;
 
-    window.renderLinktree = async function() {
-        var w = document.getElementById('linktreeWrapper');
+    window.renderEncurtador = async function() {
+        var w = document.getElementById('encurtadorWrapper');
         if (!w) return;
         try {
             var motelSnap = await getDocs(collection(db, "estabelecimentos"));
             var moteis = motelSnap.docs.map(function(d) { return { id: d.id, ...d.data() }; });
             if (!moteis.length) { w.innerHTML = '<p style="color:var(--text-tertiary)">Nenhum motel cadastrado.</p>'; return; }
-            if (!motelLinktreeSelecionado || !moteis.some(function(m) { return m.id === motelLinktreeSelecionado; })) {
-                motelLinktreeSelecionado = moteis[0].id;
+            if (!motelEncurtadorSelecionado || !moteis.some(function(m) { return m.id === motelEncurtadorSelecionado; })) {
+                motelEncurtadorSelecionado = moteis[0].id;
             }
             var filtrosHtml = '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">';
             filtrosHtml += '<label style="font-size:.8rem;color:var(--text-secondary)">Motel:</label>';
-            filtrosHtml += '<select id="selectMotelLinktree" onchange="window.mudarMotelLinktree(this.value)" class="filter-input" style="flex:1;min-width:150px">';
+            filtrosHtml += '<select id="selectMotelEncurtador" onchange="window.mudarMotelEncurtador(this.value)" class="filter-input" style="flex:1;min-width:150px">';
             moteis.forEach(function(m) {
-                filtrosHtml += '<option value="' + m.id + '"' + (m.id === motelLinktreeSelecionado ? ' selected' : '') + '>' + (m.nome || m.id) + '</option>';
+                filtrosHtml += '<option value="' + m.id + '"' + (m.id === motelEncurtadorSelecionado ? ' selected' : '') + '>' + (m.nome || m.id) + '</option>';
             });
             filtrosHtml += '</select>';
-            var publicUrl = window.location.origin + '/link.html?id=' + motelLinktreeSelecionado;
+            var publicUrl = window.location.origin + '/link.html?id=' + motelEncurtadorSelecionado;
             filtrosHtml += '<button class="btn-salvar" onclick="window.copiarTexto(\'' + publicUrl + '\')">📋 Copiar Link Público</button>';
             filtrosHtml += '<button class="btn-salvar" onclick="window.abrirUrl(\'' + publicUrl + '\')">👁️ Pré-visualizar</button>';
             filtrosHtml += '<button class="btn-salvar" onclick="window.abrirModalLink()">➕ Novo Link</button>';
             filtrosHtml += '</div>';
-            document.getElementById('linktreeFiltros').innerHTML = filtrosHtml;
+            document.getElementById('encurtadorFiltros').innerHTML = filtrosHtml;
 
-            var linksSnap = await getDocs(collection(db, "estabelecimentos", motelLinktreeSelecionado, "linktree"));
+            var linksSnap = await getDocs(collection(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree"));
             var links = linksSnap.docs.map(function(d) { return { id: d.id, ...d.data() }; });
             links.sort(function(a, b) { return (a.ordem || 0) - (b.ordem || 0); });
 
@@ -3070,9 +3070,9 @@
         }
     };
 
-    window.mudarMotelLinktree = function(id) {
-        motelLinktreeSelecionado = id;
-        renderLinktree();
+    window.mudarMotelEncurtador = function(id) {
+        motelEncurtadorSelecionado = id;
+        renderEncurtador();
     };
 
     window.abrirModalLink = function(linkId) {
@@ -3113,17 +3113,17 @@
         if (!title) { alert('Digite um título para o link.'); return; }
         if (!url) { alert('Digite uma URL para o link.'); return; }
 
-        var linksRef = collection(db, "estabelecimentos", motelLinktreeSelecionado, "linktree");
+        var linksRef = collection(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree");
         try {
             if (linkId) {
-                await updateDoc(doc(db, "estabelecimentos", motelLinktreeSelecionado, "linktree", linkId), { title: title, url: url, icon: iconVal });
+                await updateDoc(doc(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree", linkId), { title: title, url: url, icon: iconVal });
             } else {
                 var countSnap = await getDocs(linksRef);
                 var ordem = countSnap.docs.length;
                 await addDoc(linksRef, { title: title, url: url, icon: iconVal, ordem: ordem, ativo: true, createdAt: new Date().toISOString() });
             }
             window.fecharModal();
-            renderLinktree();
+            renderEncurtador();
         } catch(e) {
             alert('Erro ao salvar: ' + e.message);
         }
@@ -3133,18 +3133,18 @@
         var linkId = el.dataset.linkid;
         var campo = el.dataset.campo;
         var valor = el.value;
-        updateDoc(doc(db, "estabelecimentos", motelLinktreeSelecionado, "linktree", linkId), { [campo]: valor }).catch(function(e) { console.warn(e); });
+        updateDoc(doc(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree", linkId), { [campo]: valor }).catch(function(e) { console.warn(e); });
     };
 
     window.toggleLinkAtivo = function(id, ativo) {
-        updateDoc(doc(db, "estabelecimentos", motelLinktreeSelecionado, "linktree", id), { ativo: ativo }).catch(function(e) { console.warn(e); });
+        updateDoc(doc(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree", id), { ativo: ativo }).catch(function(e) { console.warn(e); });
     };
 
     window.excluirLink = async function(id) {
         if (!confirm('Excluir este link?')) return;
         try {
-            await deleteDoc(doc(db, "estabelecimentos", motelLinktreeSelecionado, "linktree", id));
-            renderLinktree();
+            await deleteDoc(doc(db, "estabelecimentos", motelEncurtadorSelecionado, "linktree", id));
+            renderEncurtador();
         } catch(e) {
             alert('Erro ao excluir: ' + e.message);
         }
