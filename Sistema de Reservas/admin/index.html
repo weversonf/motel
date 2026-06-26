@@ -6,6 +6,7 @@
     <title>Moteis Fortaleza - Painel v06</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         
@@ -186,11 +187,15 @@
             transition: 0.3s ease;
             overflow: hidden;
             box-shadow: 2px 0 12px rgba(0, 0, 0, 0.03);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            align-self: flex-start;
         }
 
         .sidebar.recolhida {
             width: 80px;
-            padding: 28px 12px;
+            padding: 28px 8px;
         }
 
         .sidebar.recolhida .sidebar-logo .text,
@@ -198,8 +203,79 @@
             display: none;
         }
 
+        .sidebar.recolhida .sidebar-logo > div:not(.icon) {
+            display: none;
+        }
+
+        .sidebar.recolhida .sidebar-logo {
+            justify-content: center;
+            padding: 8px 0 20px;
+            gap: 0;
+        }
+
+        .sidebar.recolhida .sidebar-logo .icon {
+            width: 44px;
+            height: 44px;
+            font-size: 2rem;
+        }
+
         .sidebar.recolhida .nav-item span:last-child {
             display: none;
+        }
+
+        .sidebar.recolhida .nav-item {
+            justify-content: center;
+            padding: 10px 0;
+            gap: 0;
+            border-left: none;
+            padding-left: 0;
+        }
+
+        .sidebar.recolhida .nav-item.ativo {
+            border-left: none;
+            padding-left: 0;
+            background: rgba(196, 78, 255, 0.15);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            margin: 0 auto;
+            padding: 0;
+        }
+
+        .sidebar.recolhida .nav-item span:first-child {
+            font-size: 1.3rem;
+            line-height: 1;
+            width: auto;
+        }
+
+        .sidebar.recolhida .nav-parent {
+            justify-content: center;
+            padding: 10px 0;
+            gap: 0;
+        }
+
+        .sidebar.recolhida .nav-parent > span:not(:first-child) {
+            display: none;
+        }
+
+        .sidebar.recolhida .nav-parent > span:first-child {
+            font-size: 1.3rem;
+            line-height: 1;
+            width: auto;
+        }
+
+        .sidebar.recolhida .submenu {
+            display: none;
+        }
+
+        .sidebar.recolhida .sidebar-footer .label {
+            display: none;
+        }
+
+        .sidebar.recolhida .sidebar-footer button {
+            justify-content: center;
+            padding: 8px 0;
+            gap: 0;
         }
 
         .sidebar.recolhida .sidebar-user .info,
@@ -207,13 +283,10 @@
             display: none;
         }
 
-        .sidebar.recolhida .nav-item {
-            justify-content: center;
-            padding: 12px;
-        }
-
         .sidebar.recolhida .sidebar-user {
             justify-content: center;
+            padding: 10px 0;
+            gap: 0;
         }
 
         .sidebar-logo {
@@ -268,6 +341,13 @@
             width: 100%;
             text-align: left;
             position: relative;
+        }
+
+        .nav-item > span:first-child,
+        .nav-parent > span:first-child {
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
         }
 
         .nav-item:hover {
@@ -332,8 +412,18 @@
             max-height: 300px;
         }
         .nav-child {
-            padding-left: 40px !important;
             font-size: 0.8rem !important;
+        }
+
+        .nav-group:hover > .submenu {
+            max-height: 300px;
+        }
+        .nav-group:hover > .nav-parent {
+            background: var(--accent-light);
+            color: var(--accent-primary);
+        }
+        .nav-group:hover > .nav-parent .arrow {
+            transform: rotate(90deg);
         }
 
         .icon-picker {
@@ -417,7 +507,6 @@
             flex-direction: column;
             min-width: 0;
             padding: 32px;
-            overflow: hidden;
             background: var(--bg-main);
         }
 
@@ -572,7 +661,6 @@
             display: flex;
             gap: 24px;
             flex: 1;
-            overflow: hidden;
             min-height: 0;
             height: 100%;
         }
@@ -584,10 +672,13 @@
             border-radius: var(--radius);
             padding: 28px;
             box-shadow: var(--shadow-sm);
-            overflow-y: auto;
             display: none;
-            height: 100%;
-            min-height: 100%;
+            align-self: flex-start;
+        }
+
+        #contentCalendario.visao-agenda .calendar-grid {
+            display: flex;
+            flex-direction: column;
         }
 
         .content.ativo {
@@ -654,10 +745,9 @@
         }
 
         .day-cell {
-            aspect-ratio: auto;
             border: 1px solid var(--border-color);
             border-radius: var(--radius-sm);
-            padding: 8px;
+            padding: 6px;
             cursor: pointer;
             transition: 0.2s;
             background: var(--bg-main);
@@ -666,35 +756,129 @@
             font-size: 0.85rem;
             display: flex;
             flex-direction: column;
-            min-height: 80px;
+            min-height: 60px;
         }
-
         .day-cell:hover {
             border-color: var(--accent-primary);
             background: var(--accent-light);
         }
-
         .day-cell.other-month {
             color: var(--text-tertiary);
         }
-
         .day-cell.today {
             border: 2px solid var(--accent-primary);
             background: rgba(196, 78, 255, 0.08);
             font-weight: 600;
         }
-
         .day-events {
             font-size: 0.65rem;
             margin-top: 4px;
         }
 
-        .event-dot {
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 2px;
+        .week-grid {
+            display: grid;
+            grid-template-columns: 52px repeat(7, 1fr);
+            grid-auto-rows: 48px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            background: var(--bg-main);
+        }
+
+        .week-corner {
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            background: var(--bg-card);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .week-day-header {
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            padding: 8px 4px;
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            background: var(--bg-card);
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .week-day-header:hover {
+            background: var(--accent-light);
+            color: var(--accent-primary);
+        }
+        .week-day-header.hoje {
+            color: var(--accent-primary);
+            font-weight: 700;
+        }
+
+        .week-time {
+            font-size: 0.65rem;
+            color: var(--text-tertiary);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            padding: 2px 6px;
+            background: var(--bg-card);
+            position: relative;
+        }
+
+        .week-cell {
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+            min-height: 48px;
+            transition: 0.15s;
+            cursor: pointer;
+        }
+        .week-cell:hover {
+            background: var(--accent-light);
+        }
+        .week-cell.hoje {
+            background: rgba(196, 78, 255, 0.04);
+        }
+
+        .week-block {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            border-radius: 6px;
+            padding: 2px 6px;
+            cursor: pointer;
+            z-index: 1;
+            overflow: hidden;
+            transition: 0.15s;
+            opacity: 0.92;
+        }
+        .week-block:hover {
+            opacity: 1;
+            transform: scale(1.02);
+            z-index: 3;
+        }
+        .week-block-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .week-block-sub {
+            font-size: 0.6rem;
+            color: rgba(255,255,255,0.85);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         /* ====== TABLE ====== */
@@ -813,11 +997,19 @@
             background: rgba(255, 107, 107, 0.15);
             color: var(--red);
         }
+        .status-pagar-motel {
+            background: rgba(255, 193, 7, 0.25);
+            color: #b8860b;
+        }
+        .status-check-in {
+            background: rgba(0, 150, 255, 0.15);
+            color: #0077cc;
+        }
 
         .motel-tag {
             display: inline-block;
-            padding: 6px 12px;
-            border-radius: var(--radius-sm);
+            padding: 5px 12px;
+            border-radius: 20px;
             font-weight: 600;
             font-size: 0.75rem;
         }
@@ -826,7 +1018,7 @@
             width: 32px;
             height: 32px;
             border: none;
-            border-radius: 6px;
+            border-radius: 50%;
             background: none;
             cursor: pointer;
             font-size: 1rem;
@@ -834,6 +1026,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            margin: 0 2px;
         }
 
         .btn-icon.confirm {
@@ -863,6 +1056,15 @@
         }
         .btn-icon.delete:hover {
             background: var(--red);
+            color: #fff;
+        }
+
+        .btn-icon.checkin {
+            background: rgba(0, 150, 255, 0.1);
+            color: #0077cc;
+        }
+        .btn-icon.checkin:hover {
+            background: #0077cc;
             color: #fff;
         }
 
@@ -1205,7 +1407,7 @@
         .toggle-sidebar {
             position: absolute;
             bottom: 28px;
-            left: 240px;
+            right: -16px;
             width: 32px;
             height: 32px;
             border-radius: 50%;
@@ -1223,7 +1425,9 @@
         }
 
         .sidebar.recolhida .toggle-sidebar {
-            left: 58px;
+            right: auto;
+            left: 50%;
+            transform: translateX(-50%);
         }
 
         .toggle-sidebar:hover {
@@ -1258,6 +1462,7 @@
         [data-theme="noir"] .sidebar-logo { border-bottom-color: #2a2a33; }
         [data-theme="noir"] .day-cell { background: var(--bg-main); }
         [data-theme="noir"] .day-cell.today { border-color: var(--accent-primary); background: rgba(210,1,80,.08); }
+        [data-theme="noir"] .week-cell.hoje { background: rgba(210,1,80,.08); }
         [data-theme="noir"] .toggle-sidebar { background: var(--bg-card); border-color: var(--border-color); }
         [data-theme="noir"] .sidebar-user { background: rgba(210,1,80,.08); }
         [data-theme="noir"] .token-row input { background: #1a1a2a; color: #e8e8ed; border-color: #333; }
@@ -1734,9 +1939,8 @@
             .user-row { flex-wrap: wrap; }
             .user-row input, .user-row select { min-width: 80px; flex: 1; }
             .login-box { width: 90%; padding: 32px 24px; }
-            .calendar-grid { gap: 4px; }
-            .day-cell { min-height: 50px; padding: 4px; font-size: 0.75rem; }
-            .day-events { display: none; }
+            .week-grid { grid-auto-rows: 40px; }
+            .week-time { font-size: 0.6rem; }
             .sidebar-user .info { font-size: 0.75rem; }
             .content-calendario { padding: 14px; }
             .cal-legend { gap: 8px; }
@@ -1848,45 +2052,49 @@
             <span>Relatórios</span>
         </button>
 
-        <button class="nav-parent" id="navParentSistema" onclick="window.toggleSubmenu(this)">
-            <span>⚙️</span>
-            <span>Sistema</span>
-            <span class="arrow">▶</span>
-        </button>
-        <div class="submenu" id="submenuSistema">
-            <button class="nav-item nav-child" id="navGerenciar" data-view="gerenciar" style="display:none" onclick="window.alternarVisao('gerenciar')">
-                <span>🏨</span>
-                <span>Configurações</span>
+        <div class="nav-group">
+            <button class="nav-parent" id="navParentSistema" onclick="window.toggleSubmenu(this)">
+                <span>⚙️</span>
+                <span>Sistema</span>
+                <span class="arrow">▶</span>
             </button>
-            <button class="nav-item nav-child" id="navUsuarios" data-view="usuarios" style="display:none" onclick="window.alternarVisao('usuarios')">
-                <span>👥</span>
-                <span>Usuários</span>
-            </button>
-            <button class="nav-item nav-child" id="navAPI" data-view="api" style="display:none" onclick="window.alternarVisao('api')">
-                <span>🔑</span>
-                <span>API</span>
-            </button>
+            <div class="submenu" id="submenuSistema">
+                <button class="nav-item nav-child" id="navGerenciar" data-view="gerenciar" style="display:none" onclick="window.alternarVisao('gerenciar')">
+                    <span>🏨</span>
+                    <span>Configurações</span>
+                </button>
+                <button class="nav-item nav-child" id="navUsuarios" data-view="usuarios" style="display:none" onclick="window.alternarVisao('usuarios')">
+                    <span>👥</span>
+                    <span>Usuários</span>
+                </button>
+                <button class="nav-item nav-child" id="navAPI" data-view="api" style="display:none" onclick="window.alternarVisao('api')">
+                    <span>🔑</span>
+                    <span>API</span>
+                </button>
+            </div>
         </div>
 
-        <button class="nav-parent" id="navParentFerramentas" onclick="window.toggleSubmenu(this)">
-            <span>🧰</span>
-            <span>Ferramentas</span>
-            <span class="arrow">▶</span>
-        </button>
-        <div class="submenu" id="submenuFerramentas">
-            <button class="nav-item nav-child" data-view="encurtador" onclick="window.alternarVisao('encurtador')">
-                <span>🔗</span>
-                <span>Encurtador de Links</span>
+        <div class="nav-group">
+            <button class="nav-parent" id="navParentFerramentas" onclick="window.toggleSubmenu(this)">
+                <span>🧰</span>
+                <span>Ferramentas</span>
+                <span class="arrow">▶</span>
             </button>
-            <button class="nav-item nav-child" id="navNps" data-view="nps" onclick="window.alternarVisao('nps')">
-                <span>📝</span>
-                <span>Pesquisa NPS <span style="font-size:.6rem;background:var(--yellow);color:#000;padding:2px 6px;border-radius:8px;font-weight:600">EM BREVE</span></span>
-            </button>
+            <div class="submenu" id="submenuFerramentas">
+                <button class="nav-item nav-child" data-view="encurtador" onclick="window.alternarVisao('encurtador')">
+                    <span>🔗</span>
+                    <span>Encurtador de Links</span>
+                </button>
+                <button class="nav-item nav-child" id="navNps" data-view="nps" onclick="window.alternarVisao('nps')">
+                    <span>📝</span>
+                    <span>Pesquisa NPS <span style="font-size:.6rem;background:var(--yellow);color:#000;padding:2px 6px;border-radius:8px;font-weight:600">EM BREVE</span></span>
+                </button>
+            </div>
         </div>
 
         <div class="sidebar-footer">
-            <button class="topbar-btn" id="temaBtn" onclick="window.toggleTema()">🌙 Noturno</button>
-            <button class="topbar-btn" onclick="window.toggleSidebar()">← Recolher</button>
+            <button class="topbar-btn" id="temaBtn" onclick="window.toggleTema()"><span>🌙</span><span class="label"> Noturno</span></button>
+            <button class="topbar-btn" onclick="window.toggleSidebar()"><span>←</span><span class="label"> Recolher</span></button>
         </div>
 
         <div class="sidebar-user">
@@ -1965,10 +2173,11 @@
                 <div class="calendar-header">
                     <h2 id="mesAno">Janeiro 2024</h2>
                     <div class="calendar-nav">
+                        <button class="cal-btn view-toggle active" data-view="calendario" onclick="window.alternarVisaoCalendario('calendario')">📅 Calendário</button>
+                        <button class="cal-btn view-toggle" data-view="agenda" onclick="window.alternarVisaoCalendario('agenda')">📋 Agenda</button>
                         <button class="cal-btn" onclick="window.mudarMes(-1)">← Anterior</button>
                         <button class="cal-btn" onclick="window.mudarMes(0)">Hoje</button>
-                        <button class="cal-btn active" onclick="window.mudarMes(1)">Próximo →</button>
-                        <button class="cal-btn" onclick="window.mostrarAgenda()">📋 Agenda</button>
+                        <button class="cal-btn" onclick="window.mudarMes(1)">Próximo →</button>
                     </div>
                 </div>
                 <div class="calendar-grid" id="calendarGrid"></div>
@@ -1986,10 +2195,11 @@
                         </select>
                         <select id="filterStatus" class="filter-input" onchange="window.aplicarFiltros()">
                             <option value="">Status</option>
-                            <option value="aguardando_pagamento">Aguardando Pagto</option>
-                            <option value="pendente_cartao">Pendente Cartão</option>
+                            <option value="aguardando_pagamento">Aguardando Pagto no Asaas</option>
+                            <option value="pendente_cartao">Pagar no Motel</option>
+                            <option value="pendente_recepcao">Pagar no Motel</option>
                             <option value="confirmado">Confirmado</option>
-                            <option value="pendente_recepcao">Pendente</option>
+                            <option value="check_in">Check-in</option>
                             <option value="cancelado">Cancelado</option>
                         </select>
                         <select id="filterSuite" class="filter-input" onchange="window.aplicarFiltros()">
@@ -2219,8 +2429,12 @@
         }
     };
 
+    let semanaInicio = new Date();
+    semanaInicio.setDate(semanaInicio.getDate() - ((semanaInicio.getDay() + 6) % 7));
+    semanaInicio.setHours(0,0,0,0);
     let mesAtual = new Date().getMonth();
     let anoAtual = new Date().getFullYear();
+    let visaoCalendario = 'calendario';
     let userRole = null;
     let dadosMotels = {};
     let reservas = [];
@@ -2428,8 +2642,8 @@
         document.getElementById('totalReservas').textContent = t.length;
         document.getElementById('reservasHoje').textContent = t.filter(r => r.data_reserva === hoje).length;
         document.getElementById('pendentes').textContent = t.filter(r => r.status === 'aguardando_pagamento').length;
-        document.getElementById('pendentesCartao').textContent = t.filter(r => r.status === 'pendente_cartao').length;
-        document.getElementById('confirmados').textContent = t.filter(r => r.status === 'confirmado').length;
+        document.getElementById('pendentesCartao').textContent = t.filter(r => r.status === 'pendente_cartao' || r.status === 'pendente_recepcao').length;
+        document.getElementById('confirmados').textContent = t.filter(r => r.status === 'confirmado' || r.status === 'check_in').length;
     }
 
     window.filtrarPorStatus = function(status) {
@@ -2538,7 +2752,7 @@
             (dadosMotels[n].suites || []).forEach(function(s) {
                 var qtde = s.qtde || 1;
                 totalVagas += qtde;
-                var ocup = filtradas.filter(function(r) { return r.motel === n && r.suite === s.nome && ['confirmado','aguardando_pagamento','pendente_cartao','pendente_recepcao'].includes(r.status); }).length;
+                var ocup = filtradas.filter(function(r) { return r.motel === n && r.suite === s.nome && ['confirmado','check_in','aguardando_pagamento','pendente_cartao','pendente_recepcao'].includes(r.status); }).length;
                 totalOcupadas += ocup;
             });
             var pct = totalVagas > 0 ? Math.round((totalOcupadas / totalVagas) * 100) : 0;
@@ -2562,8 +2776,9 @@
         var aguardando = filtradas.filter(function(r) { return r.status === 'aguardando_pagamento'; }).length;
         var cartoes = filtradas.filter(function(r) { return r.status === 'pendente_cartao'; }).length;
         var pendentes = filtradas.filter(function(r) { return r.status === 'pendente_recepcao'; }).length;
+        var checkin = filtradas.filter(function(r) { return r.status === 'check_in'; }).length;
         h += '<div class="relatorio-card"><h3>❌ Cancelamentos</h3>'
-            + '<div class="relatorio-stats">' + stat(canceladas.length, 'Canceladas') + stat(taxaCancel + '%', 'Taxa') + stat(confirmadas, 'Confirmadas') + stat(aguardando, 'Aguard.') + stat(cartoes, 'Cartão') + stat(pendentes, 'Recepção') + '</div>';
+            + '<div class="relatorio-stats">' + stat(canceladas.length, 'Canceladas') + stat(taxaCancel + '%', 'Taxa') + stat(confirmadas, 'Confirmadas') + stat(aguardando, 'Aguard.') + stat(cartoes, 'Cartão') + stat(checkin, 'Check-in') + stat(pendentes, 'Recepção') + '</div>';
         var cancelPorMotel = {};
         canceladas.forEach(function(r) { cancelPorMotel[r.motel] = (cancelPorMotel[r.motel] || 0) + 1; });
         var ordenadosCancel = Object.entries(cancelPorMotel).sort(function(a, b) { return b[1] - a[1]; });
@@ -2672,12 +2887,33 @@
 
     // ====== CALENDÁRIO ======
     window.mudarMes = function(d) {
-        if (d === 0) { mesAtual = new Date().getMonth(); anoAtual = new Date().getFullYear(); }
-        else { mesAtual += d; if (mesAtual > 11) { mesAtual = 0; anoAtual++; } else if (mesAtual < 0) { mesAtual = 11; anoAtual--; } }
-        renderCalendario();
+        if (visaoCalendario === 'agenda') {
+            if (d === 0) {
+                semanaInicio = new Date();
+                semanaInicio.setDate(semanaInicio.getDate() - ((semanaInicio.getDay() + 6) % 7));
+            } else {
+                semanaInicio.setDate(semanaInicio.getDate() + d * 7);
+            }
+            semanaInicio.setHours(0,0,0,0);
+            renderAgenda();
+        } else {
+            if (d === 0) { mesAtual = new Date().getMonth(); anoAtual = new Date().getFullYear(); }
+            else { mesAtual += d; if (mesAtual > 11) { mesAtual = 0; anoAtual++; } else if (mesAtual < 0) { mesAtual = 11; anoAtual--; } }
+            renderCalendario();
+        }
+    }
+
+    window.alternarVisaoCalendario = function(v) {
+        visaoCalendario = v;
+        document.querySelectorAll('.cal-btn.view-toggle').forEach(function(b) {
+            b.classList.toggle('active', b.dataset.view === v);
+        });
+        if (v === 'agenda') renderAgenda();
+        else renderCalendario();
     }
 
     function renderCalendario() {
+        document.getElementById('contentCalendario').classList.remove('visao-agenda');
         const p = document.getElementById('calendarGrid');
         const t = new Date(anoAtual, mesAtual, 1);
         const u = new Date(anoAtual, mesAtual + 1, 0);
@@ -2687,7 +2923,6 @@
 
         const filterMotor = document.getElementById('filterMotel')?.value || '';
         const filterStatus = document.getElementById('filterStatus')?.value || '';
-        const filterDataV = document.getElementById('filterData')?.value || '';
 
         let h = '';
         nomes.forEach(n => h += `<div class="day-header">${n}</div>`);
@@ -2719,6 +2954,82 @@
         legendas.innerHTML = Object.keys(dadosMotels).map(n =>
             `<div class="cal-legend-item"><span class="dot" style="background:${dadosMotels[n].cor}"></span>${n}</div>`
         ).join('');
+    }
+
+    function renderAgenda() {
+        document.getElementById('contentCalendario').classList.add('visao-agenda');
+        const p = document.getElementById('calendarGrid');
+        const nomes = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];
+
+        const fim = new Date(semanaInicio);
+        fim.setDate(fim.getDate() + 6);
+        const fmt = function(dt) { return ('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2); };
+        document.getElementById('mesAno').textContent = fmt(semanaInicio) + ' - ' + fmt(fim) + ' de ' + semanaInicio.getFullYear();
+
+        const filterMotor = document.getElementById('filterMotel')?.value || '';
+        const filterStatus = document.getElementById('filterStatus')?.value || '';
+
+        var dias = [];
+        for (var i = 0; i < 7; i++) {
+            var dt = new Date(semanaInicio);
+            dt.setDate(dt.getDate() + i);
+            var ds = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(dt.getDate()).padStart(2,'0');
+            var hj = new Date().toDateString() === dt.toDateString();
+            dias.push({ data: ds, label: nomes[i] + ' ' + dt.getDate(), hoje: hj });
+        }
+
+        function parseHora(str) {
+            if (!str) return 0;
+            var p = str.split(':');
+            return parseInt(p[0]) + parseInt(p[1]) / 60;
+        }
+        function parseDuracao(str) {
+            if (!str) return 3;
+            var m = str.match(/(\d+)h/);
+            return m ? parseInt(m[1]) : 3;
+        }
+
+        var h = '<div class="week-grid"><div class="week-corner"></div>';
+        dias.forEach(function(d) {
+            h += '<div class="week-day-header' + (d.hoje ? ' hoje' : '') + '" onclick="window.mostrarDia(\'' + d.data + '\')">' + d.label + '</div>';
+        });
+
+        for (var hr = 0; hr < 24; hr++) {
+            var label = String(hr).padStart(2,'0') + ':00';
+            h += '<div class="week-time">' + label + '</div>';
+            dias.forEach(function(d) {
+                var blocos = '';
+                reservas.forEach(function(r) {
+                    if (r.data_reserva !== d.data) return;
+                    if (r.status === 'cancelado') return;
+                    if (filterMotor && r.motel !== filterMotor) return;
+                    if (filterStatus && r.status !== filterStatus) return;
+                    var inicio = Math.floor(parseHora(r.hora_chegada || r.horaRes || '00:00'));
+                    var duracao = parseDuracao(r.duracao);
+                    var fi = inicio + duracao;
+                    if (hr >= inicio && hr < fi && hr === inicio) {
+                        var cor = r.status === 'confirmado' ? (dadosMotels[r.motel]?.cor || '#999') :
+                                  r.status === 'check_in' ? '#0077cc' :
+                                  r.status === 'aguardando_pagamento' ? '#f39c12' :
+                                  (r.status === 'pendente_cartao' || r.status === 'pendente_recepcao') ? '#b8860b' : '#999';
+                        var alt = Math.min(duracao, fi - hr) * 48 - 4;
+                        blocos += '<div class="week-block" style="top:2px;height:'+alt+'px;background:'+cor+'" title="'+r.cliente_nome+' - '+r.motel+' - R$ '+r.preco+'" onclick="event.stopPropagation();window.verDetalhesReserva(\''+r.id+'\')">';
+                        blocos += '<div class="week-block-title">' + (r.cliente_nome || '?') + '</div>';
+                        blocos += '<div class="week-block-sub">R$ ' + r.preco + ' · ' + (r.suite || '-') + '</div>';
+                        blocos += '</div>';
+                    }
+                });
+                h += '<div class="week-cell' + (d.hoje ? ' hoje' : '') + '">' + blocos + '</div>';
+            });
+        }
+
+        h += '</div>';
+        p.innerHTML = h;
+
+        var legendas = document.getElementById('legendaMotels');
+        legendas.innerHTML = Object.keys(dadosMotels).map(function(n) {
+            return '<div class="cal-legend-item"><span class="dot" style="background:' + dadosMotels[n].cor + '"></span>' + n + '</div>';
+        }).join('');
     }
 
     window.mostrarDia = function(d) {
@@ -2792,8 +3103,9 @@
                             var topReal = (h === inicio) ? 2 : 0;
                             if (h === inicio) {
                                 var cls = r.status === 'confirmado' ? '' : r.status === 'aguardando_pagamento' ? 'background:var(--yellow)' : 'opacity:.7';
-                                var corStatus = r.status === 'confirmado' ? corMotel : r.status === 'pendente_cartao' ? '#9b59b6' : r.status === 'aguardando_pagamento' ? '#f39c12' : '#999';
-                                bloco += '<div class="agenda-block" style="top:' + topReal + 'px;height:' + (alturaReal * 36 - 4) + 'px;background:' + corStatus + ';color:#fff" onclick="event.stopPropagation();window.verDetalhesReserva(\'' + r.id + '\')">';
+                                var corStatus = r.status === 'confirmado' ? corMotel : r.status === 'check_in' ? '#0077cc' : r.status === 'pendente_cartao' ? '#b8860b' : r.status === 'pendente_recepcao' ? '#b8860b' : r.status === 'aguardando_pagamento' ? '#f39c12' : '#999';
+                                var st = r.status === 'confirmado' ? 'Confirmado - Pagamento confirmado, reserva ativa' : r.status === 'check_in' ? 'Check-in - Hóspede já deu entrada no motel' : r.status === 'aguardando_pagamento' ? 'Aguardando Pagto no Asaas - Cliente pagou via PIX, aguardando confirmação' : (r.status === 'pendente_cartao' || r.status === 'pendente_recepcao') ? 'Pagar no Motel - Cliente vai pagar no motel' : 'Cancelado - Reserva cancelada';
+                                bloco += '<div class="agenda-block" title="' + st + '" style="top:' + topReal + 'px;height:' + (alturaReal * 36 - 4) + 'px;background:' + corStatus + ';color:#fff" onclick="event.stopPropagation();window.verDetalhesReserva(\'' + r.id + '\')">';
                                 bloco += '<div style="font-weight:700">' + (r.cliente_nome || '?') + '</div>';
                                 bloco += '<div>R$ ' + r.preco + ' · ' + r.duracao + '</div>';
                                 bloco += '</div>';
@@ -2823,28 +3135,35 @@
     function renderTabela() {
         const w = document.getElementById('tabelaWrapper'), r = getFiltradas();
         if (!r.length) { w.innerHTML = '<div class="empty"><p style="font-size:2rem;margin-bottom:12px">📭</p><p>Nenhuma reserva encontrada</p></div>'; return; }
-        let h = '<table><thead><tr><th>Status</th><th>Motel</th><th>Suíte</th><th>Cliente</th><th>CPF</th><th>Data</th><th>Horário</th><th>Valor</th><th>Duração</th><th>Criação</th><th>Protocolo</th><th>Ações</th></tr></thead><tbody>';
+        let h = '<table><thead><tr><th>Status</th><th style="text-align:center">Motel</th><th>Suíte</th><th>Cliente</th><th>CPF</th><th>Data</th><th>Horário</th><th>Valor</th><th>Protocolo</th><th>Ações</th></tr></thead><tbody>';
         r.forEach(ev => {
-            const sc = ev.status === 'confirmado' ? 'status-confirmado' : ev.status === 'aguardando_pagamento' ? 'status-aguardando' : ev.status === 'pendente_cartao' ? 'status-aguardando' : ev.status === 'cancelado' ? 'status-cancelado' : 'status-pendente';
-            const sl = ev.status === 'confirmado' ? 'Confirmado' : ev.status === 'aguardando_pagamento' ? 'Aguardando Pagto' : ev.status === 'pendente_cartao' ? 'Pendente Cartão' : ev.status === 'cancelado' ? 'Cancelado' : 'Pendente';
+            const sc = ev.status === 'confirmado' ? 'status-confirmado' : ev.status === 'check_in' ? 'status-check-in' : ev.status === 'aguardando_pagamento' ? 'status-aguardando' : (ev.status === 'pendente_cartao' || ev.status === 'pendente_recepcao') ? 'status-pagar-motel' : ev.status === 'cancelado' ? 'status-cancelado' : 'status-pendente';
+            const sl = ev.status === 'confirmado' ? 'Confirmado' : ev.status === 'check_in' ? 'Check-in' : ev.status === 'aguardando_pagamento' ? 'Aguardando Pagto no Asaas' : (ev.status === 'pendente_cartao' || ev.status === 'pendente_recepcao') ? 'Pagar no Motel' : ev.status === 'cancelado' ? 'Cancelado' : 'Pendente';
+            const st = ev.status === 'confirmado' ? 'Pagamento confirmado, reserva ativa' : ev.status === 'check_in' ? 'Hóspede já deu entrada no motel' : ev.status === 'aguardando_pagamento' ? 'Cliente pagou via PIX, aguardando confirmação do Asaas' : (ev.status === 'pendente_cartao' || ev.status === 'pendente_recepcao') ? 'Cliente vai pagar no motel' : ev.status === 'cancelado' ? 'Reserva cancelada' : 'Status pendente';
             const cor = dadosMotels[ev.motel]?.cor || '#999';
-            const criado = ev.criado_em ? (function(d){ var dt=new Date(d); return ('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+' '+('0'+dt.getHours()).slice(-2)+':'+('0'+dt.getMinutes()).slice(-2); })(ev.criado_em) : '-';
             var labelPromo = ev.promocao === '30%_OFF' ? '🔥 -30%' : ev.promocao === '3h+3h' ? '⏱️ +3h' : ev.promocao === 'recepcao' ? '🏨' : '';
-            var btnConfirmar = ev.status === 'pendente_cartao' ? '<button class="btn-icon confirm" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'confirmado\')">✓</button>' : '';
+            var btnConfirmar = ev.status === 'pendente_cartao' ? '<button class="btn-icon confirm" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'confirmado\')" title="Confirmar"><i class="fas fa-check"></i></button>' : '';
             var podeExcluir = userRole === 'superadmin' || userRole === 'admin';
-            h += `<tr data-id="${ev.id}" style="cursor:pointer" onclick="window.verDetalhesReserva('${ev.id}')"><td><span class="status ${sc}">${sl}</span></td><td><span class="motel-tag" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${ev.motel || '-'}</span></td><td>${ev.suite || '-'}</td><td>${ev.cliente_nome || '-'}</td><td style="color:var(--text-tertiary);font-size:0.75rem">${ev.cliente_cpf || '-'}</td><td>${ev.data_reserva ? ev.data_reserva.split('-').reverse().join('/') : '-'}</td><td style="color:var(--text-secondary)">${ev.hora_chegada || ev.horaRes || '-'}</td><td style="font-weight:600">R$ ${ev.preco || 0}${labelPromo ? ' ' + labelPromo : ''}</td><td style="font-size:.8rem">${ev.duracao || '-'}</td><td style="font-size:0.75rem;color:var(--text-tertiary)">${criado}</td><td style="font-size:0.7rem;color:var(--text-tertiary);letter-spacing:0.5px;font-family:monospace">${ev.protocolo || '-'}</td><td>${btnConfirmar}<button class="btn-icon cancel" onclick="event.stopPropagation();window.alterarStatus('${ev.id}','cancelado')" style="margin-left:4px">✕</button>${podeExcluir ? '<button class="btn-icon delete" onclick="event.stopPropagation();window.excluirReserva(\'' + ev.id + '\')" style="margin-left:4px" title="Excluir">🗑</button>' : ''}</td></tr>`;
+            var btnCheckIn = (ev.status !== 'check_in' && ev.status !== 'cancelado') ? '<button class="btn-icon checkin" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'check_in\')" title="Dar Entrada"><i class="fas fa-map-pin"></i></button>' : '';
+            var btnCancel = (ev.status !== 'check_in') ? '<button class="btn-icon cancel" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'cancelado\')" title="Cancelar"><i class="fas fa-times"></i></button>' : '';
+            h += `<tr data-id="${ev.id}" style="cursor:pointer" onclick="window.verDetalhesReserva('${ev.id}')"><td><span class="status ${sc}" title="${st}">${sl}</span></td><td style="text-align:center"><span class="motel-tag" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${ev.motel || '-'}</span></td><td>${ev.suite || '-'}</td><td>${ev.cliente_nome || '-'}</td><td style="color:var(--text-tertiary);font-size:0.75rem">${ev.cliente_cpf || '-'}</td><td>${ev.data_reserva ? ev.data_reserva.split('-').reverse().join('/') : '-'}</td><td style="color:var(--text-secondary)">${ev.hora_chegada || ev.horaRes || '-'}</td><td style="font-weight:600">R$ ${ev.preco || 0}${labelPromo ? ' ' + labelPromo : ''}</td><td style="font-size:0.7rem;color:var(--text-tertiary);letter-spacing:0.5px;font-family:monospace">${ev.protocolo || '-'}</td><td>${btnConfirmar}${btnCheckIn}${btnCancel}${podeExcluir ? '<button class="btn-icon delete" onclick="event.stopPropagation();window.excluirReserva(\'' + ev.id + '\')" title="Excluir">🗑</button>' : ''}</td></tr>`;
         });
         h += '</tbody></table>';
         w.innerHTML = h;
     }
 
     window.alterarStatus = async function(id, s) {
+        var r = reservas.find(function(x) { return x.id === id; });
+        if (!r) return;
         if (s === 'confirmado') {
-            var r = reservas.find(function(x) { return x.id === id; });
-            if (r && r.status === 'aguardando_pagamento') {
+            if (r.status === 'aguardando_pagamento') {
                 alert('Confirmação manual não permitida para PIX. A reserva deve ser confirmada pelo Asaas.');
                 return;
             }
+        }
+        if (s === 'cancelado' && r.status === 'check_in') {
+            alert('Reserva com check-in realizado não pode ser cancelada.');
+            return;
         }
         try {
             await updateDoc(doc(db, "reservas", id), { status: s });
@@ -2860,6 +3179,11 @@
     window.excluirReserva = async function(id) {
         if (userRole !== 'superadmin' && userRole !== 'admin') {
             alert('Apenas administradores podem excluir reservas.');
+            return;
+        }
+        var r = reservas.find(function(x) { return x.id === id; });
+        if (r && r.status === 'check_in') {
+            alert('Reserva com check-in realizado não pode ser excluída.');
             return;
         }
         if (!confirm("Tem certeza que deseja excluir permanentemente esta reserva?")) return;
@@ -2882,9 +3206,10 @@
                          r.promocao === 'recepcao' ? '🏨 Recepção' :
                          (r.promocao && r.promocao !== 'nenhuma') ? r.promocao : 'Nenhuma';
         var statusLabel = r.status === 'confirmado' ? '✅ Confirmado' :
-                          r.status === 'aguardando_pagamento' ? '⏳ Aguardando Pagto' :
-                          r.status === 'pendente_cartao' ? '💳 Pendente Cartão' :
-                          r.status === 'pendente_recepcao' ? '🏨 Pendente Recepção' :
+                          r.status === 'check_in' ? '🔵 Check-in' :
+                           r.status === 'aguardando_pagamento' ? '⏳ Aguardando Pagto no Asaas' :
+                          r.status === 'pendente_cartao' ? '💳 Pagar no Motel' :
+                          r.status === 'pendente_recepcao' ? '💳 Pagar no Motel' :
                           r.status === 'cancelado' ? '❌ Cancelado' : (r.status || '-');
         var h = '<div style="padding:0">';
         h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">';
@@ -2907,6 +3232,7 @@
         h += '<div><div class="detail-label">Protocolo</div><div class="detail-value" style="font-family:monospace;font-size:.8rem">' + (r.protocolo || '-') + '</div></div>';
         h += '<div><div class="detail-label">Status</div><div class="detail-value">' + statusLabel + '</div></div>';
         h += '<div><div class="detail-label">Origem</div><div class="detail-value">' + (r.origem || '-') + '</div></div>';
+        h += '<div><div class="detail-label">Criação</div><div class="detail-value">' + (r.criado_em ? (function(d){ var dt=new Date(d); return ('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+' '+('0'+dt.getHours()).slice(-2)+':'+('0'+dt.getMinutes()).slice(-2); })(r.criado_em) : '-') + '</div></div>';
         h += '</div>';
         if (r.preco_original && Number(r.preco_original) !== Number(r.preco)) {
             h += '<div style="margin-top:12px;padding:8px 12px;background:#f39c1215;border:1px solid #f39c1230;border-radius:8px;font-size:.8rem;color:#f39c12;text-align:center">💰 ' + labelPromo + '</div>';
@@ -2934,7 +3260,7 @@
         if (window.innerWidth <= 768) {
             document.querySelector('.sidebar').classList.remove('aberta');
         }
-        document.querySelectorAll('.nav-item').forEach(b => { b.className = 'nav-item nav-child' + (b.dataset.view === v ? ' ativo' : ''); });
+        document.querySelectorAll('.nav-item').forEach(b => { b.classList.toggle('ativo', b.dataset.view === v); });
         // Expandir submenu pai quando um filho for ativado
         document.querySelectorAll('.nav-parent').forEach(function(p) {
             var sub = p.nextElementSibling;
@@ -3669,6 +3995,11 @@
     }
 
     window.toggleSubmenu = function(btn) {
+        var sidebar = document.querySelector('.sidebar');
+        if (sidebar.classList.contains('recolhida')) {
+            sidebar.classList.remove('recolhida');
+            document.querySelector('.toggle-sidebar').textContent = '◀';
+        }
         btn.classList.toggle('aberto');
         var sub = btn.nextElementSibling;
         if (sub && sub.classList.contains('submenu')) {
@@ -3692,12 +4023,36 @@
         const nova = atual === 'noir' ? 'light' : 'noir';
         html.setAttribute('data-theme', nova);
         localStorage.setItem('dashTheme', nova);
-        document.getElementById('temaBtn').textContent = nova === 'noir' ? '☀️ Claro' : '🌙 Noturno';
+        var tb = document.getElementById('temaBtn');
+        tb.querySelector('span:first-child').textContent = nova === 'noir' ? '☀️' : '🌙';
+        tb.querySelector('.label').textContent = nova === 'noir' ? ' Claro' : ' Noturno';
     }
 
     document.addEventListener('keydown', function(e) {
         if (e.ctrlKey && e.key === 'b') { e.preventDefault(); window.toggleSidebar(); }
     });
+
+    // Sidebar: expandir ao hover quando recolhida
+    (function() {
+        var sidebar = document.querySelector('.sidebar');
+        var foiRecolhida = false;
+        sidebar.addEventListener('mouseenter', function() {
+            foiRecolhida = this.classList.contains('recolhida');
+            if (foiRecolhida) {
+                this.classList.remove('recolhida');
+                var tb = document.querySelector('.toggle-sidebar');
+                if (tb) tb.textContent = '◀';
+            }
+        });
+        sidebar.addEventListener('mouseleave', function() {
+            if (foiRecolhida) {
+                this.classList.add('recolhida');
+                var tb = document.querySelector('.toggle-sidebar');
+                if (tb) tb.textContent = '▶';
+                foiRecolhida = false;
+            }
+        });
+    })();
 
     // Close mobile sidebar when clicking outside
     document.addEventListener('click', function(e) {
