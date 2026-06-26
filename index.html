@@ -769,7 +769,7 @@
                     var token = (motelAtual ? motelAtual.token_asaas : '') || localStorage.getItem('ultimo_token_asaas') || '';
                     var resp = await fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'verificar_pagamento', payment_id:pid, cliente_cpf:cpf, token_asaas:token }) });
                     var result = await resp.json();
-                    if (result.pago) {
+                    if (result.pago && result.status === 'RECEIVED') {
                         clearInterval(window.pagamentoPollInterval);
                         window.pagamentoPollInterval = null;
                         userData.statusVoucher = 'CONFIRMADO';
@@ -781,7 +781,12 @@
                         if (db) {
                             var qP = await db.collection("reservas").where("payment_id", "==", pid).limit(1).get();
                             if (!qP.empty) {
-                                await qP.docs[0].ref.update({ status: 'confirmado' }).catch(function(e){ console.warn("Falha ao atualizar status:", e); });
+                                await qP.docs[0].ref.update({ 
+                                    status: 'confirmado',
+                                    status_atualizado_em: new Date().toISOString(),
+                                    status_origem: 'frontend_polling_asaas',
+                                    status_asaas_confirmado: result.status 
+                                }).catch(function(e){ console.warn("[AUDIT] Falha ao atualizar status:", e); });
                             }
                         }
                         addMsg("✅ <b>Pagamento confirmado!</b> Sua reserva está agendada.", 'bot');
@@ -857,7 +862,7 @@
             try {
                 var resp = await fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'verificar_pagamento', payment_id:userData.paymentId, cliente_cpf:userData.cpf, token_asaas:tokenAsaas }) });
                 var result = await resp.json();
-                if (result.pago) {
+                if (result.pago && result.status === 'RECEIVED') {
                     userData.statusVoucher = 'CONFIRMADO';
                     localStorage.removeItem('ultimo_payment_id');
                     localStorage.removeItem('ultimo_cpf');
@@ -874,7 +879,14 @@
                             var q2 = await db.collection("reservas").where("protocolo", "==", userData.protocolo).limit(1).get();
                             if (!q2.empty) ref = q2.docs[0].ref;
                         }
-                        if (ref) await ref.update({ status: 'confirmado' }).catch(function(e){ console.warn("Falha ao atualizar status:", e); });
+                        if (ref) {
+                            await ref.update({ 
+                                status: 'confirmado',
+                                status_atualizado_em: new Date().toISOString(),
+                                status_origem: 'frontend_verificacao_manual',
+                                status_asaas_confirmado: result.status 
+                            }).catch(function(e){ console.warn("[AUDIT] Falha ao atualizar status:", e); });
+                        }
                     }
                     addMsg("✅ <b>Pagamento confirmado!</b> Sua reserva está agendada.", 'bot');
                     addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
