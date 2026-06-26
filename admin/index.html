@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel v06</title>
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+    <title>Moteis Fortaleza - Painel v08</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -2088,8 +2088,8 @@
                 <button class="nav-item nav-child" id="navNps" data-view="nps" onclick="window.alternarVisao('nps')">
                     <span>📝</span>
                     <span>Pesquisa NPS <span style="font-size:.6rem;background:var(--yellow);color:#000;padding:2px 6px;border-radius:8px;font-weight:600">EM BREVE</span></span>
-                </button>
-            </div>
+            </button>
+        </div>
         </div>
 
         <div class="sidebar-footer">
@@ -2885,7 +2885,7 @@
         });
     }
 
-    // ====== CALENDÁRIO ======
+    // ====== CALENDÁRIO / AGENDA ======
     window.mudarMes = function(d) {
         if (visaoCalendario === 'agenda') {
             if (d === 0) {
@@ -3104,8 +3104,7 @@
                             if (h === inicio) {
                                 var cls = r.status === 'confirmado' ? '' : r.status === 'aguardando_pagamento' ? 'background:var(--yellow)' : 'opacity:.7';
                                 var corStatus = r.status === 'confirmado' ? corMotel : r.status === 'check_in' ? '#0077cc' : r.status === 'pendente_cartao' ? '#b8860b' : r.status === 'pendente_recepcao' ? '#b8860b' : r.status === 'aguardando_pagamento' ? '#f39c12' : '#999';
-                                var st = r.status === 'confirmado' ? 'Confirmado - Pagamento confirmado, reserva ativa' : r.status === 'check_in' ? 'Check-in - Hóspede já deu entrada no motel' : r.status === 'aguardando_pagamento' ? 'Aguardando Pagto no Asaas - Cliente pagou via PIX, aguardando confirmação' : (r.status === 'pendente_cartao' || r.status === 'pendente_recepcao') ? 'Pagar no Motel - Cliente vai pagar no motel' : 'Cancelado - Reserva cancelada';
-                                bloco += '<div class="agenda-block" title="' + st + '" style="top:' + topReal + 'px;height:' + (alturaReal * 36 - 4) + 'px;background:' + corStatus + ';color:#fff" onclick="event.stopPropagation();window.verDetalhesReserva(\'' + r.id + '\')">';
+                                bloco += '<div class="agenda-block" style="top:' + topReal + 'px;height:' + (alturaReal * 36 - 4) + 'px;background:' + corStatus + ';color:#fff" onclick="event.stopPropagation();window.verDetalhesReserva(\'' + r.id + '\')">';
                                 bloco += '<div style="font-weight:700">' + (r.cliente_nome || '?') + '</div>';
                                 bloco += '<div>R$ ' + r.preco + ' · ' + r.duracao + '</div>';
                                 bloco += '</div>';
@@ -3165,8 +3164,68 @@
             alert('Reserva com check-in realizado não pode ser cancelada.');
             return;
         }
+
+        // [FIX 3] Trava de segurança: validar pagamento no Asaas ANTES de liberar check-in
+        if (s === 'check_in') {
+            var tokenMotel = (dadosMotels[r.motel] && dadosMotels[r.motel].token_asaas) ? dadosMotels[r.motel].token_asaas : '';
+            var paymentId  = r.payment_id || '';
+
+            // Se não é PIX (sem payment_id), permite check-in direto (cartão/recepção)
+            if (paymentId && tokenMotel) {
+                var btnCheckInEl = document.querySelector('[onclick*="alterarStatus(\'' + id + '\',\'check_in\'"]');
+                if (btnCheckInEl) {
+                    btnCheckInEl.disabled = true;
+                    btnCheckInEl.title = 'Verificando pagamento no Asaas...';
+                }
+                try {
+                    var respValidar = await fetch(APP_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({
+                            acao:        'checkin_validar',
+                            payment_id:  paymentId,
+                            token_asaas: tokenMotel,
+                            reserva_id:  id
+                        })
+                    });
+                    var resValidar = await respValidar.json();
+
+                    if (!resValidar.aprovado) {
+                        // [AUDIT] Bloquear tentativa de check-in sem pagamento
+                        console.warn('[CHECKIN BLOQUEADO] reserva:', id, '| payment_id:', paymentId, '| status Asaas:', resValidar.status_asaas, '| motivo:', resValidar.motivo);
+                        alert('⚠️ Check-in BLOQUEADO\n\nPagamento não confirmado no Asaas.\n\nStatus atual: ' + (resValidar.status_asaas || 'desconhecido') + '\n\n' + (resValidar.motivo || 'Aguarde a confirmação do pagamento.'));
+                        if (btnCheckInEl) {
+                            btnCheckInEl.disabled = false;
+                            btnCheckInEl.title = 'Dar Entrada';
+                        }
+                        return;
+                    }
+                    console.log('[CHECKIN APROVADO] reserva:', id, '| status Asaas:', resValidar.status_asaas);
+                } catch(e) {
+                    // Falha de rede: não bloquear por falha técnica, mas alertar
+                    console.error('[CHECKIN] Falha ao validar no Asaas:', e);
+                    var prosseguir = confirm('⚠️ Não foi possível verificar o pagamento no Asaas (erro de rede).\n\nDeseja prosseguir com o check-in mesmo assim?');
+                    if (!prosseguir) {
+                        if (btnCheckInEl) { btnCheckInEl.disabled = false; btnCheckInEl.title = 'Dar Entrada'; }
+                        return;
+                    }
+                }
+            }
+        }
+
         try {
-            await updateDoc(doc(db, "reservas", id), { status: s });
+            // [AUDIT] Salva origem da mudança de status em todas as transições
+            var operadorUid = (typeof auth !== 'undefined' && auth.currentUser) ? auth.currentUser.uid : 'desconhecido';
+            var origemStatus = s === 'check_in' ? 'dashboard_checkin_manual' :
+                               s === 'confirmado' ? 'dashboard_confirmacao_manual' :
+                               s === 'cancelado'  ? 'dashboard_cancelamento_manual' : 'dashboard_manual';
+
+            await updateDoc(doc(db, "reservas", id), {
+                status:               s,
+                status_atualizado_em: new Date().toISOString(),
+                status_origem:        origemStatus,
+                status_operador_uid:  operadorUid
+            });
             await carregarReservas();
             atualizarEstatisticas();
             renderCalendario();
@@ -4089,7 +4148,7 @@
     }
     (function() {
         const saved = localStorage.getItem('dashTheme');
-        if (saved) { document.documentElement.setAttribute('data-theme', saved); document.getElementById('temaBtn').textContent = saved === 'noir' ? '☀️ Claro' : '🌙 Noturno'; }
+        if (saved) { document.documentElement.setAttribute('data-theme', saved); var tb=document.getElementById('temaBtn'); tb.querySelector('span:first-child').textContent = saved === 'noir' ? '☀️' : '🌙'; tb.querySelector('.label').textContent = saved === 'noir' ? ' Claro' : ' Noturno'; }
         const logoUrl = localStorage.getItem('dashLogo');
         if (logoUrl) exibirLogo(logoUrl);
     })();
