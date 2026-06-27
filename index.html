@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Pré-Reserva - Rede de Motéis v03</title>
+    <title>Pré-Reserva - Rede de Motéis v04</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
@@ -921,7 +921,14 @@
                         addMsg("⚠️ Pagamento confirmado no Asaas, mas não encontramos sua reserva no sistema. Contate a recepção informando o protocolo: " + (userData.protocolo || ''), 'bot');
                     }
                 }
-                else { addMsg('⏳ Pagamento com status: <b>' + (result.status || 'não encontrado') + '</b>. Se já pagou, aguarde alguns instantes e tente novamente.', 'bot'); }
+                else {
+                    var msgStatus = result.status || 'não encontrado';
+                    var msgTexto = msgStatus === 'OVERDUE' ? '⚠️ O prazo do PIX venceu. Sua reserva será cancelada. Faça uma nova reserva se desejar.' :
+                                  msgStatus === 'PENDING' ? '⏳ PIX gerado mas ainda não pago. O link expira em alguns minutos.' :
+                                  msgStatus === 'CONFIRMED' ? '⏳ Pagamento registrado mas ainda não recebido. Aguarde a confirmação.' :
+                                  '⏳ Pagamento com status: <b>' + msgStatus + '</b>. Se já pagou, aguarde instantes e tente novamente.';
+                    addMsg(msgTexto, 'bot');
+                }
             } catch(e) { addMsg("⚠️ Erro ao verificar pagamento. Tente novamente.", 'bot'); }
         };
 
