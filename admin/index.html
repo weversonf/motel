@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel v07</title>
+    <title>Moteis Fortaleza - Painel v08</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -2412,7 +2412,6 @@
             ],token_asaas:""},
             "Dreams":{cor:"#00ff88",icone:"✨",suites:[
                 {nome:"Suíte Delirius",preco3:127,preco12:242,preco24:512,fracao:11,qtde:31,descricao:"TV, Sistema de DVD, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
-                {nome:"Suíte Romântica",preco3:152,preco12:286,preco24:589,fracao:12,qtde:1,descricao:"Hidromassagem com iluminação Cromoterapia, Sala de Jantar, Poltrona, TV, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
                 {nome:"Suíte Sonho",preco3:167,preco12:312,preco24:635,fracao:14,qtde:7,descricao:"TV Smart, Alexa, Poltrona Erótica, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
                 {nome:"Suíte Fantasia",preco3:180,preco12:335,preco24:675,fracao:15,qtde:6,descricao:"Piscina ao Ar Livre, Hidromassagem com iluminação Cromoterapia, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
                 {nome:"Suíte Sonho Amado",preco3:193,preco12:357,preco24:713,fracao:17,qtde:8,descricao:"TV Smart, Alexa, Hidromassagem com iluminação Cromoterapia, Poltrona Erótica, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
@@ -2494,7 +2493,7 @@
         document.getElementById('userRole').textContent = label;
         var acessoTotal = role === 'superadmin' || role === 'admin';
         document.getElementById('navRelatorios').style.display = '';
-        document.getElementById('navGerenciar').style.display = '';
+        document.getElementById('navGerenciar').style.display = acessoTotal ? '' : 'none';
         document.getElementById('navAPI').style.display = acessoTotal ? '' : 'none';
         document.getElementById('navUsuarios').style.display = acessoTotal ? '' : 'none';
         var temFilhoSistema = ['navGerenciar','navUsuarios','navAPI'].some(function(id) {
