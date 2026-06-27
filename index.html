@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Pré-Reserva - Rede de Motéis v02</title>
+    <title>Pré-Reserva - Rede de Motéis v03</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
@@ -144,7 +144,6 @@
             ]},
             "Dreams":{cor:"#00ff88",icone:"✨",token_asaas:"",suites:[
                 {nome:"Suíte Delirius",preco3:127,preco12:242,preco24:512,fracao:11,qtde:31,descricao:"TV, Sistema de DVD, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
-                {nome:"Suíte Romântica",preco3:152,preco12:286,preco24:589,fracao:12,qtde:1,descricao:"Hidromassagem com iluminação Cromoterapia, Sala de Jantar, Poltrona, TV, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
                 {nome:"Suíte Sonho",preco3:167,preco12:312,preco24:635,fracao:14,qtde:7,descricao:"TV Smart, Alexa, Poltrona Erótica, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
                 {nome:"Suíte Fantasia",preco3:180,preco12:335,preco24:675,fracao:15,qtde:6,descricao:"Piscina ao Ar Livre, Hidromassagem com iluminação Cromoterapia, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
                 {nome:"Suíte Sonho Amado",preco3:193,preco12:357,preco24:713,fracao:17,qtde:8,descricao:"TV Smart, Alexa, Hidromassagem com iluminação Cromoterapia, Poltrona Erótica, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
@@ -683,18 +682,28 @@
                 criado_em: new Date().toISOString(),
                 token_asaas: motelAtual ? (motelAtual.token_asaas || '') : ''
             };
+            if (!db) {
+                addMsg("❌ Sistema de banco de dados indisponível. Contate a recepção.", 'bot');
+                return;
+            }
             var reservaId = null;
             try {
-                if (db) {
-                    if (userData.alterandoReserva && userData.reservaExistenteId) {
-                        await db.collection("reservas").doc(userData.reservaExistenteId).update({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, token_asaas:payload.token_asaas });
-                        reservaId = userData.reservaExistenteId;
-                    } else {
-                        var ref = await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:payload.token_asaas });
-                        reservaId = ref.id;
-                    }
+                if (userData.alterandoReserva && userData.reservaExistenteId) {
+                    await db.collection("reservas").doc(userData.reservaExistenteId).update({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, token_asaas:payload.token_asaas });
+                    reservaId = userData.reservaExistenteId;
+                } else {
+                    var ref = await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:payload.token_asaas });
+                    reservaId = ref.id;
                 }
-            } catch(e) { console.warn("Firebase save/update fail:", e); }
+            } catch(e) {
+                console.warn("[AUDIT] Firebase save/update fail:", e);
+                addMsg("❌ Erro ao salvar reserva. Tente novamente ou contate a recepção.", 'bot');
+                return;
+            }
+            if (!reservaId) {
+                addMsg("❌ Erro ao criar reserva. Tente novamente.", 'bot');
+                return;
+            }
 
             var isAlteracao = userData.alterandoReserva === true;
             var tituloSucesso = isAlteracao ? "✅ <b>Pré-Reserva Alterada!</b>" : "✅ <b>Pré-Reserva Registrada!</b>";
@@ -730,15 +739,18 @@
                     console.warn("ASAAS error:", errorPagamento);
                 } else {
                     if (result.pagamento_url) paymentUrl = result.pagamento_url;
-                    if (result.payment_id) {
+                    if (result.payment_id && reservaId) {
                         userData.paymentId = result.payment_id;
-                        localStorage.setItem('ultimo_payment_id', result.payment_id);
-                        localStorage.setItem('ultimo_cpf', userData.cpf);
-                        localStorage.setItem('ultimo_motel', userData.motel);
-                        localStorage.setItem('ultimo_protocolo', userData.protocolo);
-                        localStorage.setItem('ultimo_token_asaas', payload.token_asaas || '');
-                        if (reservaId) {
-                            await db.collection("reservas").doc(reservaId).update({ payment_id: result.payment_id }).catch(function(){});
+                        try {
+                            await db.collection("reservas").doc(reservaId).update({ payment_id: result.payment_id });
+                            localStorage.setItem('ultimo_payment_id', result.payment_id);
+                            localStorage.setItem('ultimo_cpf', userData.cpf);
+                            localStorage.setItem('ultimo_motel', userData.motel);
+                            localStorage.setItem('ultimo_protocolo', userData.protocolo);
+                            localStorage.setItem('ultimo_token_asaas', payload.token_asaas || '');
+                        } catch(e) {
+                            console.warn("[AUDIT] Falha ao salvar payment_id no Firestore:", e);
+                            errorPagamento = 'Pagamento criado mas não foi possível vincular à reserva. Contate a recepção.';
                         }
                     }
                     if (result.erro) { console.warn("ASAAS error:", result.erro); errorPagamento = result.erro; }
@@ -784,6 +796,7 @@
                         localStorage.removeItem('ultimo_motel');
                         localStorage.removeItem('ultimo_protocolo');
                         localStorage.removeItem('ultimo_token_asaas');
+                        var encontrouReserva = false;
                         if (db) {
                             var qP = await db.collection("reservas").where("payment_id", "==", pid).limit(1).get();
                             if (!qP.empty) {
@@ -793,10 +806,15 @@
                                     status_origem: 'frontend_polling_asaas',
                                     status_asaas_confirmado: result.status 
                                 }).catch(function(e){ console.warn("[AUDIT] Falha ao atualizar status:", e); });
+                                encontrouReserva = true;
                             }
                         }
-                        addMsg("✅ <b>Pagamento confirmado!</b> Sua reserva está agendada.", 'bot');
-                        addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
+                        if (encontrouReserva) {
+                            addMsg("✅ <b>Pagamento confirmado!</b> Sua reserva está agendada.", 'bot');
+                            addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
+                        } else {
+                            addMsg("⚠️ Pagamento confirmado, mas não encontramos sua reserva. Contate a recepção informando o protocolo.", 'bot');
+                        }
                     }
                 } catch(e) { console.warn("Polling error:", e); }
             }, 10000);
@@ -875,6 +893,7 @@
                     localStorage.removeItem('ultimo_motel');
                     localStorage.removeItem('ultimo_protocolo');
                     localStorage.removeItem('ultimo_token_asaas');
+                    var reservaAtualizada = false;
                     if (db) {
                         var ref = reservaDocId ? db.collection("reservas").doc(reservaDocId) : null;
                         if (!ref && userData.paymentId) {
@@ -892,10 +911,15 @@
                                 status_origem: 'frontend_verificacao_manual',
                                 status_asaas_confirmado: result.status 
                             }).catch(function(e){ console.warn("[AUDIT] Falha ao atualizar status:", e); });
+                            reservaAtualizada = true;
                         }
                     }
-                    addMsg("✅ <b>Pagamento confirmado!</b> Sua reserva está agendada.", 'bot');
-                    addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
+                    if (reservaAtualizada) {
+                        addMsg("✅ <b>Pagamento confirmado!</b> Sua reserva está agendada.", 'bot');
+                        addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
+                    } else {
+                        addMsg("⚠️ Pagamento confirmado no Asaas, mas não encontramos sua reserva no sistema. Contate a recepção informando o protocolo: " + (userData.protocolo || ''), 'bot');
+                    }
                 }
                 else { addMsg('⏳ Pagamento com status: <b>' + (result.status || 'não encontrado') + '</b>. Se já pagou, aguarde alguns instantes e tente novamente.', 'bot'); }
             } catch(e) { addMsg("⚠️ Erro ao verificar pagamento. Tente novamente.", 'bot'); }
