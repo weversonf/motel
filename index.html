@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Pré-Reserva - Rede de Motéis v04</title>
+    <title>Pré-Reserva - Rede de Motéis v05</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
@@ -664,7 +664,7 @@
             var isRecepcao = userData.promocao === 'recepcao';
             var isCartao = userData.promocao === 'cartao';
             var isPix = !isRecepcao && !isCartao && !modoTeste;
-            userData.statusVoucher = isRecepcao ? 'PENDENTE' : isCartao ? 'PENDENTE CARTAO' : isPix ? 'AGUARDANDO PAGAMENTO' : 'CONFIRMADO';
+            userData.statusVoucher = isRecepcao ? 'PENDENTE' : isCartao ? 'FALTA PAGAR - EFETUAR NO MOTEL' : isPix ? 'AGUARDANDO PAGAMENTO' : 'CONFIRMADO';
             var payload = {
                 motel: userData.motel,
                 suite: userData.suite,
@@ -936,7 +936,7 @@
             var m = motels[userData.motel] || {};
             var protocolo = userData.protocolo || new Date().getTime().toString(36).toUpperCase();
             var statusTexto = userData.statusVoucher || 'CONFIRMADO';
-            var statusIcon = statusTexto === 'CONFIRMADO' ? '✅' : statusTexto === 'PENDENTE' ? '⏳' : '🟡';
+            var statusIcon = statusTexto === 'CONFIRMADO' ? '✅' : (statusTexto.indexOf('FALTA PAGAR') >= 0 || statusTexto === 'PENDENTE') ? '⏳' : '🟡';
             var cor = m.cor || '#d20150';
             addMsg('<div style="background:#fff;border:1px solid #e0d0e8;border-radius:16px;padding:16px;max-width:100%">'
                 + '<div style="text-align:center;border-bottom:2px solid ' + cor + ';padding-bottom:12px;margin-bottom:14px">'
