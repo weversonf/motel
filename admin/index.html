@@ -1,9 +1,9 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel v08</title>
+    <title>Moteis Fortaleza - Painel v07</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -3159,6 +3159,35 @@
                 alert('Confirmação manual não permitida para PIX. A reserva deve ser confirmada pelo Asaas.');
                 return;
             }
+            if (r.status === 'pendente_cartao' && r.payment_id) {
+                var tokenMotelConfirm = (dadosMotels[r.motel] && dadosMotels[r.motel].token_asaas) ? dadosMotels[r.motel].token_asaas : '';
+                if (tokenMotelConfirm) {
+                    var confirmOk = confirm('Esta reserva possui um payment_id do Asaas. Deseja validar o status do pagamento antes de confirmar?');
+                    if (confirmOk) {
+                        try {
+                            var respConfirm = await fetch(APP_SCRIPT_URL, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                                body: JSON.stringify({
+                                    acao: 'checkin_validar',
+                                    payment_id: r.payment_id,
+                                    token_asaas: tokenMotelConfirm,
+                                    reserva_id: id
+                                })
+                            });
+                            var resConfirm = await respConfirm.json();
+                            if (!resConfirm.aprovado) {
+                                alert('⚠️ Confirmação BLOQUEADA\n\nPagamento não confirmado no Asaas.\nStatus: ' + (resConfirm.status_asaas || 'desconhecido') + '\n\n' + (resConfirm.motivo || 'Aguarde o pagamento ser recebido.'));
+                                return;
+                            }
+                        } catch(e) {
+                            console.error('[CONFIRMAR] Falha ao validar no Asaas:', e);
+                            var prosseguir = confirm('⚠️ Não foi possível verificar o pagamento no Asaas (erro de rede).\n\nDeseja prosseguir com a confirmação mesmo assim?');
+                            if (!prosseguir) return;
+                        }
+                    }
+                }
+            }
         }
         if (s === 'cancelado' && r.status === 'check_in') {
             alert('Reserva com check-in realizado não pode ser cancelada.');
@@ -3170,8 +3199,16 @@
             var tokenMotel = (dadosMotels[r.motel] && dadosMotels[r.motel].token_asaas) ? dadosMotels[r.motel].token_asaas : '';
             var paymentId  = r.payment_id || '';
 
-            // Se não é PIX (sem payment_id), permite check-in direto (cartão/recepção)
-            if (paymentId && tokenMotel) {
+            // Se tem payment_id, valida SEMPRE no Asaas, independente de ter token nos dados locais
+            if (paymentId) {
+                if (!tokenMotel) {
+                    // Tenta usar o token salvo na própria reserva (fallback)
+                    tokenMotel = r.token_asaas || '';
+                }
+                if (!tokenMotel) {
+                    alert('⚠️ Check-in BLOQUEADO\n\nEsta reserva possui um payment_id do Asaas, mas não foi encontrada a chave de API (token_asaas) para validar o pagamento.\n\nEntre em Configurações > API para configurar o token do motel.');
+                    return;
+                }
                 var btnCheckInEl = document.querySelector('[onclick*="alterarStatus(\'' + id + '\',\'check_in\'"]');
                 if (btnCheckInEl) {
                     btnCheckInEl.disabled = true;
