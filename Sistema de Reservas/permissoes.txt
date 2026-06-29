@@ -1,0 +1,25 @@
+PERMISSÕES DO SISTEMA — ROSE
+=============================
+Legenda:  ✅ = Acesso liberado  |  ❌ = Acesso negado
+
+MENU                      | Funcionário | Admin | Adm Master
+--------------------------|:-----------:|:-----:|:----------:
+Calendário                |     ✅      |   ✅  |     ✅
+Tabela                    |     ✅      |   ✅  |     ✅
+Relatórios                |     ✅      |   ✅  |     ✅
+Sistema → Configurações   |     ✅      |   ✅  |     ✅
+Sistema → Usuários        |     ❌      |   ✅  |     ✅
+Sistema → API             |     ❌      |   ✅  |     ✅
+Ferramentas → Encurtador  |     ✅      |   ✅  |     ✅
+Ferramentas → Pesquisa NPS (EM BREVE)| ❌ | ❌ | ✅
+
+PÁGINAS PÚBLICAS
+----------------
+link.html  →  Leitura pública (sem login)
+nps.html   →  Leitura pública + envio de resposta (sem login)
+
+REGRAS DO FIRESTORE (firestore.rules)
+-------------------------------------
+estabelecimentos/{id}/linktree/{link}      →  Leitura: pública  | Escrita: autenticado
+estabelecimentos/{id}/config/nps            →  Leitura: pública  | Escrita: autenticado
+estabelecimentos/{id}/nps_respostas/{resp}  →  Leitura: autenticado | Criação: pública

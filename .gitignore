@@ -1,5 +1,7 @@
 *.xlsx
 *.pdf
 ~$*
-v02/
+Sistema de Reservas/v02/node_modules/
+Sistema de Reservas/v02/node_modules_old/
+Sistema de Reservas/v02/dist/
 .git/
