@@ -399,6 +399,22 @@
             setTimeout(nextStep, 400);
         };
 
+        function parseTime(str) {
+            if (!str) return 0;
+            var p = str.split(':');
+            return parseInt(p[0]) + parseInt(p[1]) / 60;
+        }
+        function parseDuration(str) {
+            if (!str) return 3;
+            var m = str.match(/(\d+)h/);
+            return m ? parseInt(m[1]) : 3;
+        }
+        function formatTime(h) {
+            var hours = Math.floor(h) % 24;
+            var mins = Math.round((h - Math.floor(h)) * 60);
+            return String(hours).padStart(2, '0') + ':' + String(mins).padStart(2, '0');
+        }
+
         async function verificarDisponibilidade(data) {
             var msgDiv = document.getElementById('disponibilidadeMsg');
             if (!msgDiv) return true;
@@ -420,6 +436,36 @@
                     if (sf) qtdeTotal = sf.qtde || 1;
                 }
                 var reservasSuite = reservasData.filter(function(r){ return r.motel === userData.motel && r.suite === userData.suite; });
+
+                // Verificação por PERÍODO (overlap de horários)
+                if (userData.horaRes && userData.duracao) {
+                    var userStart = parseTime(userData.horaRes);
+                    var userDur = parseDuration(userData.duracao);
+                    var userEnd = userStart + userDur;
+                    var conflitos = reservasSuite.filter(function(r) {
+                        var rStart = parseTime(r.hora_chegada || r.horaRes || '00:00');
+                        var rDur = parseDuration(r.duracao || '3h');
+                        var rEnd = rStart + rDur;
+                        return userStart < rEnd && rStart < userEnd;
+                    });
+                    if (conflitos.length >= qtdeTotal) {
+                        var horariosOcupados = conflitos.map(function(r){ return (r.hora_chegada || r.horaRes || '?') + ' (' + (r.duracao || '3h') + ')'; }).join(', ');
+                        var msg = '❌ <b>' + userData.suite + '</b> não disponível para ' + userData.horaRes + ' - ' + formatTime(userEnd) + '.<br><br>'
+                            + '🕐 <b>Horários ocupados:</b> ' + horariosOcupados + '<br><br>'
+                            + '<small style="color:#888">Escolha outro horário ou clique em ← Voltar</small>';
+                        msgDiv.innerHTML = msg;
+                        msgDiv.style.background = 'rgba(255,0,0,0.15)';
+                        msgDiv.style.color = '#ff6666';
+                        return false;
+                    }
+                    var vagasRestantes = qtdeTotal - conflitos.length;
+                    msgDiv.innerHTML = '✅ Horário disponível! (' + vagasRestantes + ' vaga(s) restante(s) para ' + userData.horaRes + ' - ' + formatTime(userEnd) + ')';
+                    msgDiv.style.background = 'rgba(0,255,0,0.1)';
+                    msgDiv.style.color = 'var(--primary)';
+                    return true;
+                }
+
+                // Verificação por DATA (sem horário definido ainda)
                 if (reservasSuite.length >= qtdeTotal) {
                     var motelsLivres = Object.keys(motels).filter(function(nomeMotel){
                         if (nomeMotel === userData.motel) return false;
@@ -517,7 +563,15 @@
                 var agora = new Date();
                 var dataEscolhida = new Date(userData.dataRes + 'T' + hora + ':00');
                 if (dataEscolhida < agora) { alert("⚠️ Horário inválido. Escolha um horário futuro."); return; }
-                addMsg(hora, 'user'); userData.horaRes = hora; step++;
+                userData.horaRes = hora;
+                var disponivel = await verificarDisponibilidade(userData.dataRes);
+                if (!disponivel) {
+                    userData.horaRes = '';
+                    document.getElementById('uiHoraRes').value = '';
+                    document.getElementById('uiHoraRes').focus();
+                    return;
+                }
+                addMsg(hora, 'user'); step++;
             }
             removerUIAnterior();
             setTimeout(nextStep, 500);
