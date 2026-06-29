@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel v10</title>
+    <title>Moteis Fortaleza - Painel v11</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -938,6 +938,20 @@
             border-color: var(--accent-primary);
             box-shadow: 0 0 0 3px rgba(196, 78, 255, 0.08);
         }
+
+        .btn-refresh {
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            background: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            line-height: 1;
+        }
+        .btn-refresh:hover { border-color: var(--accent-primary); background: var(--bg-hover); }
+        .btn-refresh:active { transform: scale(0.95); }
 
         table {
             width: 100%;
@@ -2207,6 +2221,7 @@
                         </select>
                         <input type="text" id="filterCliente" class="filter-input" placeholder="Cliente..." onkeyup="window.filtrarTabela()">
                         <input type="text" id="filterCpf" class="filter-input" placeholder="CPF..." onkeyup="window.filtrarTabela()" style="max-width:120px">
+                        <button class="btn-refresh" onclick="window.atualizarTabela()" title="Atualizar dados">🔄</button>
                     </div>
                 </div>
                 <div id="tabelaWrapper"></div>
@@ -2574,6 +2589,22 @@
         atualizarEstatisticas();
         renderCalendario();
         renderGerenciar();
+        iniciarPollingAuto();
+    }
+
+    var pollingInterval = null;
+    function iniciarPollingAuto() {
+        if (pollingInterval) clearInterval(pollingInterval);
+        pollingInterval = setInterval(async function() {
+            try {
+                var antes = reservas.length;
+                await carregarReservas();
+                if (reservas.length !== antes) {
+                    var tabAtiva = document.querySelector('.table-filters');
+                    if (tabAtiva) { popularFiltrosTabela(); renderTabela(); atualizarEstatisticas(); renderCalendario(); }
+                }
+            } catch(e) {}
+        }, 15000);
     }
 
     function preencherSuite(s) {
@@ -2860,6 +2891,17 @@
     window.filtrarTabela = function() {
         // cliente e cpf só filtram com 3+ caracteres
         renderTabela();
+    }
+
+    window.atualizarTabela = function() {
+        var btn = document.querySelector('.btn-refresh');
+        btn.textContent = '⏳';
+        btn.disabled = true;
+        renderTabela();
+        setTimeout(function() {
+            btn.textContent = '🔄';
+            btn.disabled = false;
+        }, 1500);
     }
 
     function getFiltradas() {
