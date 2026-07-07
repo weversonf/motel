@@ -1,272 +1,734 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Motéis em Fortaleza - Sua melhor experiência</title>
-  <meta name="description" content="Encontre os melhores motéis em Fortaleza. Dragon Motel, Assahi Motel, Dreams Motel e Spa Urbano. Reserve agora e aproveite momentos inesquecíveis.">
-  <meta property="og:title" content="Motéis em Fortaleza - Sua melhor experiência">
-  <meta property="og:description" content="Encontre os melhores motéis em Fortaleza. Conforto, privacidade e momentos inesquecíveis.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://moteisfortaleza.com.br">
-  <meta property="og:image" content="https://moteisfortaleza.com.br/img/moteis/dragon-motel.jpg">
-  <meta property="og:locale" content="pt_BR">
-  <meta name="robots" content="index, follow">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" type="image/svg+xml" href="favicon.svg">
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- ===== TOP BAR ===== -->
-  <div class="topbar">
-    <div class="container">
-      <div class="topbar-left">
-        <span>📞 (85) 8774-0048</span>
-        <span>📍 Fortaleza - CE</span>
-      </div>
-      <div class="topbar-right">
-        <a href="#" aria-label="Facebook">📘</a>
-        <a href="#" aria-label="Instagram">📷</a>
-      </div>
+    <title>Motéis Fortaleza | Melhores Motéis de Fortaleza</title>
+    <meta name="description" content="Grupo Motéis Fortaleza: Assahi Motel, Dragon Motel, Dreams Motel e Spa Urbano. Suítes temáticas, conforto e privacidade em Fortaleza - CE." />
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="images/favicon.png" />
+    <!-- Bootstrap core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!--Default CSS-->
+    <link href="css/default.css" rel="stylesheet" type="text/css" />
+    <!--Custom CSS-->
+    <link href="css/style.css" rel="stylesheet" type="text/css" />
+    <!--Plugin CSS-->
+    <link href="css/plugin.css" rel="stylesheet" type="text/css" />
+    <!--Font Awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
+  </head>
+  <body>
+    <!-- Preloader -->
+    <div id="preloader">
+      <div id="status"></div>
     </div>
-  </div>
+    <!-- Preloader Ends -->
 
-  <!-- ===== HEADER ===== -->
-  <header class="header">
-    <div class="container">
-      <a href="index.html" class="header-logo"><img src="img/logo.png" alt="Motéis Fortaleza"></a>
-      <button class="nav-toggle" aria-label="Abrir menu">
-        <span></span><span></span><span></span>
-      </button>
-      <nav>
-        <ul class="nav-list">
-          <li><a href="index.html" class="active">Início</a></li>
-          <li><a href="#moteis">Motéis</a></li>
-          <li><a href="#servicos">Serviços</a></li>
-          <li><a href="#regioes">Regiões</a></li>
-          <li><a href="contato.html">Contato</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <!-- ===== HERO SLIDER ===== -->
-  <section class="hero" id="hero">
-    <div class="hero-slides">
-      <div class="hero-slide active" style="background-image: url('img/moteis/dragon-motel.jpg')"></div>
-      <div class="hero-slide" style="background-image: url('img/suites/suite-felicidade.jpg')"></div>
-      <div class="hero-slide" style="background-image: url('img/suites/suite-tahiti.jpg')"></div>
-      <div class="hero-slide" style="background-image: url('img/suites/suite-diamante.jpg')"></div>
-      <div class="hero-slide" style="background-image: url('img/suites/suite-esmeralda.jpg')"></div>
-    </div>
-    <div class="hero-content">
-      <div class="label">A melhor experiência de Fortaleza</div>
-      <h1>Motéis em<br>Fortaleza</h1>
-      <p>Conforto, privacidade e momentos inesquecíveis. Escolha o motel ideal para você.</p>
-      <div class="hero-buttons">
-        <a href="#moteis" class="btn btn-primary">VER MOTÉIS</a>
-        <a href="https://wa.me/558587740048" target="_blank" class="btn btn-outline">FALE CONOSCO</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== SEARCH BAR ===== -->
-  <div class="search-section">
-    <div class="container">
-      <div class="search-card">
-        <select id="filterMotel" aria-label="Selecionar motel">
-          <option value="">Todos os Motéis</option>
-          <option value="dragon-motel">Dragon Motel</option>
-          <option value="assahi-motel">Assahi Motel</option>
-          <option value="dreams-motel">Dreams Motel</option>
-          <option value="spa-urbano">Spa Urbano</option>
-        </select>
-        <a href="#moteis" class="btn btn-primary">BUSCAR</a>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== ABOUT ===== -->
-  <section class="about-section">
-    <div class="container">
-      <div class="about-grid">
-        <div>
-          <div class="about-label">Sobre Nós</div>
-          <div class="section-divider"><div class="line"></div><div class="dot"></div></div>
-          <h2 class="about-title">Os melhores motéis de Fortaleza</h2>
-        </div>
-        <div>
-          <p class="about-text">Oferecemos uma seleção dos melhores motéis de Fortaleza, com suítes temáticas, ambiente privativo e atendimento de qualidade. Cada unidade foi cuidadosamente escolhida para proporcionar momentos inesquecíveis.</p>
-          <p class="about-text">Da decoração oriental do Dragon Motel ao sofisticado Spa Urbano, temos a opção perfeita para cada ocasião. Reserve agora pelo WhatsApp e garanta sua experiência.</p>
+    <!-- header start -->
+    <header class="main_header_area">
+      <div class="header-content">
+        <div class="container">
+          <div class="links links-left">
+            <ul>
+              <li>
+                <a href="tel:8532578877"><i class="fa fa-phone" aria-hidden="true"></i> (85) 3257-8877</a>
+              </li>
+              <li>
+                <select class="wide">
+                  <option value="pt">PT-BR</option>
+                  <option value="en">EN</option>
+                  <option value="es">ES</option>
+                  <option value="fr">FR</option>
+                </select>
+              </li>
+            </ul>
+          </div>
+          <div class="links links-right pull-right">
+            <ul>
+              <li>
+                <ul class="social-links">
+                  <li>
+                    <a href="https://www.facebook.com/moteisfortaleza" target="_blank"><i class="fab fa-facebook" aria-hidden="true"></i></a>
+                  </li>
+                  <li>
+                    <a href="https://www.instagram.com/moteisfortaleza" target="_blank"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ===== MOTÉIS ===== -->
-  <section class="motels-section" id="moteis">
-    <div class="container">
-      <div class="section-header">
-        <div>
-          <div class="section-label">Nossas Unidades</div>
-          <div class="section-divider"><div class="line"></div><div class="dot"></div></div>
-          <h2>Motéis</h2>
+      <!-- Navigation Bar -->
+      <div class="header_menu">
+        <div class="container">
+          <nav class="navbar navbar-default">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+              <a class="navbar-brand" href="index.html">
+                <img alt="Moteis Fortaleza" src="images/logo-site.png" class="logo-white" />
+                <img alt="Moteis Fortaleza" src="images/logo-scroll.png" class="logo-black" />
+              </a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+               <ul class="nav navbar-nav" id="responsive-menu">
+                <li class="active">
+                  <a href="#">Início</a>
+                </li>
+                <li>
+                  <a href="#">Motéis</a>
+                </li>
+                <li>
+                  <a href="#">Reservas</a>
+                </li>
+                <li>
+                  <a href="#">Contato</a>
+                </li>
+              </ul>
+              <div class="nav-btn">
+                <a href="#" class="btn btn-orange">Reserve com Desconto</a>
+              </div>
+            </div>
+            <!-- /.navbar-collapse -->
+            <div id="slicknav-mobile"></div>
+          </nav>
         </div>
-        <p>Unidades selecionadas para proporcionar a melhor experiência em Fortaleza</p>
+        <!-- /.container-fluid -->
       </div>
+      <!-- Navigation Bar Ends -->
+    </header>
+    <!-- header Ends -->
 
-      <div class="motel-grid" id="motelGrid">
-
-        <article class="motel-card" data-motel="dragon-motel">
-          <div class="motel-card-img">
-            <img src="img/moteis/dragon-motel.jpg" alt="Dragon Motel" loading="lazy">
-            <div class="motel-card-overlay">
-              <a href="motel/dragon-motel.html" class="btn btn-primary">RESERVAR</a>
+    <!-- Banner start -->
+    <section class="banner">
+      <div class="slider">
+        <div class="swiper-container">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide" style="background-image: url(../img/suites/suite-mandala.jpg)">
+              <div class="swiper-content">
+                <div class="slider-logo">
+                  <img src="images/logo-assahi.png" alt="Assahi Motel" style="max-height:60px" />
+                </div>
+                <h3 data-animation="animated fadeInUp">Assahi Motel</h3>
+                <h1 data-animation="animated fadeInUp">Suíte <span>Mandala</span></h1>
+                <p class="slider-amenities" data-animation="animated fadeInUp">
+                  <i class="fa fa-bath"></i> Hidromassagem &amp; Ofuro
+                  <i class="fa fa-bed"></i> King-size
+                </p>
+                <a href="motel/assahi-motel.html" data-animation="animated fadeInUp" class="slider-btn btn-or mar-right-10"><i class="fa fa-book"></i> Ver Suíte</a>
+                <a href="#" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-or"><i class="fa fa-whatsapp"></i> Reservar</a>
+              </div>
+            </div>
+            <div class="swiper-slide" style="background-image: url(../img/suites/suite-sucesso.jpg)">
+              <div class="swiper-content">
+                <div class="slider-logo">
+                  <img src="images/logo-dragon.png" alt="Dragon Motel" style="max-height:60px" />
+                </div>
+                <h3 data-animation="animated fadeInUp">Dragon Motel</h3>
+                <h1 data-animation="animated fadeInUp">Suíte <span>Sucesso</span></h1>
+                <p class="slider-amenities" data-animation="animated fadeInUp">
+                  <i class="fa fa-bath"></i> Hidromassagem &amp; Ofuro
+                  <i class="fa fa-bed"></i> King-size
+                </p>
+                <a href="motel/dragon-motel.html" data-animation="animated fadeInUp" class="slider-btn btn-or mar-right-10"><i class="fa fa-book"></i> Ver Suíte</a>
+                <a href="#" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-or"><i class="fa fa-whatsapp"></i> Reservar</a>
+              </div>
+            </div>
+            <div class="swiper-slide" style="background-image: url(../img/suites/suite-diamante.jpg)">
+              <div class="swiper-content">
+                <div class="slider-logo">
+                  <img src="images/logo-spa.png" alt="Spa Urbano" style="max-height:60px" />
+                </div>
+                <h3 data-animation="animated fadeInUp">Spa Urbano</h3>
+                <h1 data-animation="animated fadeInUp">Suíte <span>Diamante</span></h1>
+                <p class="slider-amenities" data-animation="animated fadeInUp">
+                  <i class="fa fa-swimmer"></i> Piscina Privativa
+                  <i class="fa fa-bath"></i> Hidro &amp; Ofuro
+                </p>
+                <a href="motel/spa-urbano.html" data-animation="animated fadeInUp" class="slider-btn btn-or mar-right-10"><i class="fa fa-book"></i> Ver Suíte</a>
+                <a href="#" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-or"><i class="fa fa-whatsapp"></i> Reservar</a>
+              </div>
+            </div>
+            <div class="swiper-slide" style="background-image: url(../img/suites/suite-sonho.jpg)">
+              <div class="swiper-content">
+                <div class="slider-logo">
+                  <img src="images/logo-dreams.png" alt="Dreams Motel" style="max-height:60px" />
+                </div>
+                <h3 data-animation="animated fadeInUp">Dreams Motel</h3>
+                <h1 data-animation="animated fadeInUp">Suíte <span>Master</span></h1>
+                <p class="slider-amenities" data-animation="animated fadeInUp">
+                  <i class="fa fa-bath"></i> Hidromassagem
+                  <i class="fa fa-wifi"></i> Wi-Fi Grátis
+                </p>
+                <a href="motel/dreams-motel.html" data-animation="animated fadeInUp" class="slider-btn btn-or mar-right-10"><i class="fa fa-book"></i> Ver Suíte</a>
+                <a href="#" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-or"><i class="fa fa-whatsapp"></i> Reservar</a>
+              </div>
             </div>
           </div>
-          <div class="motel-card-body">
-            <h3>Dragon Motel</h3>
-            <p class="motel-card-location">📍 Rua José Alencar Ramos, 50 - Luciano Cavalcante</p>
-            <div class="motel-card-price">R$ 193 <small>/ 3h</small></div>
-            <div class="motel-card-actions">
-              <a href="motel/dragon-motel.html" class="btn btn-primary">VER SUÍTES</a>
-              <a href="https://weversonf.github.io/motel/" target="_blank" class="btn btn-reservar">RESERVAR</a>
-            </div>
-          </div>
-        </article>
+          <!-- Add Pagination -->
+          <div class="swiper-pagination"></div>
+        </div>
+        <div class="overlay"></div>
+      </div>
 
-        <article class="motel-card" data-motel="assahi-motel">
-          <div class="motel-card-img">
-            <img src="img/suites/suite-tahiti.jpg" alt="Assahi Motel" loading="lazy">
-            <div class="motel-card-overlay">
-              <a href="motel/assahi-motel.html" class="btn btn-primary">RESERVAR</a>
+      <div class="banner-form">
+        <div class="container">
+          <div class="form-content">
+            <div class="table-item">
+              <div class="form-group form-icon" style="position:relative;">
+                <i class="fa fa-calendar" style="position:absolute; left:0; top:12px; color:#FF0080; z-index:3; font-size:14px;"></i>
+                <input type="datetime-local" id="filtro-data" class="form-control" style="padding-left:22px; color-scheme:dark;" />
+              </div>
+            </div>
+            <div class="table-item">
+              <div class="form-group form-icon">
+                <select class="wide" id="filtro-periodo">
+                  <option value="3h">3h</option>
+                  <option value="6h">6h</option>
+                  <option value="12h">12h</option>
+                  <option value="pernoite">Pernoite</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-item">
+              <div class="form-group form-icon">
+                <select class="wide" id="filtro-pessoas">
+                  <option value="1">1 Pessoa</option>
+                  <option value="2" selected>2 Pessoas</option>
+                  <option value="3">3 Pessoas</option>
+                  <option value="4">4 Pessoas</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-item">
+              <div class="form-group form-icon">
+                <select class="wide" id="filtro-bairro">
+                  <option value="">Bairro - Motel</option>
+                  <option value="assahi">Fátima - Assahi Motel</option>
+                  <option value="dragon">Luciano Cavalcante - Dragon Motel</option>
+                  <option value="dreams">Cajazeiras - Dreams Motel</option>
+                  <option value="spa">Dionísio Torres - Spa Urbano</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-item">
+              <div class="form-btn">
+                <a class="btn btn-orange" id="btn-buscar">Buscar</a>
+              </div>
             </div>
           </div>
-          <div class="motel-card-body">
-            <h3>Assahi Motel</h3>
-            <p class="motel-card-location">📍 Av. Luciano Carneiro, 605 - Fátima</p>
-            <div class="motel-card-price">R$ 180 <small>/ 3h</small></div>
-            <div class="motel-card-actions">
-              <a href="motel/assahi-motel.html" class="btn btn-primary">VER SUÍTES</a>
-              <a href="https://weversonf.github.io/motel/" target="_blank" class="btn btn-reservar">RESERVAR</a>
-            </div>
-          </div>
-        </article>
+        </div>
+      </div>
+    </section>
+    <!-- Banner Ends -->
 
-        <article class="motel-card" data-motel="dreams-motel">
-          <div class="motel-card-img">
-            <img src="img/suites/suite-sonho.jpg" alt="Dreams Motel" loading="lazy">
-            <div class="motel-card-overlay">
-              <a href="motel/dreams-motel.html" class="btn btn-primary">RESERVAR</a>
+    <!-- About Us Start -->
+    <section class="about-us">
+      <div class="container">
+        <div class="section-title">
+          <h2>Quem <span>Somos</span></h2>
+          <p>
+            O Grupo Motéis Fortaleza reúne os melhores motéis da cidade, oferecendo experiências únicas com conforto, privacidade e sofisticação.
+          </p>
+        </div>
+        <div class="about-outer">
+          <div class="row">
+            <div class="col-lg-6">
+              <div class="about-content">
+                <h3 class="mar-bottom-30">Sua melhor escolha em Fortaleza</h3>
+                <p>
+                  Com unidades nos melhores bairros da cidade — Fátima, Luciano Cavalcante, Cajazeiras e Dionísio Torres — o Grupo Motéis Fortaleza é referência em hospitalidade e momentos inesquecíveis.
+                </p>
+                <p>
+                  São 4 motéis com suítes temáticas, ambientes luxuosos e estrutura completa para você e seu acompanhante. Dragon Motel, Assahi Motel, Dreams Motel e Spa Urbano: cada um com seu estilo, todos com o mesmo compromisso de qualidade.
+                </p>
+                <a href="https://moteisfortaleza.com" target="_blank" class="btn btn-orange mar-top-10">CONHEÇA MAIS <i class="fas fa-angle-double-right"></i></a>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="about-image">
+                <div class="image-box">
+                  <div class="image-1 abt-image">
+                    <img src="../img/suites/suite-mandala.jpg" alt="Assahi Motel" />
+                  </div>
+                  <div class="image-2 abt-image">
+                    <img src="../img/suites/suite-diamante.jpg" alt="Spa Urbano" />
+                  </div>
+                </div>
+                <div class="image-box">
+                  <div class="image-3 abt-image">
+                    <img src="../img/suites/suite-sucesso.jpg" alt="Dragon Motel" />
+                  </div>
+                  <div class="image-4 abt-image">
+                    <img src="../img/suites/suite-honolulu.jpg" alt="Dreams Motel" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="motel-card-body">
-            <h3>Dreams Motel</h3>
-            <p class="motel-card-location">📍 BR 116 KM 06, 2430 - Cajazeiras</p>
-            <div class="motel-card-price">R$ 127 <small>/ 3h</small></div>
-            <div class="motel-card-actions">
-              <a href="motel/dreams-motel.html" class="btn btn-primary">VER SUÍTES</a>
-              <a href="https://weversonf.github.io/motel/" target="_blank" class="btn btn-reservar">RESERVAR</a>
-            </div>
-          </div>
-        </article>
+        </div>
+      </div>
+    </section>
+    <!-- About Us Ends -->
 
-        <article class="motel-card" data-motel="spa-urbano">
-          <div class="motel-card-img">
-            <img src="img/suites/suite-diamante.jpg" alt="Spa Urbano" loading="lazy">
-            <div class="motel-card-overlay">
-              <a href="motel/spa-urbano.html" class="btn btn-primary">RESERVAR</a>
+    <!-- Rooms starts -->
+    <section class="rooms" id="suites">
+      <div class="container">
+        <div class="section-title">
+          <h2>Confira nossas <span>Suítes</span></h2>
+          <p>
+            Conheça as suítes mais exclusivas de cada um dos nossos motéis. Experiências únicas em Fortaleza para momentos inesquecíveis.
+          </p>
+        </div>
+        <div class="room-outer">
+          <div class="row">
+            <div class="col-lg-3 col-md-6 mar-bottom-30">
+              <div class="room-item">
+                <div class="room-image">
+                  <img src="../img/suites/suite-malibu.jpg" alt="Assahi Motel" />
+                </div>
+                <div class="room-content">
+                  <div class="room-title">
+                    <h4>Assahi Motel</h4>
+                    <div class="deal-rating">
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                    </div>
+                    <p>Suíte Malibu - R$ 663</p>
+                  </div>
+                  <div class="room-services mar-bottom-15">
+                    <ul>
+                      <li><i class="fa fa-map-marker" aria-hidden="true"></i> Fátima</li>
+                      <li><i class="fa fa-bath"></i> Hidro + Sala de estar</li>
+                    </ul>
+                  </div>
+                  <div class="room-btns mar-top-20">
+                    <a href="motel/assahi-motel.html" class="btn btn-black">Ver mais</a>
+                    <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+reservar+no+Assahi+Motel" target="_blank" class="btn btn-orange">Reservar</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mar-bottom-30">
+              <div class="room-item">
+                <div class="room-image">
+                  <img src="../img/suites/suite-inspiracao.jpg" alt="Dragon Motel" />
+                </div>
+                <div class="room-content">
+                  <div class="room-title">
+                    <h4>Dragon Motel</h4>
+                    <div class="deal-rating">
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                    </div>
+                    <p>Suíte Inspiração - R$ 259</p>
+                  </div>
+                  <div class="room-services mar-bottom-15">
+                    <ul>
+                      <li><i class="fa fa-map-marker" aria-hidden="true"></i> Luciano Cavalcante</li>
+                      <li><i class="fa fa-bath"></i> Hidro + Frigobar</li>
+                    </ul>
+                  </div>
+                  <div class="room-btns mar-top-20">
+                    <a href="motel/dragon-motel.html" class="btn btn-black">Ver mais</a>
+                    <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+reservar+no+Dragon+Motel" target="_blank" class="btn btn-orange">Reservar</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mar-bottom-30">
+              <div class="room-item">
+                <div class="room-image">
+                  <img src="../img/suites/suite-esmeralda.jpg" alt="Spa Urbano" />
+                </div>
+                <div class="room-content">
+                  <div class="room-title">
+                    <h4>Spa Urbano</h4>
+                    <div class="deal-rating">
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                    </div>
+                    <p>Suíte Esmeralda - R$ 441</p>
+                  </div>
+                  <div class="room-services mar-bottom-15">
+                    <ul>
+                      <li><i class="fa fa-map-marker" aria-hidden="true"></i> Dionísio Torres</li>
+                      <li><i class="fa fa-bath"></i> Hidro + Ofuro</li>
+                    </ul>
+                  </div>
+                  <div class="room-btns mar-top-20">
+                    <a href="motel/spa-urbano.html" class="btn btn-black">Ver mais</a>
+                    <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+reservar+no+Spa+Urbano" target="_blank" class="btn btn-orange">Reservar</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mar-bottom-30">
+              <div class="room-item">
+                <div class="room-image">
+                  <img src="../img/suites/suite-honolulu.jpg" alt="Dreams Motel" />
+                </div>
+                <div class="room-content">
+                  <div class="room-title">
+                    <h4>Dreams Motel</h4>
+                    <div class="deal-rating">
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                      <span class="fa fa-star checked"></span>
+                    </div>
+                    <p>Suíte Econômica - R$ 127</p>
+                  </div>
+                  <div class="room-services mar-bottom-15">
+                    <ul>
+                      <li><i class="fa fa-map-marker" aria-hidden="true"></i> Cajazeiras (BR 116)</li>
+                      <li><i class="fa fa-bath"></i> Hidro + Ar-condicionado</li>
+                    </ul>
+                  </div>
+                  <div class="room-btns mar-top-20">
+                    <a href="motel/dreams-motel.html" class="btn btn-black">Ver mais</a>
+                    <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+fazer+uma+reserva+no+Dreams+Motel" target="_blank" class="btn btn-orange">Reservar</a>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="motel-card-body">
-            <h3>Spa Urbano</h3>
-            <p class="motel-card-location">📍 Av. Des. Moreira, 3033 - Dionísio Torres</p>
-            <div class="motel-card-price">R$ 160 <small>/ 3h</small></div>
-            <div class="motel-card-actions">
-              <a href="motel/spa-urbano.html" class="btn btn-primary">VER SUÍTES</a>
-              <a href="https://weversonf.github.io/motel/" target="_blank" class="btn btn-reservar">RESERVAR</a>
-            </div>
-          </div>
-        </article>
+        </div>
+      </div>
+    </section>
+    <!-- Room Ends -->
 
+    <!-- Call To Action Starts -->
+    <section class="call-to-action">
+      <div class="container-fluid">
+        <div class="row display-flex">
+          <div class="col-lg-6 col-lg-6">
+            <div class="call-content pad-left-30">
+              <h2 class="white mar-bottom-25">Reserve sua <span>suíte</span> agora</h2>
+              <p>
+                Faça sua reserva pelo WhatsApp e garanta o melhor momento para você e seu acompanhante. Todos os nossos motéis estão prontos para receber vocês com conforto e privacidade.
+              </p>
+              <p>
+                De Fátima a Cajazeiras, passando pelo Luciano Cavalcante e Dionísio Torres — escolha o motel mais próximo e venha viver essa experiência.
+              </p>
+              <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+fazer+uma+reserva." target="_blank" class="btn btn-orange mar-top-20">RESERVAR AGORA <i class="fas fa-angle-double-right"></i></a>
+            </div>
+          </div>
+          <div class="col-lg-6 col-lg-6">
+            <div class="call-button">
+              <button type="button" class="play-btn js-video-button" data-video-id="347309186" data-channel="vimeo"><i class="fa fa-play"></i></button>
+            </div>
+            <div class="video-figure"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Call To Action Ends -->
+
+    <!-- Services Starts -->
+    <section class="services pad-bottom-70">
+      <div class="container-fluid" style="padding:0;">
+        <div class="section-title">
+          <h2>Nossos <span>Motéis</span></h2>
+          <p>
+            Quatro unidades espalhadas pelos melhores bairros de Fortaleza. Cada motel com seu estilo único para tornar seu momento especial.
+          </p>
+        </div>
+        <div style="width:100%; height:450px; overflow:hidden;">
+          <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-38.545%2C-3.815%2C-38.435%2C-3.740&amp;layer=mapnik&amp;marker=-3.7646%2C-38.5212&amp;marker=-3.7905%2C-38.4609&amp;marker=-3.8125%2C-38.5205&amp;marker=-3.7440%2C-38.4975" width="100%" height="100%" style="border:0; border-radius:0;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+        <div class="container mar-top-30">
+          <div class="row text-center">
+            <div class="col-3 col-md-3 col-sm-6 mar-bottom-20">
+              <h5><i class="fa fa-map-marker" style="color:#FF0080;"></i> Assahi Motel</h5>
+              <small>Av. Luciano Carneiro, 605 - Fátima</small>
+            </div>
+            <div class="col-3 col-md-3 col-sm-6 mar-bottom-20">
+              <h5><i class="fa fa-map-marker" style="color:#9900CC;"></i> Dragon Motel</h5>
+              <small>R. José Alencar Ramos, 50 - Luciano Cavalcante</small>
+            </div>
+            <div class="col-3 col-md-3 col-sm-6 mar-bottom-20">
+              <h5><i class="fa fa-map-marker" style="color:#FF0080;"></i> Dreams Motel</h5>
+              <small>BR 116 KM 06, 2430 - Cajazeiras</small>
+            </div>
+            <div class="col-3 col-md-3 col-sm-6 mar-bottom-20">
+              <h5><i class="fa fa-map-marker" style="color:#9900CC;"></i> Spa Urbano</h5>
+              <small>Av. Des. Moreira, 3033 - Dionísio Torres</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Services Ends -->
+
+    <!-- Reviews Starts -->
+    <section class="reviews">
+      <div class="container">
+        <div class="section-title title-white">
+          <h2>Depoimentos <span>reais</span></h2>
+          <p>
+            Veja o que nossos hóspedes estão dizendo no Google Meu Negócio sobre cada um dos nossos motéis.
+          </p>
+        </div>
+        <div class="review-slider">
+          <div class="slider-item">
+            <div class="slider-image">
+              <img src="images/review1.jpg" alt="Cliente" />
+            </div>
+            <div class="slider-content">
+              <img src="images/logo-assahi.png" alt="Assahi Motel" style="max-width:45px; background:#fff; border-radius:50%; padding:3px; border:2px solid #eee; float:right; margin-left:10px;" />
+              <p>"Melhor motel de Fortaleza! A Suíte Mandala é maravilhosa, o ofuro é enorme e a hidro super relaxante. Atendimento nota mil, recepcionista muito educada. Vou voltar mais vezes com certeza. O café da manhã servido no quarto é um diferencial incrível!"</p>
+              <div class="deal-rating">
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+              </div>
+              <h4>Pedro H.</h4>
+              <span>há 2 semanas no Google - Assahi Motel</span>
+            </div>
+            <div class="slider-quote">
+              <img src="images/icons/quote.png" alt="Aspas" />
+            </div>
+          </div>
+          <div class="slider-item">
+            <div class="slider-image">
+              <img src="images/review2.jpg" alt="Cliente" />
+            </div>
+            <div class="slider-content">
+              <img src="images/logo-dragon.png" alt="Dragon Motel" style="max-width:45px; background:#fff; border-radius:50%; padding:3px; border:2px solid #eee; float:right; margin-left:10px;" />
+              <p>"Simplesmente sensacional! A Suíte Sucesso tem um ofuro gigante, hidro com jatos perfeitos, a cama king-size é muito confortável. O ambiente todo é lindo, decorado com muito bom gosto. Estacionamento amplo e seguro. Recomendo demais!"</p>
+              <div class="deal-rating">
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+              </div>
+              <h4>Lucas M.</h4>
+              <span>há 1 mês no Google - Dragon Motel</span>
+            </div>
+            <div class="slider-quote">
+              <img src="images/icons/quote.png" alt="Aspas" />
+            </div>
+          </div>
+          <div class="slider-item">
+            <div class="slider-image">
+              <img src="images/review1.jpg" alt="Cliente" />
+            </div>
+            <div class="slider-content">
+              <img src="images/logo-spa.png" alt="Spa Urbano" style="max-width:45px; background:#fff; border-radius:50%; padding:3px; border:2px solid #eee; float:right; margin-left:10px;" />
+              <p>"A Suíte Diamante é a melhor suíte que já conheci! Piscina privativa aquecida, hidro com cromoterapia, ofuro perfeito. O atendimento é diferenciado, permitiram check-in mais cedo sem custo extra. Experiência 5 estrelas, superou todas as expectativas!"</p>
+              <div class="deal-rating">
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+              </div>
+              <h4>Camila R.</h4>
+              <span>há 3 semanas no Google - Spa Urbano</span>
+            </div>
+            <div class="slider-quote">
+              <img src="images/icons/quote.png" alt="Aspas" />
+            </div>
+          </div>
+          <div class="slider-item">
+            <div class="slider-image">
+              <img src="images/review2.jpg" alt="Cliente" />
+            </div>
+            <div class="slider-content">
+              <img src="images/logo-dreams.png" alt="Dreams Motel" style="max-width:45px; background:#fff; border-radius:50%; padding:3px; border:2px solid #eee; float:right; margin-left:10px;" />
+              <p>"Ótimo custo-benefício! Pagamos super barato e o quarto era limpo, cheiroso, hidro funcionando perfeitamente. Ar-condicionado gelando bem, TV com todos os canais. Atendimento rápido e educado. Pra quem quer economizar sem abrir mão do conforto, é a melhor escolha!"</p>
+              <div class="deal-rating">
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+                <span class="fa fa-star checked"></span>
+              </div>
+              <h4>Juliana S.</h4>
+              <span>há 2 meses no Google - Dreams Motel</span>
+            </div>
+            <div class="slider-quote">
+              <img src="images/icons/quote.png" alt="Aspas" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Reviews Ends -->
+
+    <!-- Footer Starts -->
+    <footer>
+      <div class="footer-top pad-bottom-20">
+        <div class="container">
+          <div class="footer-content">
+            <div class="row">
+              <div class="col-lg-3 col-md-6 mar-bottom-30">
+                <div class="footer-about">
+                  <h4>Grupo Motéis Fortaleza</h4>
+                  <img src="images/logo-site.png" alt="Moteis Fortaleza" style="max-width:150px; margin-top:8px;" />
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6 mar-bottom-30">
+                <div class="quick-links">
+                  <h4>Links</h4>
+                  <ul>
+                    <li><a href="motel/assahi-motel.html">Assahi Motel</a></li>
+                    <li><a href="motel/dragon-motel.html">Dragon Motel</a></li>
+                    <li><a href="motel/dreams-motel.html">Dreams Motel</a></li>
+                    <li><a href="motel/spa-urbano.html">Spa Urbano</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6 mar-bottom-30">
+                <div class="Rooms">
+                  <h4>Localizações</h4>
+                  <ul>
+                    <li><a href="#">Bairro de Fátima</a></li>
+                    <li><a href="#">Luciano Cavalcante</a></li>
+                    <li><a href="#">Cajazeiras (BR 116)</a></li>
+                    <li><a href="#">Dionísio Torres</a></li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col-lg-3 col-md-6 mar-bottom-30">
+                <div class="footer-contact">
+                  <h4>Contato</h4>
+                  <ul>
+                    <li><i class="fa fa-phone"></i> (85) 3257-8877</li>
+                    <li><i class="fa fa-whatsapp"></i> (85) 98774-0016</li>
+                    <li><i class="fa fa-envelope"></i> contato@moteisfortaleza.com</li>
+                    <li><i class="fa fa-map-marker"></i> Fortaleza - CE</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-copyright pad-bottom-20">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12 text-center">
+              <div class="copyright-content">
+                <p class="mar-bottom-10">&copy; 2026 Grupo Motéis Fortaleza. Todos os direitos reservados.</p>
+                <ul>
+                  <li><a href="https://www.facebook.com/moteisfortaleza" target="_blank"><i class="fab fa-facebook" aria-hidden="true"></i></a></li>
+                  <li><a href="https://www.instagram.com/moteisfortaleza" target="_blank"><i class="fab fa-instagram" aria-hidden="true"></i></a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    <!-- Footer Ends -->
+
+    <!-- Back to top start -->
+    <div id="back-to-top">
+      <a href="#"></a>
+    </div>
+    <!-- Back to top ends -->
+
+    <!-- Modal Resultados -->
+    <div class="modal fade" id="modal-resultados" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width:1100px;">
+        <div class="modal-content" style="border-radius:20px; overflow:hidden; border:none; box-shadow:0 20px 60px rgba(0,0,0,0.3); max-height:90vh;">
+          <div style="background:linear-gradient(135deg,#0F172A 0%,#1a2744 100%); padding:20px 30px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0;">
+            <div>
+              <h5 class="modal-title" id="modal-titulo" style="color:#fff; font-size:20px; font-weight:600; margin:0 0 2px;">Suítes disponíveis</h5>
+              <small style="color:rgba(255,255,255,0.6); font-size:13px;">Selecione a suíte ideal para você</small>
+            </div>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar" style="opacity:0.8;"></button>
+          </div>
+          <div id="modal-corpo" style="padding:20px; overflow-y:auto;"></div>
+        </div>
       </div>
     </div>
-  </section>
 
-  <!-- ===== SERVICES ===== -->
-  <section class="services-section" id="servicos">
-    <div class="container">
-      <div class="section-header" style="text-align: center; display: block;">
-        <div class="section-label" style="text-align: center;">Por que nos escolher</div>
-        <div class="section-divider" style="justify-content: center;"><div class="line"></div><div class="dot"></div></div>
-        <h2 style="text-align: center;">Nossos Diferenciais</h2>
-      </div>
+    <!-- *Scripts* -->
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/plugin.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/custom-nav.js"></script>
+    <script src="js/custom-swiper1.js"></script>
+    <script src="js/custom-singledate.js"></script>
+    <script>
+    var suitesData = [
+      { motel:"Assahi Motel", bairro:"Fátima", suite:"Suíte Tahiti", preco:"R$ 180", img:"../img/suites/suite-tahiti.jpg", link:"motel/assahi-motel.html", key:"assahi", cat:"padrao", hidro:false, sauna:false, piscina:false },
+      { motel:"Assahi Motel", bairro:"Fátima", suite:"Suíte Malibu", preco:"R$ 663", img:"../img/suites/suite-malibu.jpg", link:"motel/assahi-motel.html", key:"assahi", cat:"hidro", hidro:true, sauna:false, piscina:false },
+      { motel:"Assahi Motel", bairro:"Fátima", suite:"Suíte Bora-Bora", preco:"R$ 208", img:"../img/suites/suite-bora-bora.jpg", link:"motel/assahi-motel.html", key:"assahi", cat:"hidro", hidro:true, sauna:false, piscina:false },
+      { motel:"Assahi Motel", bairro:"Fátima", suite:"Suíte Mandala", preco:"R$ 997", img:"../img/suites/suite-mandala.jpg", link:"motel/assahi-motel.html", key:"assahi", cat:"hidro", hidro:true, sauna:false, piscina:false, ofuro:true },
+      { motel:"Dragon Motel", bairro:"Luciano Cavalcante", suite:"Suíte Sonho", preco:"R$ 193", img:"../img/suites/suite-sonho.jpg", link:"motel/dragon-motel.html", key:"dragon", cat:"padrao", hidro:false, sauna:false, piscina:false },
+      { motel:"Dragon Motel", bairro:"Luciano Cavalcante", suite:"Suíte Felicidade", preco:"R$ 301", img:"../img/suites/suite-felicidade.jpg", link:"motel/dragon-motel.html", key:"dragon", cat:"hidro", hidro:true, sauna:false, piscina:false },
+      { motel:"Dragon Motel", bairro:"Luciano Cavalcante", suite:"Suíte Inspiração", preco:"R$ 259", img:"../img/suites/suite-inspiracao.jpg", link:"motel/dragon-motel.html", key:"dragon", cat:"hidro", hidro:true, sauna:false, piscina:false },
+      { motel:"Dragon Motel", bairro:"Luciano Cavalcante", suite:"Suíte Sucesso", preco:"R$ 552", img:"../img/suites/suite-sucesso.jpg", link:"motel/dragon-motel.html", key:"dragon", cat:"hidro", hidro:true, sauna:false, piscina:false, ofuro:true },
+      { motel:"Dreams Motel", bairro:"Cajazeiras (BR 116)", suite:"Suíte Master", preco:"R$ 127", img:"../img/suites/suite-honolulu.jpg", link:"motel/dreams-motel.html", key:"dreams", cat:"padrao", hidro:false, sauna:false, piscina:false },
+      { motel:"Spa Urbano", bairro:"Dionísio Torres", suite:"Suíte Jade", preco:"R$ 160", img:"../img/suites/suite-jade.jpg", link:"motel/spa-urbano.html", key:"spa", cat:"padrao", hidro:false, sauna:false, piscina:false },
+      { motel:"Spa Urbano", bairro:"Dionísio Torres", suite:"Suíte Rubi", preco:"R$ 204", img:"../img/suites/suite-rubi.jpg", link:"motel/spa-urbano.html", key:"spa", cat:"hidro", hidro:true, sauna:false, piscina:false },
+      { motel:"Spa Urbano", bairro:"Dionísio Torres", suite:"Suíte Esmeralda", preco:"R$ 441", img:"../img/suites/suite-esmeralda.jpg", link:"motel/spa-urbano.html", key:"spa", cat:"hidro", hidro:true, sauna:false, piscina:false, ofuro:true },
+      { motel:"Spa Urbano", bairro:"Dionísio Torres", suite:"Suíte Safira", preco:"R$ 180", img:"../img/suites/suite-safira.jpg", link:"motel/spa-urbano.html", key:"spa", cat:"hidro", hidro:true, sauna:false, piscina:false },
+      { motel:"Spa Urbano", bairro:"Dionísio Torres", suite:"Suíte Diamante", preco:"R$ 552", img:"../img/suites/suite-diamante.jpg", link:"motel/spa-urbano.html", key:"spa", cat:"piscina", hidro:true, sauna:false, piscina:true, ofuro:true }
+    ];
 
-      <div class="services-grid">
-        <div class="service-card">
-          <div class="service-icon">❤</div>
-          <h4>Privacidade Total</h4>
-          <p>Garagem individual e entrada discreta em todas as unidades</p>
-        </div>
-        <div class="service-card">
-          <div class="service-icon">★</div>
-          <h4>Ambientes Temáticos</h4>
-          <p>Suítes decoradas com estilos únicos para cada momento</p>
-        </div>
-        <div class="service-card">
-          <div class="service-icon">📞</div>
-          <h4>Reserva Fácil</h4>
-          <p>Reserve pelo WhatsApp e tenha seu horário garantido</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== REGIÕES ===== -->
-  <section class="regions-section" id="regioes">
-    <div class="container">
-      <div class="section-header" style="text-align: center; display: block;">
-        <div class="section-label" style="text-align: center;">Localização</div>
-        <div class="section-divider" style="justify-content: center;"><div class="line"></div><div class="dot"></div></div>
-        <h2 style="text-align: center;">Regiões</h2>
-      </div>
-
-      <div class="region-grid">
-        <div class="region-card">
-          <h4>Luciano Cavalcante</h4>
-          <p>1 motel disponível</p>
-        </div>
-        <div class="region-card">
-          <h4>Fátima</h4>
-          <p>1 motel disponível</p>
-        </div>
-        <div class="region-card">
-          <h4>Cajazeiras</h4>
-          <p>1 motel disponível</p>
-        </div>
-        <div class="region-card">
-          <h4>Dionísio Torres</h4>
-          <p>1 motel disponível</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== CTA ===== -->
-  <section class="cta-section">
-    <div class="container">
-      <h2>Pronto para uma experiência inesquecível?</h2>
-      <p>Reserve agora pelo WhatsApp e garanta o melhor momento</p>
-      <a href="https://weversonf.github.io/motel/" target="_blank" class="btn">RESERVAR AGORA</a>
-    </div>
-  </section>
-
-  <script src="js/main.js"></script>
-  <script src="js/components.js"></script>
-  <div id="site-footer"></div>
-  <div id="site-wa-popup"></div>
+    document.getElementById('btn-buscar').addEventListener('click', function(e) {
+      e.preventDefault();
+      var periodo = document.getElementById('filtro-periodo').value;
+      var bairro = document.getElementById('filtro-bairro').value;
+      var resultados = suitesData.filter(function(s) {
+        if (bairro && bairro !== '' && s.key !== bairro) return false;
+        return true;
+      });
+      if (resultados.length === 0) {
+        document.getElementById('modal-corpo').innerHTML = '<div style="text-align:center; padding:80px 20px;"><div style="font-size:48px; margin-bottom:16px;">😕</div><p style="font-size:18px; color:#555; margin:0;">Nenhuma suíte encontrada para esses filtros.</p></div>';
+      } else {
+        var html = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">';
+        resultados.forEach(function(s) {
+          var tags = '';
+          if (s.hidro) tags += '<span style="display:inline-block; background:#e8f5e9; color:#2e7d32; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:500; margin-right:3px;"><i class="fa fa-bath"></i> Hidro</span>';
+          if (s.piscina) tags += '<span style="display:inline-block; background:#e3f2fd; color:#1565c0; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:500; margin-right:3px;"><i class="fa fa-swimmer"></i> Piscina</span>';
+          if (s.ofuro) tags += '<span style="display:inline-block; background:#fce4ec; color:#c62828; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:500; margin-right:3px;"><i class="fa fa-hot-tub"></i> Ofuro</span>';
+          html += '<div style="background:#fff; border-radius:14px; overflow:hidden; box-shadow:0 1px 8px rgba(0,0,0,0.07); transition:transform 0.2s, box-shadow 0.2s;" onmouseover="this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 4px 16px rgba(0,0,0,0.12)\';" onmouseout="this.style.transform=\'\';this.style.boxShadow=\'0 1px 8px rgba(0,0,0,0.07)\';">' +
+            '<div style="height:140px; overflow:hidden;">' +
+            '<img src="' + s.img + '" alt="' + s.suite + '" style="width:100%; height:100%; object-fit:cover; display:block;" />' +
+            '</div>' +
+            '<div style="padding:12px 14px 14px;">' +
+            '<div style="display:flex; align-items:center; gap:6px; margin-bottom:2px; flex-wrap:wrap;">' +
+            '<span style="font-weight:600; font-size:14px; color:#222;">' + s.motel + '</span>' +
+            '<span style="font-size:11px; color:#999;"><i class="fa fa-map-marker" style="color:#FF0080;"></i> ' + s.bairro + '</span>' +
+            '</div>' +
+            '<h4 style="margin:2px 0 6px; font-size:17px; color:#FF0080; font-weight:600;">' + s.suite + '</h4>' +
+            '<div style="margin-bottom:8px; min-height:18px;">' + tags + '</div>' +
+            '<div style="display:flex; align-items:center; justify-content:space-between;">' +
+            '<span style="font-size:18px; font-weight:700; color:#0F172A;">' + s.preco + ' <small style="font-size:12px; font-weight:400; color:#999;">/ ' + periodo + '</small></span>' +
+            '<a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+reservar+' + encodeURIComponent(s.suite) + '+no+' + encodeURIComponent(s.motel) + '" target="_blank" style="padding:6px 14px; border-radius:50px; background:linear-gradient(135deg,#FF0080,#9900CC); color:#fff; font-size:12px; font-weight:500; text-decoration:none; white-space:nowrap;">Reservar</a>' +
+            '</div></div></div>';
+        });
+        html += '</div>';
+        document.getElementById('modal-corpo').innerHTML = html;
+      }
+      document.getElementById('modal-titulo').textContent = resultados.length + ' suíte(s) encontrada(s)';
+      var modal = new bootstrap.Modal(document.getElementById('modal-resultados'));
+      modal.show();
+    });
+    </script>
 </body>
 </html>
