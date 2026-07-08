@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dreams Motel - O Melhor Custo-Benefício da BR 116 | Cajazeiras</title>
+    <meta name="description" content="Dreams Motel em Fortaleza. Suítes a partir de R$ 127. Hidromassagem, Wi-Fi, ar-condicionado, garagem privativa. Reserve pelo WhatsApp!" />
+    <link rel="icon" type="image/png" href="img/favicon.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #0B0B0B;
+            color: #F0EFEA;
+            line-height: 1.6;
+        }
+        a { text-decoration: none; }
+
+        /* ===== NEON GREEN ===== */
+        .neon {
+            color: #00CC44;
+            text-shadow: 0 0 7px rgba(0,204,68,0.8), 0 0 20px rgba(0,204,68,0.4), 0 0 40px rgba(0,204,68,0.2);
+        }
+        .neon-icon {
+            color: #00CC44;
+            text-shadow: 0 0 6px rgba(0,204,68,0.7), 0 0 15px rgba(0,204,68,0.3);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .btn-primary {
+            background: #00CC44;
+            color: #0B0B0B;
+            box-shadow: 0 0 15px rgba(0,204,68,0.5), 0 0 30px rgba(0,204,68,0.25);
+        }
+        .btn-primary:hover {
+            box-shadow: 0 0 25px rgba(0,204,68,0.7), 0 0 50px rgba(0,204,68,0.35);
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            border: 1px solid #00CC44;
+            color: #00CC44;
+            background: transparent;
+            text-shadow: 0 0 5px rgba(0,204,68,0.5);
+            box-shadow: 0 0 8px rgba(0,204,68,0.2);
+        }
+        .btn-outline:hover {
+            background: #00CC44;
+            color: #0B0B0B;
+            box-shadow: 0 0 20px rgba(0,204,68,0.6);
+        }
+        .btn-whatsapp {
+            background: #25D366;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(37,211,102,0.5);
+        }
+        .btn-whatsapp:hover {
+            box-shadow: 0 0 25px rgba(37,211,102,0.7);
+            transform: translateY(-2px);
+        }
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(0,204,68,0.6); }
+            70% { box-shadow: 0 0 0 20px rgba(0,204,68,0); }
+            100% { box-shadow: 0 0 0 0 rgba(0,204,68,0); }
+        }
+
+        /* ===== HEADER ===== */
+        header {
+            background: rgba(11,11,11,0.95);
+            backdrop-filter: blur(10px);
+            padding: 14px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .header-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .logo img { height: 40px; }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 20px 80px;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+        .hero-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.35;
+        }
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, #0B0B0B 80%);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 700px;
+        }
+        .hero-badge {
+            display: inline-block;
+            background: rgba(0,204,68,0.15);
+            border: 1px solid rgba(0,204,68,0.3);
+            color: #00CC44;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        .hero h1 {
+            font-size: clamp(32px, 5vw, 56px);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 16px;
+        }
+        .hero h1 span { color: #00CC44; }
+        .hero p {
+            font-size: clamp(16px, 2vw, 18px);
+            color: #bbb;
+            margin-bottom: 30px;
+            max-width: 550px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 14px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .hero-features {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        .hero-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #E5E0D8;
+        }
+        .hero-feature i { font-size: 16px; }
+
+        /* ===== SECTIONS ===== */
+        section { padding: 80px 20px; }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        .section-header h2 {
+            font-size: clamp(26px, 4vw, 40px);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .section-header h2 span { color: #00CC44; }
+        .section-header p { color: #aaa; font-size: 16px; max-width: 600px; margin: 0 auto; }
+
+        /* ===== SUITES ===== */
+        .bg-alt { background: #0D0D0F; }
+        .suites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        .suite-card {
+            background: #121212;
+            border: 1px solid #1a1a1a;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+        .suite-card:hover {
+            transform: translateY(-4px);
+            border-color: #00CC44;
+            box-shadow: 0 0 25px rgba(0,204,68,0.15);
+        }
+        .suite-card.destaque {
+            border-color: #00CC44;
+            box-shadow: 0 0 20px rgba(0,204,68,0.15);
+            position: relative;
+        }
+        .suite-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #00CC44;
+            color: #0B0B0B;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 700;
+            z-index: 2;
+            box-shadow: 0 0 10px rgba(0,204,68,0.5);
+        }
+        .suite-image {
+            height: 200px;
+            overflow: hidden;
+        }
+        .suite-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+        .suite-card:hover .suite-image img { transform: scale(1.05); }
+        .suite-body {
+            padding: 20px;
+        }
+        .suite-body h3 {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+        .suite-price {
+            font-size: 26px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        .suite-price small {
+            font-size: 14px;
+            font-weight: 400;
+            color: #888;
+        }
+        .suite-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+        .suite-tag {
+            font-size: 12px;
+            color: #E5E0D8;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .suite-body p { color: #999; font-size: 14px; margin-bottom: 16px; line-height: 1.5; }
+        .suite-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .suite-actions .btn { padding: 10px 20px; font-size: 13px; }
+
+        /* ===== AMENITIES MARQUEE ===== */
+        .amenities-marquee {
+            overflow: hidden;
+            position: relative;
+            padding: 10px 0;
+        }
+        .amenities-track {
+            display: flex;
+            gap: 20px;
+            width: max-content;
+            animation: scroll-left 20s linear infinite;
+        }
+        .amenities-marquee:hover .amenities-track {
+            animation-play-state: paused;
+        }
+        @keyframes scroll-left {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .amenity-item {
+            flex-shrink: 0;
+            width: 150px;
+            background: #121212;
+            border: 1px solid #1a1a1a;
+            border-radius: 14px;
+            padding: 28px 16px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: default;
+        }
+        .amenity-item:hover {
+            border-color: #00CC44;
+            box-shadow: 0 0 20px rgba(0,204,68,0.15);
+            transform: translateY(-2px);
+        }
+        .amenity-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .amenity-item h4 { font-size: 14px; font-weight: 500; color: #F0EFEA; white-space: nowrap; }
+
+        /* edges fade */
+        .amenities-marquee::before,
+        .amenities-marquee::after {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 60px;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .amenities-marquee::before {
+            left: 0;
+            background: linear-gradient(to right, #0D0D0F, transparent);
+        }
+        .amenities-marquee::after {
+            right: 0;
+            background: linear-gradient(to left, #0D0D0F, transparent);
+        }
+
+        /* ===== CTA BANNER ===== */
+        .cta-banner {
+            background: linear-gradient(135deg, #0D0D0F, #121a0D);
+            border: 1px solid rgba(0,204,68,0.15);
+            border-radius: 20px;
+            padding: 50px 30px;
+            text-align: center;
+        }
+        .cta-banner h2 {
+            font-size: clamp(24px, 4vw, 34px);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .cta-banner p {
+            color: #bbb;
+            margin-bottom: 24px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ===== REVIEWS ===== */
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .review-card {
+            background: #121212;
+            border: 1px solid #1a1a1a;
+            border-radius: 14px;
+            padding: 24px;
+        }
+        .review-stars {
+            color: #00CC44;
+            text-shadow: 0 0 4px rgba(0,204,68,0.5);
+            margin-bottom: 12px;
+            font-size: 13px;
+        }
+        .review-card p { color: #E5E0D8; font-size: 14px; line-height: 1.6; margin-bottom: 14px; font-style: italic; }
+        .review-author { display: flex; align-items: center; gap: 10px; }
+        .review-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #00CC44;
+            font-size: 16px;
+        }
+        .review-name { font-weight: 600; font-size: 14px; }
+        .review-date { font-size: 12px; color: #888; }
+
+        /* ===== LOCATION ===== */
+        .location-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+        @media (max-width: 768px) { .location-grid { grid-template-columns: 1fr; } }
+        .location-map {
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid #1a1a1a;
+            height: 320px;
+        }
+        .location-map iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .location-info h3 { font-size: 24px; margin-bottom: 16px; }
+        .location-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            color: #E5E0D8;
+            font-size: 15px;
+        }
+        .location-item i { font-size: 18px; width: 20px; text-align: center; }
+
+        /* ===== FAQ ACCORDION ===== */
+        .faq-list { max-width: 700px; margin: 0 auto; }
+        .faq-item {
+            background: #121212;
+            border: 1px solid #1a1a1a;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+        .faq-item.open { border-color: #00CC44; }
+        .faq-question {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: none;
+            border: none;
+            color: #F0EFEA;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            padding: 18px 22px;
+            cursor: pointer;
+            text-align: left;
+            transition: color 0.3s;
+        }
+        .faq-item.open .faq-question { color: #00CC44; text-shadow: 0 0 6px rgba(0,204,68,0.5); }
+        .faq-arrow {
+            flex-shrink: 0;
+            font-size: 12px;
+            color: #00CC44;
+            transition: transform 0.3s;
+            text-shadow: 0 0 4px rgba(0,204,68,0.4);
+        }
+        .faq-item.open .faq-arrow { transform: rotate(180deg); }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+        .faq-item.open .faq-answer {
+            max-height: 300px;
+        }
+        .faq-answer p {
+            padding: 0 22px 18px;
+            font-size: 14px;
+            color: #bbb;
+            line-height: 1.6;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            background: #0B0B0B;
+            border-top: 1px solid #1a1a1a;
+            padding: 50px 20px 30px;
+            text-align: center;
+        }
+        .footer-logo { margin-bottom: 16px; }
+        .footer-logo img { height: 36px; }
+        .footer-links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .footer-links a {
+            color: #E5E0D8;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover { color: #00CC44; }
+        .footer-social {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #121212;
+            border: 1px solid #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #E5E0D8;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .footer-social a:hover {
+            border-color: #00CC44;
+            color: #00CC44;
+            box-shadow: 0 0 12px rgba(0,204,68,0.3);
+        }
+        .footer-copy { color: #666; font-size: 13px; }
+        .footer-copy a { color: #00CC44; }
+
+        /* ===== WHATSAPP FLOAT ===== */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 200;
+            width: 56px;
+            height: 56px;
+            background: #25D366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(37,211,102,0.5);
+            transition: all 0.3s;
+            animation: pulse-whatsapp 2s infinite;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.08);
+            box-shadow: 0 4px 30px rgba(37,211,102,0.7);
+        }
+        @keyframes pulse-whatsapp {
+            0% { box-shadow: 0 0 0 0 rgba(37,211,102,0.5); }
+            70% { box-shadow: 0 0 0 18px rgba(37,211,102,0); }
+            100% { box-shadow: 0 0 0 0 rgba(37,211,102,0); }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            .hero { min-height: 80vh; padding: 80px 16px 60px; }
+            .suites-grid { grid-template-columns: 1fr; }
+            .reviews-grid { grid-template-columns: 1fr; }
+            .hero-buttons { flex-direction: column; }
+            .suite-actions { flex-direction: column; }
+            .suite-actions .btn { width: 100%; text-align: center; }
+            .amenity-item { width: 130px; }
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeInUp 0.6s ease both; }
+        .fade-in:nth-child(2) { animation-delay: 0.15s; }
+        .fade-in:nth-child(3) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="header-inner">
+        <a href="#" class="logo">
+            <img src="img/logo-dreams.png" alt="Dreams Motel" />
+        </a>
+        <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+quero+reservar+no+Dreams+Motel" target="_blank" class="btn btn-primary" style="padding:10px 22px; font-size:13px;">
+            <i class="fab fa-whatsapp"></i> Reservar Agora
+        </a>
+    </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-bg">
+        <img src="img/suite-honolulu.jpg" alt="Dreams Motel" />
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content fade-in">
+        <div class="hero-badge">&#11088; Melhor custo-benefício da BR 116</div>
+        <h1>Viva momentos <span class="neon">inesquecíveis</span> no Dreams Motel</h1>
+        <p>Suítes confortáveis com hidromassagem, Wi-Fi e ar-condicionado. O refúgio perfeito para casais em Fortaleza.</p>
+        <div class="hero-buttons">
+            <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+quero+reservar+no+Dreams+Motel" target="_blank" class="btn btn-primary pulse">
+                <i class="fab fa-whatsapp"></i> Quero Reservar Agora
+            </a>
+            <a href="#suites" class="btn btn-outline">
+                <i class="fas fa-bed"></i> Ver Suítes
+            </a>
+        </div>
+        <div class="hero-features">
+            <div class="hero-feature"><i class="fas fa-bath neon-icon"></i> Hidromassagem</div>
+            <div class="hero-feature"><i class="fas fa-wifi neon-icon"></i> Wi-Fi Grátis</div>
+            <div class="hero-feature"><i class="fas fa-car neon-icon"></i> Garagem Privativa</div>
+            <div class="hero-feature"><i class="fas fa-snowflake neon-icon"></i> Ar-Condicionado</div>
+        </div>
+    </div>
+</section>
+
+<!-- SUITES -->
+<section class="bg-alt" id="suites">
+    <div class="container">
+        <div class="section-header">
+            <h2>Nossas <span class="neon">Suítes</span></h2>
+            <p>Três opções pensadas para o seu conforto. Escolha a ideal e reserve pelo WhatsApp.</p>
+        </div>
+        <div class="suites-grid">
+
+            <!-- Suite Master -->
+            <div class="suite-card fade-in">
+                <div class="suite-image"><img src="img/suite-sonho.jpg" alt="Suíte Master" loading="lazy" /></div>
+                <div class="suite-body">
+                    <h3>Suíte Master</h3>
+                    <div class="suite-price neon">R$ 127 <small>/ 3 horas</small></div>
+                    <div class="suite-tags">
+                        <span class="suite-tag"><i class="fas fa-bed neon-icon"></i> Queen-size</span>
+                        <span class="suite-tag"><i class="fas fa-wifi neon-icon"></i> Wi-Fi</span>
+                        <span class="suite-tag"><i class="fas fa-snowflake neon-icon"></i> Ar</span>
+                    </div>
+                    <p>Conforto e economia na medida certa. Cama queen-size, TV LED, ar-condicionado split e banho quente.</p>
+                    <div class="suite-actions">
+                        <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+quero+reservar+a+Su%C3%ADte+Master+no+Dreams+Motel" target="_blank" class="btn btn-primary pulse">Reservar</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suite Luxo -->
+            <div class="suite-card fade-in">
+                <div class="suite-image"><img src="img/suite-honolulu.jpg" alt="Suíte Luxo" loading="lazy" /></div>
+                <div class="suite-body">
+                    <h3>Suíte Luxo</h3>
+                    <div class="suite-price neon">R$ 189 <small>/ 3 horas</small></div>
+                    <div class="suite-tags">
+                        <span class="suite-tag"><i class="fas fa-bed neon-icon"></i> King-size</span>
+                        <span class="suite-tag"><i class="fas fa-bath neon-icon"></i> Hidro</span>
+                        <span class="suite-tag"><i class="fas fa-wifi neon-icon"></i> Wi-Fi</span>
+                    </div>
+                    <p>O upgrade que você merece. Cama king-size, hidromassagem com jatos relaxantes e frigobar.</p>
+                    <div class="suite-actions">
+                        <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+quero+reservar+a+Su%C3%ADte+Luxo+no+Dreams+Motel" target="_blank" class="btn btn-primary pulse">Reservar</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suite Premium -->
+            <div class="suite-card destaque fade-in">
+                <div class="suite-badge"><i class="fas fa-fire"></i> Mais Pedida</div>
+                <div class="suite-image"><img src="img/room-b1.jpg" alt="Suíte Premium" loading="lazy" /></div>
+                <div class="suite-body">
+                    <h3>Suíte Premium</h3>
+                    <div class="suite-price neon">R$ 249 <small>/ 3 horas</small></div>
+                    <div class="suite-tags">
+                        <span class="suite-tag"><i class="fas fa-bed neon-icon"></i> King-size</span>
+                        <span class="suite-tag"><i class="fas fa-bath neon-icon"></i> Hidro</span>
+                        <span class="suite-tag"><i class="fas fa-couch neon-icon"></i> Sala</span>
+                    </div>
+                    <p>A suíte mais completa. Hidromassagem, sala de estar separada, TV LED, frigobar e muito espaço.</p>
+                    <div class="suite-actions">
+                        <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+quero+reservar+a+Su%C3%ADte+Premium+no+Dreams+Motel" target="_blank" class="btn btn-primary pulse">Reservar</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- CTA BANNER -->
+<section>
+    <div class="container">
+        <div class="cta-banner">
+            <h2>Reserve em <span class="neon">30 segundos</span> pelo WhatsApp</h2>
+            <p>Atendimento rápido, discreto e sem burocracia. Escolha a suíte, o horário e pronto. Seu momento começa aqui.</p>
+            <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+quero+reservar+no+Dreams+Motel" target="_blank" class="btn btn-whatsapp pulse" style="padding:16px 36px; font-size:16px;">
+                <i class="fab fa-whatsapp"></i> Fazer Reserva Agora
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- AMENITIES -->
+<section class="bg-alt">
+    <div class="container" style="max-width:100%; padding:0;">
+        <div class="section-header">
+            <h2>Comodidades <span class="neon">Premium</span></h2>
+            <p>Tudo o que você precisa para uma experiência confortável e inesquecível.</p>
+        </div>
+        <div class="amenities-marquee">
+            <div class="amenities-track">
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-bath"></i></div><h4>Hidromassagem</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-wifi"></i></div><h4>Wi-Fi Grátis</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-car"></i></div><h4>Garagem Privativa</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-lock"></i></div><h4>Portão Automático</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-snowflake"></i></div><h4>Ar-Condicionado</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-tv"></i></div><h4>TV LED</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-shower"></i></div><h4>Banho Quente</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-glass-martini-alt"></i></div><h4>Frigobar</h4></div>
+                <!-- Duplicate for seamless loop -->
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-bath"></i></div><h4>Hidromassagem</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-wifi"></i></div><h4>Wi-Fi Grátis</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-car"></i></div><h4>Garagem Privativa</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-lock"></i></div><h4>Portão Automático</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-snowflake"></i></div><h4>Ar-Condicionado</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-tv"></i></div><h4>TV LED</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-shower"></i></div><h4>Banho Quente</h4></div>
+                <div class="amenity-item"><div class="amenity-icon neon-icon"><i class="fas fa-glass-martini-alt"></i></div><h4>Frigobar</h4></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- REVIEWS -->
+<section>
+    <div class="container">
+        <div class="section-header">
+            <h2>O que dizem <span class="neon">nossos clientes</span></h2>
+            <p>A prova de que o Dreams Motel é a melhor escolha da BR 116.</p>
+        </div>
+        <div class="reviews-grid">
+            <div class="review-card fade-in">
+                <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p>"Melhor motel da BR 116! Quartos sempre limpos, toalhas cheirosas, hidro funcionando direitinho. O preço é o melhor da região. Voltamos sempre!"</p>
+                <div class="review-author">
+                    <div class="review-avatar">RC</div>
+                    <div><div class="review-name">Rafael C.</div><div class="review-date">há 1 mês no Google</div></div>
+                </div>
+            </div>
+            <div class="review-card fade-in">
+                <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p>"Custo-benefício excelente! Pagamos barato, quarto limpo e cheiroso, ar-condicionado gelando. Atendimento rápido e educado. Super recomendo!"</p>
+                <div class="review-author">
+                    <div class="review-avatar">JS</div>
+                    <div><div class="review-name">Juliana S.</div><div class="review-date">há 2 meses no Google</div></div>
+                </div>
+            </div>
+            <div class="review-card fade-in">
+                <div class="review-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                <p>"Fomos na Premium e amamos! Hidro incrível, sala espaçosa, tudo muito limpo. Atendimento na recepção foi discreto e rápido. Experiência nota 10!"</p>
+                <div class="review-author">
+                    <div class="review-avatar">AL</div>
+                    <div><div class="review-name">Amanda L.</div><div class="review-date">há 3 semanas no Google</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- LOCATION -->
+<section class="bg-alt">
+    <div class="container">
+        <div class="section-header">
+            <h2>Nossa <span class="neon">Localização</span></h2>
+            <p>Fácil acesso pela BR 116, no bairro Cajazeiras. Estacionamento amplo e seguro.</p>
+        </div>
+        <div class="location-grid">
+            <div class="location-info">
+                <h3>BR 116 KM 06, 2430<br>Cajazeiras, Fortaleza - CE</h3>
+                <div class="location-item"><i class="fas fa-phone neon-icon"></i> (85) 3279-5788</div>
+                <div class="location-item"><i class="fab fa-whatsapp neon-icon"></i> (85) 98774-0016</div>
+                <div class="location-item"><i class="fas fa-clock neon-icon"></i> Aberto 24 horas</div>
+                <div class="location-item"><i class="fas fa-car neon-icon"></i> Estacionamento amplo</div>
+                <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+quero+reservar+no+Dreams+Motel" target="_blank" class="btn btn-primary pulse" style="margin-top:16px;">Reservar Agora</a>
+            </div>
+            <div class="location-map">
+                <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-38.545%2C-3.815%2C-38.435%2C-3.740&amp;layer=mapnik&amp;marker=-3.8125%2C-38.5205" allowfullscreen loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ -->
+<section>
+    <div class="container">
+        <div class="section-header">
+            <h2>Dúvidas <span class="neon">Frequentes</span></h2>
+        </div>
+        <div class="faq-list">
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    Como faço a reserva?
+                    <i class="fas fa-chevron-down faq-arrow"></i>
+                </button>
+                <div class="faq-answer"><p>Basta clicar em qualquer botão "Reservar" e você será direcionado para o nosso WhatsApp. Nossa equipe fará sua reserva em segundos.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    Quanto tempo dura a diária?
+                    <i class="fas fa-chevron-down faq-arrow"></i>
+                </button>
+                <div class="faq-answer"><p>O período padrão é de 3 horas. Também temos opções de 6h, 12h e pernoite. Consulte valores no WhatsApp.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    Quais formas de pagamento?
+                    <i class="fas fa-chevron-down faq-arrow"></i>
+                </button>
+                <div class="faq-answer"><p>Aceitamos dinheiro, cartões de crédito e débito (Visa, Mastercard, American Express). Pagamento na entrada.</p></div>
+            </div>
+            <div class="faq-item">
+                <button class="faq-question" onclick="this.parentElement.classList.toggle('open')">
+                    Tem estacionamento?
+                    <i class="fas fa-chevron-down faq-arrow"></i>
+                </button>
+                <div class="faq-answer"><p>Sim! Todas as suítes possuem garagem privativa com portão automático, garantindo total privacidade e segurança.</p></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="container">
+        <div class="footer-logo"><img src="img/logo-dreams.png" alt="Dreams Motel" /></div>
+        <div class="footer-links">
+            <a href="#suites">Suítes</a>
+            <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+quero+reservar+no+Dreams+Motel" target="_blank">Reservas</a>
+            <a href="https://moteisfortaleza.com/politica-de-privacidade/" target="_blank">Privacidade</a>
+            <a href="https://moteisfortaleza.com/termos-de-uso/" target="_blank">Termos de Uso</a>
+        </div>
+        <div class="footer-social">
+            <a href="https://www.facebook.com/moteisfortaleza" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/moteisfortaleza" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://wa.me/558532578877" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        </div>
+        <p class="footer-copy">&copy; 2026 Dreams Motel. Todos os direitos reservados.<br>Parte do <a href="../v02/index.html">Grupo Motéis Fortaleza</a></p>
+    </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+quero+reservar+no+Dreams+Motel" target="_blank" class="whatsapp-float" title="Reserve pelo WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
+</body>
+</html>

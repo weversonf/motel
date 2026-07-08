@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://moteisfortaleza.com.br/sitemap.xml
