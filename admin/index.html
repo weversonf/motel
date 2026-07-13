@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel v11</title>
-    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <title>Painel de Reservas v12</title>
+    <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
@@ -938,20 +938,6 @@
             border-color: var(--accent-primary);
             box-shadow: 0 0 0 3px rgba(196, 78, 255, 0.08);
         }
-
-        .btn-refresh {
-            padding: 10px 14px;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm);
-            background: var(--bg-main);
-            color: var(--text-primary);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.2s;
-            line-height: 1;
-        }
-        .btn-refresh:hover { border-color: var(--accent-primary); background: var(--bg-hover); }
-        .btn-refresh:active { transform: scale(0.95); }
 
         table {
             width: 100%;
@@ -2102,8 +2088,8 @@
                 <button class="nav-item nav-child" id="navNps" data-view="nps" onclick="window.alternarVisao('nps')">
                     <span>📝</span>
                     <span>Pesquisa NPS <span style="font-size:.6rem;background:var(--yellow);color:#000;padding:2px 6px;border-radius:8px;font-weight:600">EM BREVE</span></span>
-            </button>
-        </div>
+                </button>
+            </div>
         </div>
 
         <div class="sidebar-footer">
@@ -2210,8 +2196,8 @@
                         <select id="filterStatus" class="filter-input" onchange="window.aplicarFiltros()">
                             <option value="">Status</option>
                             <option value="aguardando_pagamento">Aguardando Pagto no Asaas</option>
-                            <option value="pendente_cartao">Falta Pagar - Cartão</option>
-                            <option value="pendente_recepcao">Falta Pagar - Recepção</option>
+                            <option value="pendente_cartao">Pagar no Motel</option>
+                            <option value="pendente_recepcao">Pagar no Motel</option>
                             <option value="confirmado">Confirmado</option>
                             <option value="check_in">Check-in</option>
                             <option value="cancelado">Cancelado</option>
@@ -2221,7 +2207,6 @@
                         </select>
                         <input type="text" id="filterCliente" class="filter-input" placeholder="Cliente..." onkeyup="window.filtrarTabela()">
                         <input type="text" id="filterCpf" class="filter-input" placeholder="CPF..." onkeyup="window.filtrarTabela()" style="max-width:120px">
-                        <button class="btn-refresh" onclick="window.atualizarTabela()" title="Atualizar dados">🔄</button>
                     </div>
                 </div>
                 <div id="tabelaWrapper"></div>
@@ -2427,6 +2412,7 @@
             ],token_asaas:""},
             "Dreams":{cor:"#00ff88",icone:"✨",suites:[
                 {nome:"Suíte Delirius",preco3:127,preco12:242,preco24:512,fracao:11,qtde:31,descricao:"TV, Sistema de DVD, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Romântica",preco3:152,preco12:286,preco24:589,fracao:12,qtde:1,descricao:"Hidromassagem com iluminação Cromoterapia, Sala de Jantar, Poltrona, TV, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
                 {nome:"Suíte Sonho",preco3:167,preco12:312,preco24:635,fracao:14,qtde:7,descricao:"TV Smart, Alexa, Poltrona Erótica, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
                 {nome:"Suíte Fantasia",preco3:180,preco12:335,preco24:675,fracao:15,qtde:6,descricao:"Piscina ao Ar Livre, Hidromassagem com iluminação Cromoterapia, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
                 {nome:"Suíte Sonho Amado",preco3:193,preco12:357,preco24:713,fracao:17,qtde:8,descricao:"TV Smart, Alexa, Hidromassagem com iluminação Cromoterapia, Poltrona Erótica, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
@@ -2450,6 +2436,7 @@
     let anoAtual = new Date().getFullYear();
     let visaoCalendario = 'calendario';
     let userRole = null;
+    let userMotel = null;
     let dadosMotels = {};
     let reservas = [];
     let usuarios = [];
@@ -2475,7 +2462,7 @@
                 var snap = await getDoc(doc(db, "usuarios", user.uid));
                 console.log('User doc exists:', snap.exists());
                 var data = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
-                await entrarSistema(user, data.role, data.nome);
+                await entrarSistema(user, data.role, data.nome, data.motel);
             } catch(e) {
                 console.warn('Auto-login error:', e);
                 mostrarLogin();
@@ -2497,18 +2484,20 @@
         document.getElementById('loginCarregando').style.display = v ? '' : 'none';
     }
 
-    async function entrarSistema(usuarioAuth, role, nome) {
+    async function entrarSistema(usuarioAuth, role, nome, motel) {
         uidAtual = usuarioAuth.uid;
         userRole = role;
+        userMotel = motel || null;
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('app').className = 'app logado';
         document.getElementById('userAvatar').textContent = (nome || 'U').charAt(0).toUpperCase();
         document.getElementById('userNome').textContent = nome || 'Usuário';
-        var label = role === 'superadmin' ? 'Super Admin' : role === 'admin' ? 'Administrador' : 'Atendimento';
+        var label = role === 'superadmin' ? 'Super Admin' : role === 'admin' ? 'Administrador' : role === 'atendimento' ? 'Atendimento (' + (motel || 'Sem motel') + ')' : 'Atendimento';
         document.getElementById('userRole').textContent = label;
         var acessoTotal = role === 'superadmin' || role === 'admin';
+        var isAtendimento = role === 'atendimento';
         document.getElementById('navRelatorios').style.display = '';
-        document.getElementById('navGerenciar').style.display = acessoTotal ? '' : 'none';
+        document.getElementById('navGerenciar').style.display = (acessoTotal || isAtendimento) ? '' : 'none';
         document.getElementById('navAPI').style.display = acessoTotal ? '' : 'none';
         document.getElementById('navUsuarios').style.display = acessoTotal ? '' : 'none';
         var temFilhoSistema = ['navGerenciar','navUsuarios','navAPI'].some(function(id) {
@@ -2537,7 +2526,7 @@
             const snap = await getDoc(doc(db, "usuarios", cred.user.uid));
             console.log('fazerLogin: user doc exists:', snap.exists());
             var userData = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
-            await entrarSistema(cred.user, userData.role, userData.nome);
+            await entrarSistema(cred.user, userData.role, userData.nome, userData.motel);
             authInitialized = true;
         } catch(e) {
             console.warn('fazerLogin: erro:', e.code, e.message);
@@ -2575,6 +2564,7 @@
         signOut(auth);
         uidAtual = null;
         userRole = null;
+        userMotel = null;
         document.getElementById('loginOverlay').style.display = '';
         document.getElementById('app').className = 'app';
         document.getElementById('emailInput').value = '';
@@ -2585,26 +2575,16 @@
     async function iniciar() {
         await carregarMotels();
         await carregarReservas();
+        if (userRole === 'atendimento' && userMotel) {
+            document.getElementById('filterMotel').value = userMotel;
+            document.querySelectorAll('.motel-filter-btn').forEach(function(btn) {
+                btn.classList.toggle('active', btn.dataset.motel === userMotel);
+            });
+        }
         renderMotelFilters();
         atualizarEstatisticas();
         renderCalendario();
         renderGerenciar();
-        iniciarPollingAuto();
-    }
-
-    var pollingInterval = null;
-    function iniciarPollingAuto() {
-        if (pollingInterval) clearInterval(pollingInterval);
-        pollingInterval = setInterval(async function() {
-            try {
-                var antes = reservas.length;
-                await carregarReservas();
-                if (reservas.length !== antes) {
-                    var tabAtiva = document.querySelector('.table-filters');
-                    if (tabAtiva) { popularFiltrosTabela(); renderTabela(); atualizarEstatisticas(); renderCalendario(); }
-                }
-            } catch(e) {}
-        }, 15000);
     }
 
     function preencherSuite(s) {
@@ -2658,6 +2638,11 @@
     function renderMotelFilters() {
         const container = document.querySelector('.motel-filters');
         if (!container) return;
+        if (userRole === 'atendimento') {
+            container.style.display = 'none';
+            return;
+        }
+        container.style.display = '';
         let html = '<button class="motel-filter-btn active" data-motel="todos" onclick="window.filtrarPorMotel(\'todos\')">Todos</button>';
         Object.keys(dadosMotels).forEach(n => {
             html += `<button class="motel-filter-btn" data-motel="${n}" onclick="window.filtrarPorMotel('${n}')" style="--cor:${dadosMotels[n].cor}">${dadosMotels[n].icone} ${n}</button>`;
@@ -2668,7 +2653,10 @@
     // ====== ESTATÍSTICAS ======
     function atualizarEstatisticas() {
         const hoje = new Date().toISOString().split('T')[0];
-        const t = reservas;
+        var t = reservas;
+        if (userRole === 'atendimento' && userMotel) {
+            t = t.filter(function(r) { return r.motel === userMotel; });
+        }
         document.getElementById('totalReservas').textContent = t.length;
         document.getElementById('reservasHoje').textContent = t.filter(r => r.data_reserva === hoje).length;
         document.getElementById('pendentes').textContent = t.filter(r => r.status === 'aguardando_pagamento').length;
@@ -2861,6 +2849,11 @@
     function popularFiltrosTabela() {
         var selMotel = document.getElementById('filterMotel');
         if (!selMotel) return;
+        if (userRole === 'atendimento') {
+            selMotel.style.display = 'none';
+        } else {
+            selMotel.style.display = '';
+        }
         var atual = selMotel.value;
         selMotel.innerHTML = '<option value="">Motel</option>';
         Object.keys(dadosMotels).forEach(function(n) {
@@ -2874,7 +2867,7 @@
         var selSuite = document.getElementById('filterSuite');
         if (!selSuite) return;
         var atual = selSuite.value;
-        var motel = selMotel ? selMotel.value : '';
+        var motel = selMotel ? (selMotel.value || (userRole === 'atendimento' && userMotel ? userMotel : '')) : '';
         var suites = motel && dadosMotels[motel] ? dadosMotels[motel].suites : [];
         // collect all unique suites from all reservations if no motel selected
         if (!motel) {
@@ -2893,20 +2886,12 @@
         renderTabela();
     }
 
-    window.atualizarTabela = function() {
-        var btn = document.querySelector('.btn-refresh');
-        btn.textContent = '⏳';
-        btn.disabled = true;
-        renderTabela();
-        setTimeout(function() {
-            btn.textContent = '🔄';
-            btn.disabled = false;
-        }, 1500);
-    }
-
     function getFiltradas() {
         const f1 = document.getElementById('filterData')?.value || '';
-        const f2 = document.getElementById('filterMotel')?.value || '';
+        var f2 = document.getElementById('filterMotel')?.value || '';
+        if (userRole === 'atendimento' && userMotel) {
+            f2 = userMotel;
+        }
         const f3 = document.getElementById('filterStatus')?.value || '';
         const f4 = document.getElementById('filterSuite')?.value || '';
         const f5 = document.getElementById('filterCliente')?.value || '';
@@ -2926,7 +2911,7 @@
         });
     }
 
-    // ====== CALENDÁRIO / AGENDA ======
+    // ====== CALENDÁRIO ======
     window.mudarMes = function(d) {
         if (visaoCalendario === 'agenda') {
             if (d === 0) {
@@ -2962,7 +2947,7 @@
         const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
         document.getElementById('mesAno').textContent = `${meses[mesAtual]} ${anoAtual}`;
 
-        const filterMotor = document.getElementById('filterMotel')?.value || '';
+        const filterMotor = (userRole === 'atendimento' && userMotel) ? userMotel : (document.getElementById('filterMotel')?.value || '');
         const filterStatus = document.getElementById('filterStatus')?.value || '';
 
         let h = '';
@@ -3007,7 +2992,7 @@
         const fmt = function(dt) { return ('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2); };
         document.getElementById('mesAno').textContent = fmt(semanaInicio) + ' - ' + fmt(fim) + ' de ' + semanaInicio.getFullYear();
 
-        const filterMotor = document.getElementById('filterMotel')?.value || '';
+        const filterMotor = (userRole === 'atendimento' && userMotel) ? userMotel : (document.getElementById('filterMotel')?.value || '');
         const filterStatus = document.getElementById('filterStatus')?.value || '';
 
         var dias = [];
@@ -3145,7 +3130,8 @@
                             if (h === inicio) {
                                 var cls = r.status === 'confirmado' ? '' : r.status === 'aguardando_pagamento' ? 'background:var(--yellow)' : 'opacity:.7';
                                 var corStatus = r.status === 'confirmado' ? corMotel : r.status === 'check_in' ? '#0077cc' : r.status === 'pendente_cartao' ? '#b8860b' : r.status === 'pendente_recepcao' ? '#b8860b' : r.status === 'aguardando_pagamento' ? '#f39c12' : '#999';
-                                bloco += '<div class="agenda-block" style="top:' + topReal + 'px;height:' + (alturaReal * 36 - 4) + 'px;background:' + corStatus + ';color:#fff" onclick="event.stopPropagation();window.verDetalhesReserva(\'' + r.id + '\')">';
+                                var st = r.status === 'confirmado' ? 'Confirmado - Pagamento confirmado, reserva ativa' : r.status === 'check_in' ? 'Check-in - Hóspede já deu entrada no motel' : r.status === 'aguardando_pagamento' ? 'Aguardando Pagto no Asaas - Cliente pagou via PIX, aguardando confirmação' : (r.status === 'pendente_cartao' || r.status === 'pendente_recepcao') ? 'Pagar no Motel - Cliente vai pagar no motel' : 'Cancelado - Reserva cancelada';
+                                bloco += '<div class="agenda-block" title="' + st + '" style="top:' + topReal + 'px;height:' + (alturaReal * 36 - 4) + 'px;background:' + corStatus + ';color:#fff" onclick="event.stopPropagation();window.verDetalhesReserva(\'' + r.id + '\')">';
                                 bloco += '<div style="font-weight:700">' + (r.cliente_nome || '?') + '</div>';
                                 bloco += '<div>R$ ' + r.preco + ' · ' + r.duracao + '</div>';
                                 bloco += '</div>';
@@ -3178,14 +3164,15 @@
         let h = '<table><thead><tr><th>Status</th><th style="text-align:center">Motel</th><th>Suíte</th><th>Cliente</th><th>CPF</th><th>Data</th><th>Horário</th><th>Valor</th><th>Protocolo</th><th>Ações</th></tr></thead><tbody>';
         r.forEach(ev => {
             const sc = ev.status === 'confirmado' ? 'status-confirmado' : ev.status === 'check_in' ? 'status-check-in' : ev.status === 'aguardando_pagamento' ? 'status-aguardando' : (ev.status === 'pendente_cartao' || ev.status === 'pendente_recepcao') ? 'status-pagar-motel' : ev.status === 'cancelado' ? 'status-cancelado' : 'status-pendente';
-            const sl = ev.status === 'confirmado' ? 'Confirmado' : ev.status === 'check_in' ? 'Check-in' : ev.status === 'aguardando_pagamento' ? 'Aguardando Pagto no Asaas' : (ev.status === 'pendente_cartao' || ev.status === 'pendente_recepcao') ? '⏳ Falta Pagar' : ev.status === 'cancelado' ? 'Cancelado' : 'Pendente';
-            const st = ev.status === 'confirmado' ? 'Pagamento confirmado, reserva ativa' : ev.status === 'check_in' ? 'Hóspede já deu entrada no motel' : ev.status === 'aguardando_pagamento' ? 'Cliente pagou via PIX, aguardando confirmação do Asaas' : (ev.status === 'pendente_cartao' || ev.status === 'pendente_recepcao') ? 'Cliente ainda não pagou — efetuar pagamento no motel' : ev.status === 'cancelado' ? 'Reserva cancelada' : 'Status pendente';
+            const sl = ev.status === 'confirmado' ? 'Confirmado' : ev.status === 'check_in' ? 'Check-in' : ev.status === 'aguardando_pagamento' ? 'Aguardando Pagto no Asaas' : (ev.status === 'pendente_cartao' || ev.status === 'pendente_recepcao') ? 'Pagar no Motel' : ev.status === 'cancelado' ? 'Cancelado' : 'Pendente';
+            const st = ev.status === 'confirmado' ? 'Pagamento confirmado, reserva ativa' : ev.status === 'check_in' ? 'Hóspede já deu entrada no motel' : ev.status === 'aguardando_pagamento' ? 'Cliente pagou via PIX, aguardando confirmação do Asaas' : (ev.status === 'pendente_cartao' || ev.status === 'pendente_recepcao') ? 'Cliente vai pagar no motel' : ev.status === 'cancelado' ? 'Reserva cancelada' : 'Status pendente';
             const cor = dadosMotels[ev.motel]?.cor || '#999';
             var labelPromo = ev.promocao === '30%_OFF' ? '🔥 -30%' : ev.promocao === '3h+3h' ? '⏱️ +3h' : ev.promocao === 'recepcao' ? '🏨' : '';
-            var btnConfirmar = ''; // botão "Confirmar" removido — pagamento é confirmado apenas via Asaas ou check-in
+            var btnConfirmar = ev.status === 'pendente_cartao' ? '<button class="btn-icon confirm" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'confirmado\')" title="Confirmar"><i class="fas fa-check"></i></button>' : '';
             var podeExcluir = userRole === 'superadmin' || userRole === 'admin';
-            var btnCheckIn = (ev.status !== 'check_in' && ev.status !== 'cancelado') ? '<button class="btn-icon checkin" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'check_in\')" title="Dar Entrada"><i class="fas fa-map-pin"></i></button>' : '';
-            var btnCancel = (ev.status !== 'check_in') ? '<button class="btn-icon cancel" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'cancelado\')" title="Cancelar"><i class="fas fa-times"></i></button>' : '';
+            var podeCheckIn = userRole === 'superadmin' || userRole === 'admin' || userRole === 'atendimento';
+            var btnCheckIn = (ev.status !== 'check_in' && ev.status !== 'cancelado' && podeCheckIn) ? '<button class="btn-icon checkin" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'check_in\')" title="Dar Entrada"><i class="fas fa-map-pin"></i></button>' : '';
+            var btnCancel = (ev.status !== 'check_in' && podeExcluir) ? '<button class="btn-icon cancel" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'cancelado\')" title="Cancelar"><i class="fas fa-times"></i></button>' : '';
             h += `<tr data-id="${ev.id}" style="cursor:pointer" onclick="window.verDetalhesReserva('${ev.id}')"><td><span class="status ${sc}" title="${st}">${sl}</span></td><td style="text-align:center"><span class="motel-tag" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${ev.motel || '-'}</span></td><td>${ev.suite || '-'}</td><td>${ev.cliente_nome || '-'}</td><td style="color:var(--text-tertiary);font-size:0.75rem">${ev.cliente_cpf || '-'}</td><td>${ev.data_reserva ? ev.data_reserva.split('-').reverse().join('/') : '-'}</td><td style="color:var(--text-secondary)">${ev.hora_chegada || ev.horaRes || '-'}</td><td style="font-weight:600">R$ ${ev.preco || 0}${labelPromo ? ' ' + labelPromo : ''}</td><td style="font-size:0.7rem;color:var(--text-tertiary);letter-spacing:0.5px;font-family:monospace">${ev.protocolo || '-'}</td><td>${btnConfirmar}${btnCheckIn}${btnCancel}${podeExcluir ? '<button class="btn-icon delete" onclick="event.stopPropagation();window.excluirReserva(\'' + ev.id + '\')" title="Excluir">🗑</button>' : ''}</td></tr>`;
         });
         h += '</tbody></table>';
@@ -3195,120 +3182,30 @@
     window.alterarStatus = async function(id, s) {
         var r = reservas.find(function(x) { return x.id === id; });
         if (!r) return;
+        if (userRole === 'atendimento' && userMotel && r.motel !== userMotel) {
+            alert('Você só pode operar reservas do motel ' + userMotel + '.');
+            return;
+        }
+        if (userRole === 'atendimento' && s === 'cancelado') {
+            alert('Atendimento não pode cancelar reservas. Solicite a um administrador.');
+            return;
+        }
         if (s === 'confirmado') {
             if (r.status === 'aguardando_pagamento') {
                 alert('Confirmação manual não permitida para PIX. A reserva deve ser confirmada pelo Asaas.');
                 return;
-            }
-            if (r.status === 'pendente_cartao' && r.payment_id) {
-                var tokenMotelConfirm = (dadosMotels[r.motel] && dadosMotels[r.motel].token_asaas) ? dadosMotels[r.motel].token_asaas : '';
-                if (tokenMotelConfirm) {
-                    var confirmOk = confirm('Esta reserva possui um payment_id do Asaas. Deseja validar o status do pagamento antes de confirmar?');
-                    if (confirmOk) {
-                        try {
-                            var respConfirm = await fetch(APP_SCRIPT_URL, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                                body: JSON.stringify({
-                                    acao: 'checkin_validar',
-                                    payment_id: r.payment_id,
-                                    token_asaas: tokenMotelConfirm,
-                                    reserva_id: id
-                                })
-                            });
-                            var resConfirm = await respConfirm.json();
-                            if (!resConfirm.aprovado) {
-                                alert('⚠️ Confirmação BLOQUEADA\n\nPagamento não confirmado no Asaas.\nStatus: ' + (resConfirm.status_asaas || 'desconhecido') + '\n\n' + (resConfirm.motivo || 'Aguarde o pagamento ser recebido.'));
-                                return;
-                            }
-                        } catch(e) {
-                            console.error('[CONFIRMAR] Falha ao validar no Asaas:', e);
-                            var prosseguir = confirm('⚠️ Não foi possível verificar o pagamento no Asaas (erro de rede).\n\nDeseja prosseguir com a confirmação mesmo assim?');
-                            if (!prosseguir) return;
-                        }
-                    }
-                }
             }
         }
         if (s === 'cancelado' && r.status === 'check_in') {
             alert('Reserva com check-in realizado não pode ser cancelada.');
             return;
         }
-
-        // [FIX 3] Trava de segurança: validar pagamento no Asaas ANTES de liberar check-in
-        if (s === 'check_in') {
-            var tokenMotel = (dadosMotels[r.motel] && dadosMotels[r.motel].token_asaas) ? dadosMotels[r.motel].token_asaas : '';
-            var paymentId  = r.payment_id || '';
-
-            // Se tem payment_id, valida SEMPRE no Asaas, independente de ter token nos dados locais
-            if (paymentId) {
-                if (!tokenMotel) {
-                    // Tenta usar o token salvo na própria reserva (fallback)
-                    tokenMotel = r.token_asaas || '';
-                }
-                if (!tokenMotel) {
-                    alert('⚠️ Check-in BLOQUEADO\n\nEsta reserva possui um payment_id do Asaas, mas não foi encontrada a chave de API (token_asaas) para validar o pagamento.\n\nEntre em Configurações > API para configurar o token do motel.');
-                    return;
-                }
-                var btnCheckInEl = document.querySelector('[onclick*="alterarStatus(\'' + id + '\',\'check_in\'"]');
-                if (btnCheckInEl) {
-                    btnCheckInEl.disabled = true;
-                    btnCheckInEl.title = 'Verificando pagamento no Asaas...';
-                }
-                try {
-                    var respValidar = await fetch(APP_SCRIPT_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({
-                            acao:        'checkin_validar',
-                            payment_id:  paymentId,
-                            token_asaas: tokenMotel,
-                            reserva_id:  id
-                        })
-                    });
-                    var resValidar = await respValidar.json();
-
-                    if (!resValidar.aprovado) {
-                        // [AUDIT] Bloquear tentativa de check-in sem pagamento
-                        console.warn('[CHECKIN BLOQUEADO] reserva:', id, '| payment_id:', paymentId, '| status Asaas:', resValidar.status_asaas, '| motivo:', resValidar.motivo);
-                        alert('⚠️ Check-in BLOQUEADO\n\nPagamento não confirmado no Asaas.\n\nStatus atual: ' + (resValidar.status_asaas || 'desconhecido') + '\n\n' + (resValidar.motivo || 'Aguarde a confirmação do pagamento.'));
-                        if (btnCheckInEl) {
-                            btnCheckInEl.disabled = false;
-                            btnCheckInEl.title = 'Dar Entrada';
-                        }
-                        return;
-                    }
-                    console.log('[CHECKIN APROVADO] reserva:', id, '| status Asaas:', resValidar.status_asaas);
-                } catch(e) {
-                    // Falha de rede: não bloquear por falha técnica, mas alertar
-                    console.error('[CHECKIN] Falha ao validar no Asaas:', e);
-                    var prosseguir = confirm('⚠️ Não foi possível verificar o pagamento no Asaas (erro de rede).\n\nDeseja prosseguir com o check-in mesmo assim?');
-                    if (!prosseguir) {
-                        if (btnCheckInEl) { btnCheckInEl.disabled = false; btnCheckInEl.title = 'Dar Entrada'; }
-                        return;
-                    }
-                }
-            }
-        }
-
         try {
-            // [AUDIT] Salva origem da mudança de status em todas as transições
-            var operadorUid = (typeof auth !== 'undefined' && auth.currentUser) ? auth.currentUser.uid : 'desconhecido';
-            var origemStatus = s === 'check_in' ? 'dashboard_checkin_manual' :
-                               s === 'confirmado' ? 'dashboard_confirmacao_manual' :
-                               s === 'cancelado'  ? 'dashboard_cancelamento_manual' : 'dashboard_manual';
-
-            await updateDoc(doc(db, "reservas", id), {
-                status:               s,
-                status_atualizado_em: new Date().toISOString(),
-                status_origem:        origemStatus,
-                status_operador_uid:  operadorUid
-            });
+            await updateDoc(doc(db, "reservas", id), { status: s });
             await carregarReservas();
             atualizarEstatisticas();
             renderCalendario();
             renderTabela();
-            // Enviar notificação Telegram quando confirmado pagamento manualmente
             if (s === 'confirmado') {
                 try {
                     fetch(APP_SCRIPT_URL, {
@@ -3364,11 +3261,11 @@
                          r.promocao === '3h+3h' ? '⏱️ +3 horas grátis' :
                          r.promocao === 'recepcao' ? '🏨 Recepção' :
                          (r.promocao && r.promocao !== 'nenhuma') ? r.promocao : 'Nenhuma';
-        var statusLabel = r.status === 'confirmado' ? '✅ Pago - Confirmado' :
+        var statusLabel = r.status === 'confirmado' ? '✅ Confirmado' :
                           r.status === 'check_in' ? '🔵 Check-in' :
                            r.status === 'aguardando_pagamento' ? '⏳ Aguardando Pagto no Asaas' :
-                          r.status === 'pendente_cartao' ? '⏳ Falta Pagar - Efetuar no Motel' :
-                          r.status === 'pendente_recepcao' ? '⏳ Falta Pagar - Efetuar no Motel' :
+                          r.status === 'pendente_cartao' ? '💳 Pagar no Motel' :
+                          r.status === 'pendente_recepcao' ? '💳 Pagar no Motel' :
                           r.status === 'cancelado' ? '❌ Cancelado' : (r.status || '-');
         var h = '<div style="padding:0">';
         h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">';
@@ -3543,6 +3440,10 @@
     }
 
     window.salvarSuites = async function() {
+        if (userRole === 'atendimento') {
+            alert('Atendimento não pode alterar configurações.');
+            return;
+        }
         const btn = document.getElementById('btnSalvar'), fb = document.getElementById('saveFeedback');
         btn.disabled = true;
         fb.textContent = '⏳ Salvando...';
@@ -3591,15 +3492,17 @@
         var h = '<div style="font-size:.8rem;color:var(--text-tertiary);margin-bottom:12px">Os usuários fazem login com e-mail + senha via Firebase Auth. A senha do master é gerenciada pelo próprio Firebase.</div>';
         lista.forEach(function(u) {
             var isSuper = u.role === 'superadmin';
-            var roleLabel = isSuper ? 'Super Admin' : u.role === 'admin' ? 'Admin' : 'Funcionário';
+            var roleLabel = isSuper ? 'Super Admin' : u.role === 'admin' ? 'Admin' : u.role === 'atendimento' ? 'Atendimento' : 'Funcionário';
             h += '<div class="user-row">'
                 + '<input class="unome" value="' + (u.nome || '') + '" placeholder="Nome" data-uid="' + u.uid + '" data-campo="nome" onchange="window.atualizarUserFirebase(this)">'
                 + '<span class="uuser" style="padding:8px 10px;flex:1;font-size:.8rem;color:var(--text-secondary)">' + u.email + '</span>'
                 + (isSuper ? '<span class="urole" style="padding:8px 10px;color:var(--accent-primary);font-weight:600">Super Admin</span>'
                 : '<select class="urole" data-uid="' + u.uid + '" onchange="window.atualizarUserFirebase(this)">'
                 + '<option value="funcionario"' + (u.role === 'funcionario' ? ' selected' : '') + '>Funcionário</option>'
+                + '<option value="atendimento"' + (u.role === 'atendimento' ? ' selected' : '') + '>Atendimento</option>'
                 + '<option value="admin"' + (u.role === 'admin' ? ' selected' : '') + '>Admin</option>'
                 + '</select>')
+                + (isSuper ? '' : '<select class="urole" data-uid="' + u.uid + '" data-campo="motel" onchange="window.atualizarUserFirebase(this)" style="max-width:120px"><option value="">Sem motel</option>' + Object.keys(dadosMotels).map(function(n) { return '<option value="' + n + '"' + (u.motel === n ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select>')
                 + (isSuper ? '' : '<button class="udel" onclick="window.removerUserFirebase(\'' + u.uid + '\')" title="Remover">✕</button>')
                 + (isSuper ? '' : '<button class="udel" style="background:var(--orange-soft);color:var(--accent-primary)" onclick="window.resetarSenhaUsuario(\'' + u.uid + '\',\'' + u.email + '\')" title="Resetar senha">🔑</button>')
                 + '</div>';
@@ -3618,8 +3521,9 @@
     };
 
     window.adicionarUsuario = function() {
+        var motelOptions = Object.keys(dadosMotels).map(function(n) { return '<option value="' + n + '">' + n + '</option>'; }).join('');
         document.getElementById('modalFormBox').className = 'modal-box';
-        document.getElementById('modalFormBox').innerHTML = '<h3 id="modalTitle">➕ Novo Usuário</h3><p id="modalSubtitle">Preencha os dados para criar o acesso</p><input type="email" id="modalEmail" placeholder="E-mail do usuário"><input type="text" id="modalNome" placeholder="Nome do usuário"><select id="modalRole"><option value="funcionario">Funcionário (Atendimento)</option><option value="admin">Admin</option></select><div class="modal-actions"><button class="modal-btn-secondary" onclick="window.fecharModal()">Cancelar</button><button class="modal-btn-primary" onclick="window.criarUsuario()">Criar</button></div>';
+        document.getElementById('modalFormBox').innerHTML = '<h3 id="modalTitle">➕ Novo Usuário</h3><p id="modalSubtitle">Preencha os dados para criar o acesso</p><input type="email" id="modalEmail" placeholder="E-mail do usuário"><input type="text" id="modalNome" placeholder="Nome do usuário"><select id="modalRole"><option value="funcionario">Funcionário (Geral)</option><option value="atendimento">Atendimento (Motel específico)</option><option value="admin">Admin</option></select><select id="modalMotel"><option value="">Motel (para Atendimento)</option>' + motelOptions + '</select><div class="modal-actions"><button class="modal-btn-secondary" onclick="window.fecharModal()">Cancelar</button><button class="modal-btn-primary" onclick="window.criarUsuario()">Criar</button></div>';
         document.getElementById('modalFormBox').style.display = '';
         document.getElementById('modalResultBox').style.display = 'none';
         document.getElementById('modalOverlay').classList.add('mostrar');
@@ -3634,6 +3538,7 @@
         var email = document.getElementById('modalEmail').value.trim();
         var nome = document.getElementById('modalNome').value.trim() || email.split('@')[0];
         var role = document.getElementById('modalRole').value;
+        var motel = document.getElementById('modalMotel').value;
         if (!email) { document.getElementById('modalEmail').focus(); return; }
         var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&';
         var senha = '';
@@ -3646,9 +3551,10 @@
             var data = await resp.json();
             if (data.error) { alert('Erro: ' + (data.error.message || JSON.stringify(data.error))); return; }
             if (!data.localId) { alert('Erro ao criar usuário.'); return; }
-            await setDoc(doc(db, "usuarios", data.localId), { nome: nome, email: email, role: role });
+            await setDoc(doc(db, "usuarios", data.localId), { nome: nome, email: email, role: role, motel: motel });
             document.getElementById('resultEmail').textContent = email;
-            document.getElementById('resultRole').textContent = role === 'admin' ? 'Admin' : 'Funcionário';
+            var roleLabel = role === 'admin' ? 'Admin' : role === 'atendimento' ? 'Atendimento' : 'Funcionário';
+            document.getElementById('resultRole').textContent = roleLabel + (motel ? ' (' + motel + ')' : '');
             document.getElementById('resultSenha').textContent = senha;
             document.getElementById('btnCopySenha').textContent = '📋 Copiar Senha';
             document.getElementById('btnCopySenha').className = 'btn-copy';
@@ -4248,7 +4154,7 @@
     }
     (function() {
         const saved = localStorage.getItem('dashTheme');
-        if (saved) { document.documentElement.setAttribute('data-theme', saved); var tb=document.getElementById('temaBtn'); tb.querySelector('span:first-child').textContent = saved === 'noir' ? '☀️' : '🌙'; tb.querySelector('.label').textContent = saved === 'noir' ? ' Claro' : ' Noturno'; }
+        if (saved) { document.documentElement.setAttribute('data-theme', saved); document.getElementById('temaBtn').textContent = saved === 'noir' ? '☀️ Claro' : '🌙 Noturno'; }
         const logoUrl = localStorage.getItem('dashLogo');
         if (logoUrl) exibirLogo(logoUrl);
     })();
