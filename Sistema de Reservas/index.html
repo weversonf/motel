@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="light">
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-W65FRBLG');</script>
+    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
@@ -86,9 +93,20 @@
             .badge-pendente { color:#f59e0b; font-size:.75rem; margin-top:10px; text-align:center; }
             @media print { body * { visibility:hidden; } .voucher-print, .voucher-print * { visibility:visible; } .voucher-print { position:absolute; left:0; top:0; width:100%; padding:20px; } }
         .disclaimer { font-size:.7rem; color:var(--text3); text-align:center; padding:10px 20px; background:var(--disclaimer-bg); border-top:1px solid var(--bot-border); transition:background .3s; }
+        .regulamento-box { margin:12px 0; padding:10px 12px; background:rgba(0,0,0,.03); border-radius:10px; border:1px solid var(--bot-border); max-height:140px; overflow-y:auto; font-size:.72rem; color:var(--text2); line-height:1.5; scrollbar-width:thin; }
+        .regulamento-box::-webkit-scrollbar { width:3px; }
+        .regulamento-box::-webkit-scrollbar-thumb { background:var(--bot-border); border-radius:3px; }
+        .regulamento-box b { color:var(--text); }
+        .regulamento-check { display:flex; align-items:flex-start; gap:8px; margin:10px 0 14px; font-size:.78rem; color:var(--text); cursor:pointer; }
+        .regulamento-check input { margin-top:3px; accent-color:var(--primary); }
+        .btn-action:disabled { opacity:.5; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
     </style>
 </head>
 <body style="background:#f0e8f0">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W65FRBLG"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div class="chat-container">
         <div class="chat-header">
             <span>♾️</span> PRÉ-RESERVA ONLINE
@@ -241,8 +259,20 @@
                     + '💡 <b>Pagando com PIX você ganha:</b><br>'
                     + '<span style="color:' + corPreco + '">🔥 30% de desconto</span> ou <span style="color:' + corPreco + '">🎁 +3h grátis</span> (total 6h)'
                     + '</div>'
-                    + '<button class="btn-action" style="margin-bottom:8px;background:#28a745" onclick="window.mostrarOpcoesPix()">💳 Pagar com PIX</button>'
-                    + '<button class="btn-action" style="background:#666" onclick="window.confirmarCartao()">💳 Pagar com Cartão</button>'
+                    + '<div class="regulamento-box">'
+                    + '<b>⚠️ Regulamento da Promoção:</b><br><br>'
+                    + '● A promoção não inclui refeições.<br>'
+                    + '● A promoção não inclui produtos do frigobar, da suíte ou do sex shop.<br>'
+                    + '● A promoção não inclui café da manhã.<br>'
+                    + '● A promoção não é cumulativa com outras promoções vigentes.<br>'
+                    + '● A promoção é válida exclusivamente para um casal.<br>'
+                    + '● Em caso de não comparecimento (no-show), o valor pago não será reembolsado e a reserva não poderá ser remarcada.<br>'
+                    + '● Solicitações de reembolso (com desconto das taxas bancárias) ou remarcação da reserva deverão ser feitas com no mínimo 1 hora de antecedência em relação ao horário agendado. Após esse prazo, não será possível realizar alterações ou reembolso.<br><br>'
+                    + '<b>Ao adquirir a promoção, o cliente declara estar ciente e de acordo com todas as condições acima.</b>'
+                    + '</div>'
+                    + '<label class="regulamento-check"><input type="checkbox" id="aceiteRegulamento" onchange="window.toggleBotoesPagamento()"> <span>Li e concordo com todas as condições do regulamento acima</span></label>'
+                    + '<button class="btn-action" id="btnPix" style="margin-bottom:8px;background:#28a745" onclick="window.mostrarOpcoesPix()" disabled>💳 Pagar com PIX</button>'
+                    + '<button class="btn-action" id="btnCartao" style="background:#666" onclick="window.confirmarCartao()" disabled>💳 Pagar com Cartão</button>'
                     + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>'
                     + '<div class="badge-pendente">⏳ Pré-reserva - aguardando confirmação</div>';
             }
@@ -690,6 +720,12 @@
         };
 
         window.confirmarCartao = function() { prepararFinalizar('cartao'); };
+
+        window.toggleBotoesPagamento = function() {
+            var aceito = document.getElementById('aceiteRegulamento').checked;
+            document.getElementById('btnPix').disabled = !aceito;
+            document.getElementById('btnCartao').disabled = !aceito;
+        };
 
         function prepararFinalizar(tipo) {
             userData.promocao = tipo;
