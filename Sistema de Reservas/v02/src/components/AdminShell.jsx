@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useTheme } from "../context/ThemeContext";
-import { RESERVATIONS_DATA, SUITES_DATA, MOTEIS_DATA } from "../data/mock";
+import { loadReservations } from "../services/dataService";
 import GlobalStyles from "../styles/GlobalStyles";
 import { Sidebar } from "./layout/Sidebar";
 import { Btn } from "./ui/Btn";
@@ -18,16 +18,25 @@ import { PageGerenciar } from "./pages/PageGerenciar";
 import { PageApi } from "./pages/PageApi";
 import { PageControleAcesso } from "./pages/PageControleAcesso";
 
-export function AdminShell({ suites, setSuites }) {
+export function AdminShell({ suites, setSuites, moteis, setMoteis }) {
   const { t } = useTheme();
   const [page, setPage] = useState("calendario");
   const [open, setOpen] = useState(true);
-  const [reservations, setReservations] = useState(RESERVATIONS_DATA.map(r=>({...r})));
-  const [moteis, setMoteis] = useState(MOTEIS_DATA.map(m=>({...m})));
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadReservations().then(data => {
+      setReservations(data);
+      setLoading(false);
+    });
+  }, []);
 
   const handleSetReservations = useCallback((valOrFn) => {
     setReservations(valOrFn);
   }, []);
+
+  if (loading) return <div style={{ minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",color:t.textSecondary,fontFamily:"sans-serif",background:t.bg }}>Carregando reservas...</div>;
 
   if (page === "governanca") {
     return (
