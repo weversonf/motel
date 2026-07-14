@@ -15,7 +15,7 @@ function inlineAssetsPlugin() {
 
       const jsFiles = [];
       html = html.replace(
-        /<script\s+[^>]*src="([^"]*)"[^>]*><\/script>/gi,
+        /<script\s+[^>]*src="(?!https?:\/\/)([^"]*)"[^>]*><\/script>/gi,
         (match, href) => {
           const jsPath = resolve(distDir, href.replace(/^\//, ""));
           try {
@@ -26,7 +26,7 @@ function inlineAssetsPlugin() {
       );
 
       html = html.replace(
-        /<link\s+rel="stylesheet"\s+[^>]*href="([^"]*)"[^>]*\/?>/gi,
+        /<link\s+rel="stylesheet"\s+[^>]*href="(?!https?:\/\/)([^"]*)"[^>]*\/?>/gi,
         (match, href) => {
           const cssPath = resolve(distDir, href.replace(/^\//, ""));
           try {
