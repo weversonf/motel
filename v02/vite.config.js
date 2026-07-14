@@ -50,11 +50,4 @@ function inlineAssetsPlugin() {
 export default defineConfig({
   plugins: [react(), inlineAssetsPlugin()],
   base: "./",
-  build: {
-    rollupOptions: {
-      output: {
-        inlineDynamicImports: true,
-      },
-    },
-  },
 });
