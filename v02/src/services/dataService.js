@@ -28,9 +28,10 @@ export async function loadMotels() {
     ]);
     if (!snap.exists) throw new Error("no config");
     const { moteis, suites } = adaptMotelsToApp(snap.data());
+    if (!moteis.length) throw new Error("empty");
     return { moteis, suites };
   } catch (e) {
-    console.warn("Erro ao carregar motéis:", e);
+    console.warn("Erro ao carregar motéis, usando mock:", e.message);
     return { moteis: MOTEIS_DATA.map(m => ({ ...m })), suites: SUITES_DATA.map(s => ({ ...s })) };
   }
 }
@@ -45,9 +46,11 @@ export async function loadReservations() {
       db.collection("reservas").orderBy("criado_em", "desc").get(),
       new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000)),
     ]);
-    return adaptReservationsToApp(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (!docs.length) throw new Error("empty");
+    return adaptReservationsToApp(docs);
   } catch (e) {
-    console.warn("Erro ao carregar reservas:", e);
+    console.warn("Erro ao carregar reservas, usando mock:", e.message);
     return RESERVATIONS_DATA.map(r => ({ ...r }));
   }
 }
