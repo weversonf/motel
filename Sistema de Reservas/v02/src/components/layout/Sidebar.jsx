@@ -48,7 +48,7 @@ export function Sidebar({ active, setActive, open, setOpen }) {
         <div onClick={toggleTheme} style={{ width:32, height:32, borderRadius:6, display:"flex",
           alignItems:"center", justifyContent:"center", fontSize:16, flexShrink:0, cursor:"pointer",
           transition:".15s", overflow:"hidden", background:"transparent" }} title="Alternar tema">
-          <img src="/logo.png" alt="Logo" style={{ width:"100%", height:"100%", objectFit:"contain" }} />
+          <img src="logo.png" alt="Logo" style={{ width:"100%", height:"100%", objectFit:"contain" }} />
         </div>
         {open && (
           <div>

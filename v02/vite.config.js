@@ -37,7 +37,7 @@ function inlineAssetsPlugin() {
         }
       );
 
-      html = html.replace(/<link\s+rel="icon"[^>]*\/?>/gi, "");
+      html = html.replace(/<link\s+rel="icon"[^>]*\/?>/gi, (m) => m.replace(/href="[^"]*"/, 'href="ICONE.png"'));
       const allJS = jsFiles.join("\n");
 
       html = html.replace(/<\/body>/i, () => "<script>" + allJS + "</script></body>");
