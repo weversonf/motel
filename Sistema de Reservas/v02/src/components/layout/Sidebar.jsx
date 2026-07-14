@@ -45,10 +45,10 @@ export function Sidebar({ active, setActive, open, setOpen }) {
 
       <div style={{ padding: open ? "18px 16px" : "18px 10px", borderBottom:`1px solid ${t.border}`,
         display:"flex", alignItems:"center", gap:10, minWidth:220 }}>
-        <div onClick={toggleTheme} style={{ width:32, height:32, background:t.accent, borderRadius:6, display:"flex",
+        <div onClick={toggleTheme} style={{ width:32, height:32, borderRadius:6, display:"flex",
           alignItems:"center", justifyContent:"center", fontSize:16, flexShrink:0, cursor:"pointer",
-          transition:".15s" }} title="Alternar tema">
-          {theme === "noir" ? "☀️" : "🌙"}
+          transition:".15s", overflow:"hidden", background:"transparent" }} title="Alternar tema">
+          <img src="/logo.png" alt="Logo" style={{ width:"100%", height:"100%", objectFit:"contain" }} />
         </div>
         {open && (
           <div>
@@ -65,7 +65,7 @@ export function Sidebar({ active, setActive, open, setOpen }) {
           );
           const isActive = active === item.id;
           return (
-            <button key={item.id} onClick={() => setActive(item.id)}
+            <button key={item.id} onClick={() => setActive(item.id)} title={item.label}
               style={{ display:"flex", alignItems:"center", gap:9, width:"100%", padding: open ? "7px 10px" : "8px 10px",
                 borderRadius:5, border:"none", background:isActive ? `${t.accent}22` : "transparent",
                 color: isActive ? t.accent : t.textSecondary, textAlign:"left",
