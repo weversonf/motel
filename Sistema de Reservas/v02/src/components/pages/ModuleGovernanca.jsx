@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 import { Btn } from "../ui/Btn";
 import { Card } from "../ui/Card";
 import { Chip } from "../ui/Chip";
@@ -8,6 +8,7 @@ import GlobalStyles from "../../styles/GlobalStyles";
 const items = ["Cerveja Long Neck","Água Mineral","Refrigerante Lata","Amendoim","Batata Chips","Preservativo CX12","Gel Íntimo","Chocolate"];
 
 export function ModuleGovernanca({ suites, setSuites }) {
+  const { t } = useTheme();
   const dirty = suites.filter(s=>s.status==="suja"||s.status==="em_limpeza");
   const [active, setActive] = useState(null);
   const [modal, setModal]   = useState(false);

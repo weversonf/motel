@@ -1,41 +1,5 @@
-export const t = {
-  bg:       "#f5f0f8",
-  bgCard:   "#ffffff",
-  bgItem:   "#faf5ff",
-  bgHover:  "#fce4ec",
-  border:   "#e8dff0",
-  border2:  "#d4c8e0",
+export { useTheme } from "../context/ThemeContext";
 
-  textPrimary:   "#2d1b3d",
-  textSecondary: "#7a5a8a",
-  textMuted:     "#b8a0c8",
-
-  accent:    "#d20150",
-  accentL:   "#fce4ec",
-  accentGlow:"rgba(210,1,80,0.12)",
-
-  confirmed: "#00d99f",
-  confirmedBg:"rgba(0,217,159,0.15)",
-  pixPend:   "#ffc107",
-  pixPendBg: "rgba(255,193,7,0.15)",
-  cardPend:  "#2563eb",
-  cardPendBg:"rgba(37,99,235,0.15)",
-  waiting:   "#ff6b6b",
-  waitingBg: "rgba(255,107,107,0.15)",
-  cancelled: "#b8a0c8",
-  cancelledBg:"rgba(184,160,200,0.15)",
-  pending:   "#ffc107",
-  pendingBg: "rgba(255,193,7,0.15)",
-
-  avail:   "#00d99f",
-  occupied:"#ff6b6b",
-  dirty:   "#ffc107",
-  cleaning:"#2563eb",
-  maint:   "#d20150",
-
-  white:  "#ffffff",
-  green:  "#00d99f",
-  red:    "#ff6b6b",
-  yellow: "#ffc107",
-  blue:   "#2563eb",
-};
+// Backward compat — use "import { t }" still works via useTheme().t
+import { useTheme } from "../context/ThemeContext";
+export const t = typeof window !== "undefined" ? (()=>{try{return useTheme().t}catch{return {}}})() : {};

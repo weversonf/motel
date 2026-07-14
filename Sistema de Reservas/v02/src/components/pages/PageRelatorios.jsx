@@ -1,4 +1,4 @@
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 import { FINANCIAL_DATA, REVENUE_DATA } from "../../data/mock";
 import { Card } from "../ui/Card";
 import { KPI } from "../ui/KPI";
@@ -6,6 +6,7 @@ import { BarChart } from "../ui/BarChart";
 import { Header } from "../layout/Header";
 
 export function PageRelatorios() {
+  const { t } = useTheme();
   const totalIn  = FINANCIAL_DATA.filter(f=>f.type==="entrada").reduce((a,b)=>a+b.value,0);
   const totalOut = FINANCIAL_DATA.filter(f=>f.type==="saida").reduce((a,b)=>a+b.value,0);
   return (

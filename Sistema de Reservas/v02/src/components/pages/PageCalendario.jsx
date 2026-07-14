@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 import { SUITES_DATA } from "../../data/mock";
 import { RES_STATUS, StatusChip } from "../ui/StatusChip";
 import { Btn } from "../ui/Btn";
@@ -13,6 +13,7 @@ const MONTHS = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","A
 const WDAYS  = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
 
 export function PageCalendario({ reservations, setReservations }) {
+  const { t } = useTheme();
   const now = new Date();
   const [cur, setCur]           = useState(new Date(now.getFullYear(), now.getMonth(), 1));
   const [selected, setSelected] = useState(null);
@@ -43,10 +44,11 @@ export function PageCalendario({ reservations, setReservations }) {
     setReservations(prev=>[...prev, {
       id:`r${Date.now()}`, suiteId:newR.suiteId,
       suiteName:`${suite?.name} (${suite?.number})`,
-      motel:newR.motel, guestName:newR.guestName,
-      checkIn:new Date(newR.checkIn), checkOut:newR.checkOut?new Date(newR.checkOut):null,
+      motel:newR.motel, motelId:suite?.motelId, guestName:newR.guestName,
+      cpf:"", protocolo:`RES-${new Date().getFullYear()}-${String(prev.length+1).padStart(3,"0")}`,
+      reservationDate:new Date(), checkIn:new Date(newR.checkIn), checkOut:newR.checkOut?new Date(newR.checkOut):null,
       type:newR.type, status:"pendente", totalValue:newR.type==="pernoite"?(suite?.pricePernoite||200):(suite?.priceRotativo||120),
-      paymentMethod:newR.paymentMethod, paymentStatus:"pendente",
+      paymentMethod:newR.paymentMethod, paymentStatus:"pendente", asaasPaid:false,
     }]);
     setShowNew(false);
     setNewR({ guestName:"", suiteId:"s1", type:"pernoite", checkIn:"", checkOut:"", paymentMethod:"pix", motel:"Motel Fortaleza Norte" });
@@ -57,10 +59,10 @@ export function PageCalendario({ reservations, setReservations }) {
 
   const kpis = [
     { icon:"📊", label:"Total", value:reservations.length, color:t.textPrimary },
-    { icon:"📅", label:"Reservas hoje", value:resOnDay(today).length, color:t.textPrimary },
-    { icon:"⏳", label:"PIX Pendente",   value:reservations.filter(r=>r.status==="pix_pendente").length, color:t.yellow },
-    { icon:"💳", label:"Cartão Pendente",value:reservations.filter(r=>r.status==="cartao_pendente").length, color:t.blue },
-    { icon:"✅", label:"Confirmados",    value:reservations.filter(r=>r.status==="confirmado").length, color:t.green },
+    { icon:"📅", label:"Reservas Hoje", value:resOnDay(today).length, color:t.textPrimary },
+    { icon:"✅", label:"Confirmados",   value:reservations.filter(r=>r.status==="confirmado").length, color:t.green },
+    { icon:"⏳", label:"Pendentes",     value:reservations.filter(r=>r.status==="pendente"||r.status==="aguardando").length, color:t.yellow },
+    { icon:"🏨", label:"Check-in",      value:reservations.filter(r=>r.status==="check-in").length, color:t.blue },
   ];
 
   return (
@@ -92,11 +94,12 @@ export function PageCalendario({ reservations, setReservations }) {
             {["todos",...Object.keys(RES_STATUS)].map(s=>{
               const cfg = RES_STATUS[s];
               const active = filterStatus === s;
+              const c = cfg ? t[cfg.color] : t.accent;
               return (
                 <button key={s} onClick={()=>setFS(s)}
-                  style={{ padding:"5px 12px", borderRadius:4, border:`1px solid ${active?(cfg?.color||t.accent):t.border}`,
-                    background:active?`${cfg?.color||t.accent}22`:"transparent",
-                    color:active?(cfg?.color||t.accent):t.textSecondary, fontSize:11, fontWeight:active?600:400, cursor:"pointer" }}>
+                  style={{ padding:"5px 12px", borderRadius:4, border:`1px solid ${active? c : t.border}`,
+                    background:active?`${c}22`:"transparent",
+                    color:active? c : t.textSecondary, fontSize:11, fontWeight:active?600:400, cursor:"pointer" }}>
                   {s==="todos"?"Todos":cfg?.label}
                 </button>
               );
@@ -142,7 +145,7 @@ export function PageCalendario({ reservations, setReservations }) {
                     {dayRes.slice(0,2).map(r=>{
                       const cfg=RES_STATUS[r.status]||RES_STATUS.pendente;
                       return (
-                        <div key={r.id} style={{ background:cfg.bg, borderLeft:`2px solid ${cfg.color}`,
+                        <div key={r.id} style={{ background:t[cfg.bg], borderLeft:`2px solid ${t[cfg.color]}`,
                           borderRadius:"0 3px 3px 0", padding:"2px 5px", marginBottom:2 }}>
                           <span style={{ color:t.textPrimary, fontSize:10, display:"block",
                             whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>
@@ -171,7 +174,7 @@ export function PageCalendario({ reservations, setReservations }) {
                   alignItems:"center", padding:"12px 16px", borderBottom:`1px solid ${t.border}22`,
                   gap:10, flexWrap:"wrap" }}>
                   <div style={{ display:"flex", gap:10, alignItems:"center" }}>
-                    <div style={{ width:3, height:36, background:cfg.color, borderRadius:2, flexShrink:0 }}/>
+                    <div style={{ width:3, height:36, background:t[cfg.color], borderRadius:2, flexShrink:0 }}/>
                     <div>
                       <p style={{ color:t.textPrimary, fontWeight:600, fontSize:13, margin:0 }}>{r.guestName}</p>
                       <p style={{ color:t.textSecondary, fontSize:11, margin:0 }}>{r.suiteName} · {r.motel}</p>
@@ -204,7 +207,7 @@ export function PageCalendario({ reservations, setReservations }) {
               {selected.res.map(r=>{
                 const cfg=RES_STATUS[r.status]||RES_STATUS.pendente;
                 return (
-                  <div key={r.id} style={{ background:t.bgItem,borderRadius:6,padding:14,marginBottom:10,borderLeft:`3px solid ${cfg.color}` }}>
+                  <div key={r.id} style={{ background:t.bgItem,borderRadius:6,padding:14,marginBottom:10,borderLeft:`3px solid ${t[cfg.color]}` }}>
                     <div style={{ display:"flex",justifyContent:"space-between",marginBottom:6 }}>
                       <span style={{ color:t.textPrimary,fontWeight:700,fontSize:14 }}>{r.guestName}</span>
                       <StatusChip status={r.status}/>

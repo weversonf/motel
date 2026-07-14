@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 import { Btn } from "../ui/Btn";
 import { Input } from "../ui/Input";
 import { Card } from "../ui/Card";
 import { Header } from "../layout/Header";
 
 export function PageEncurtador() {
+  const { t } = useTheme();
   const [links, setLinks] = useState([
     { id:"l1", original:"https://moteis.com.br/reserva/suite-imperial", short:"mts.lk/imp", clicks:142, date:"12/06/2025" },
     { id:"l2", original:"https://moteis.com.br/reserva/suite-rubi",    short:"mts.lk/rub", clicks:87,  date:"10/06/2025" },

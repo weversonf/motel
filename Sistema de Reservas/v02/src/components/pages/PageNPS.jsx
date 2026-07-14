@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 import { NPS_DATA, SUITES_DATA } from "../../data/mock";
 import { Btn } from "../ui/Btn";
 import { Card } from "../ui/Card";
 import { Header } from "../layout/Header";
 
 export function PageNPS() {
+  const { t } = useTheme();
   const [nps, setNps]     = useState(NPS_DATA);
   const [tab, setTab]     = useState("painel");
   const [score, setScore] = useState(0);

@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { t } from "../styles/tokens";
-import { RESERVATIONS_DATA } from "../data/mock";
+import { useState, useEffect, useCallback } from "react";
+import { useTheme } from "../context/ThemeContext";
+import { RESERVATIONS_DATA, SUITES_DATA, MOTEIS_DATA } from "../data/mock";
 import GlobalStyles from "../styles/GlobalStyles";
 import { Sidebar } from "./layout/Sidebar";
 import { Btn } from "./ui/Btn";
@@ -14,11 +14,20 @@ import { PageNPS } from "./pages/PageNPS";
 import { PageCadastro } from "./pages/PageCadastro";
 import { PageEncurtador } from "./pages/PageEncurtador";
 import { ModuleGovernanca } from "./pages/ModuleGovernanca";
+import { PageGerenciar } from "./pages/PageGerenciar";
+import { PageApi } from "./pages/PageApi";
+import { PageControleAcesso } from "./pages/PageControleAcesso";
 
 export function AdminShell({ suites, setSuites }) {
+  const { t } = useTheme();
   const [page, setPage] = useState("calendario");
   const [open, setOpen] = useState(true);
   const [reservations, setReservations] = useState(RESERVATIONS_DATA.map(r=>({...r})));
+  const [moteis, setMoteis] = useState(MOTEIS_DATA.map(m=>({...m})));
+
+  const handleSetReservations = useCallback((valOrFn) => {
+    setReservations(valOrFn);
+  }, []);
 
   if (page === "governanca") {
     return (
@@ -33,10 +42,10 @@ export function AdminShell({ suites, setSuites }) {
   }
 
   const pages = {
-    calendario: <PageCalendario reservations={reservations} setReservations={setReservations}/>,
-    tabela:     <PageTabela reservations={reservations}/>,
+    calendario: <PageCalendario reservations={reservations} setReservations={handleSetReservations} moteis={moteis}/>,
+    tabela:     <PageTabela reservations={reservations} setReservations={handleSetReservations} suites={suites} setSuites={setSuites} moteis={moteis}/>,
     relatorios: <PageRelatorios/>,
-    recepcao:   <PageRecepcao suites={suites} setSuites={setSuites}/>,
+    recepcao:   <PageRecepcao suites={suites} setSuites={setSuites} moteis={moteis}/>,
     estoque:    <PageEstoque/>,
     produtos:   <PageProdutos/>,
     financeiro: <PageRelatorios/>,
@@ -44,6 +53,9 @@ export function AdminShell({ suites, setSuites }) {
     nps:        <PageNPS/>,
     encurtador: <PageEncurtador/>,
     governanca: null,
+    gerenciar:  <PageGerenciar moteis={moteis} setMoteis={setMoteis} suites={suites} setSuites={setSuites}/>,
+    api:        <PageApi moteis={moteis} setMoteis={setMoteis}/>,
+    acesso:     <PageControleAcesso/>,
   };
 
   return (

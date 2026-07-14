@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 import { Btn } from "../ui/Btn";
 import { Input } from "../ui/Input";
 import { Select } from "../ui/Select";
@@ -7,6 +7,7 @@ import { Card } from "../ui/Card";
 import { Header } from "../layout/Header";
 
 export function PageCadastro() {
+  const { t } = useTheme();
   const [form, setForm] = useState({ name:"", category:"standard", priceRotativo:"", pricePernoite:"", floor:"1", capacity:"2", amenities:[] });
   const [saved, setSaved] = useState(false);
   const ams = ["Smart TV","Hidro","Sauna","Piscina Privativa","Alexa","Frigobar","Lareira","Bar Privativo","Ar-Condicionado","Home Theater"];

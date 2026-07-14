@@ -1,6 +1,7 @@
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 
 export const Btn = ({ children, onClick, variant="primary", small=false, disabled=false, style:sx={} }) => {
+  const { t } = useTheme();
   const base = { border:"none", borderRadius:100, fontWeight:600, cursor:disabled?"not-allowed":"pointer",
     padding: small ? "5px 12px" : "9px 18px", fontSize: small ? 12 : 13, opacity:disabled?.5:1,
     transition:"filter .15s", ...sx };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 import { useTimer } from "../../hooks/useTimer";
 import { Btn } from "../ui/Btn";
 import { Input } from "../ui/Input";
@@ -8,20 +8,21 @@ import { Card } from "../ui/Card";
 import { Chip } from "../ui/Chip";
 import { Header } from "../layout/Header";
 
-const SUITE_STATUS = {
-  disponivel:  { label:"Disponível",      color:t.avail,    border:`${t.avail}44`   },
-  ocupada:     { label:"Ocupada",         color:t.occupied, border:`${t.occupied}44`},
-  suja:        { label:"Aguard. Limpeza", color:t.yellow,   border:`${t.yellow}44`  },
-  em_limpeza:  { label:"Em Limpeza",      color:t.cleaning, border:`${t.cleaning}44`},
-  manutencao:  { label:"Manutenção",      color:t.maint,    border:`${t.maint}44`   },
-};
-
-function OccTimer({ since }) {
+function OccTimer({ since, redColor }) {
   const t2 = useTimer(since);
-  return <span style={{fontFamily:"monospace",color:t.red,fontSize:12,fontWeight:700}}>{t2}</span>;
+  return <span style={{fontFamily:"monospace",color:redColor,fontSize:12,fontWeight:700}}>{t2}</span>;
 }
 
 export function PageRecepcao({ suites, setSuites }) {
+  const { t } = useTheme();
+
+  const SUITE_STATUS = {
+    disponivel:  { label:"Disponível",      color:t.avail,    border:`${t.avail}44`   },
+    ocupada:     { label:"Ocupada",         color:t.occupied, border:`${t.occupied}44`},
+    suja:        { label:"Aguard. Limpeza", color:t.yellow,   border:`${t.yellow}44`  },
+    em_limpeza:  { label:"Em Limpeza",      color:t.cleaning, border:`${t.cleaning}44`},
+    manutencao:  { label:"Manutenção",      color:t.maint,    border:`${t.maint}44`   },
+  };
   const [checkinT, setCI] = useState(null);
   const [checkoutT, setCO] = useState(null);
   const [filter, setFilter] = useState("todos");
@@ -80,7 +81,7 @@ export function PageRecepcao({ suites, setSuites }) {
                   {suite.status==="ocupada" && (
                     <>
                       <p style={{ color:t.textSecondary,fontSize:11,margin:"0 0 4px" }}>👤 {suite.currentGuest}</p>
-                      <OccTimer since={suite.occupiedSince}/>
+                      <OccTimer since={suite.occupiedSince} redColor={t.red}/>
                       <Btn small onClick={()=>setCO(suite)} style={{ width:"100%",marginTop:6 }} variant="danger">Checkout</Btn>
                     </>
                   )}
@@ -131,7 +132,7 @@ export function PageRecepcao({ suites, setSuites }) {
                 </div>
                 <div style={{ display:"flex",justifyContent:"space-between",marginBottom:6 }}>
                   <span style={{ color:t.textSecondary,fontSize:12 }}>Permanência</span>
-                  <OccTimer since={checkoutT.occupiedSince}/>
+                  <OccTimer since={checkoutT.occupiedSince} redColor={t.red}/>
                 </div>
                 <div style={{ display:"flex",justifyContent:"space-between" }}>
                   <span style={{ color:t.textSecondary,fontSize:12 }}>Valor</span>

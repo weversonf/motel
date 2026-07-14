@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 import { PRODUCTS_DATA as MOCK_PRODUCTS } from "../../data/mock";
 import { Chip } from "../ui/Chip";
 import { Btn } from "../ui/Btn";
@@ -9,6 +9,7 @@ import { Card } from "../ui/Card";
 import { Header } from "../layout/Header";
 
 export function PageProdutos() {
+  const { t } = useTheme();
   const [products, setProducts] = useState(MOCK_PRODUCTS.map(p=>({...p})));
   const [tab, setTab]     = useState("lista");
   const [editId, setEditId] = useState(null);

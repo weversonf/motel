@@ -1,9 +1,10 @@
-import { t } from "./tokens";
+import { useTheme } from "../context/ThemeContext";
 
 export default function GlobalStyles() {
+  const { t } = useTheme();
   return (
     <style>{`
-      *{box-sizing:border-box;margin:0;padding:0}
+      *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
       body{background:${t.bg};color:${t.textPrimary};font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
       ::-webkit-scrollbar{width:6px;height:6px}
       ::-webkit-scrollbar-track{background:transparent}

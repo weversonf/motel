@@ -1,10 +1,11 @@
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 import { PRODUCTS_DATA } from "../../data/mock";
 import { Chip } from "../ui/Chip";
 import { Card } from "../ui/Card";
 import { Header } from "../layout/Header";
 
 export function PageEstoque() {
+  const { t } = useTheme();
   const low = PRODUCTS_DATA.filter(p=>p.currentStock<=p.minStock&&p.active);
   return (
     <div className="fade-in" style={{ display:"flex",flexDirection:"column",height:"100%" }}>

@@ -1,6 +1,7 @@
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 
 export const BarChart = ({ data }) => {
+  const { t } = useTheme();
   const max = Math.max(...data.map(d=>d.v));
   const W=340,H=100,PB=24,PL=8,PR=8;
   const cw=(W-PL-PR)/data.length;

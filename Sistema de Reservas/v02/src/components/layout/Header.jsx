@@ -1,6 +1,7 @@
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 
 export function Header({ title, sub, right }) {
+  const { t } = useTheme();
   return (
     <div style={{ padding:"14px 24px", borderBottom:`1px solid ${t.border}`,
       display:"flex", justifyContent:"space-between", alignItems:"center",

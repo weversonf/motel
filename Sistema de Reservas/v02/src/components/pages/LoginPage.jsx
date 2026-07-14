@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { t } from "../../styles/tokens";
+import { useTheme } from "../../context/ThemeContext";
 import { AppCtx } from "../../context/AppContext";
 import { delay } from "../../data/mock";
 import GlobalStyles from "../../styles/GlobalStyles";
@@ -7,6 +7,7 @@ import { Input } from "../ui/Input";
 import { Btn } from "../ui/Btn";
 
 export function LoginPage() {
+  const { t } = useTheme();
   const { setPage } = useContext(AppCtx);
   const [email, setEmail] = useState("");
   const [pass, setPass]   = useState("");

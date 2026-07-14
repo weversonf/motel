@@ -1,9 +1,9 @@
-import { useContext } from "react";
-import { t } from "../../styles/tokens";
+import { useContext, useEffect } from "react";
+import { useTheme } from "../../context/ThemeContext";
 import { AppCtx } from "../../context/AppContext";
 
 const NAV = [
-  { id:"calendario",  label:"Calendário",        icon:"📊" },
+  { id:"calendario",  label:"Calendário",        icon:"📅" },
   { id:"tabela",      label:"Tabela",             icon:"📋" },
   { id:"relatorios",  label:"Relatórios",         icon:"📊" },
   { id:"__sep1",      sep:true },
@@ -11,17 +11,32 @@ const NAV = [
   { id:"estoque",     label:"Estoque & Frigobar", icon:"🛒" },
   { id:"produtos",    label:"Produtos",           icon:"🍺" },
   { id:"financeiro",  label:"Financeiro",         icon:"💰" },
-  { id:"cadastro",    label:"Configurações",      icon:"⚙️" },
   { id:"__sep2",      sep:true },
-  { id:"encurtador",  label:"Encurtador de Links",icon:"🔗" },
-  { id:"nps",         label:"Pesquisa NPS",       icon:"📝", badge:"EM BREVE", badgeColor:t.accent },
+  { id:"gerenciar",   label:"Gerenciar Motéis/Suítes", icon:"🏢" },
+  { id:"api",         label:"API & Integração",   icon:"🔌" },
+  { id:"acesso",      label:"Controle de Acesso", icon:"🔐" },
   { id:"__sep3",      sep:true },
+  { id:"encurtador",  label:"Encurtador de Links",icon:"🔗" },
+  { id:"nps",         label:"Pesquisa NPS",       icon:"📝" },
+  { id:"__sep4",      sep:true },
   { id:"governanca",  label:"Governança",         icon:"🧹" },
 ];
 
 export function Sidebar({ active, setActive, open, setOpen }) {
+  const { t, theme, toggleTheme } = useTheme();
   const { setPage } = useContext(AppCtx);
   const W = open ? 220 : 52;
+
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (e.ctrlKey && e.key === "b") {
+        e.preventDefault();
+        setOpen(o => !o);
+      }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [setOpen]);
 
   return (
     <aside style={{ width:W, minWidth:W, background:t.bgCard, borderRight:`1px solid ${t.border}`,
@@ -30,8 +45,11 @@ export function Sidebar({ active, setActive, open, setOpen }) {
 
       <div style={{ padding: open ? "18px 16px" : "18px 10px", borderBottom:`1px solid ${t.border}`,
         display:"flex", alignItems:"center", gap:10, minWidth:220 }}>
-        <div style={{ width:32, height:32, background:t.accent, borderRadius:6, display:"flex",
-          alignItems:"center", justifyContent:"center", fontSize:16, flexShrink:0 }}>🏨</div>
+        <div onClick={toggleTheme} style={{ width:32, height:32, background:t.accent, borderRadius:6, display:"flex",
+          alignItems:"center", justifyContent:"center", fontSize:16, flexShrink:0, cursor:"pointer",
+          transition:".15s" }} title="Alternar tema">
+          {theme === "noir" ? "☀️" : "🌙"}
+        </div>
         {open && (
           <div>
             <p style={{ color:t.textPrimary, fontWeight:700, fontSize:13, margin:0, lineHeight:1.2 }}>Motéis Fortaleza</p>
@@ -60,7 +78,7 @@ export function Sidebar({ active, setActive, open, setOpen }) {
                 <>
                   <span style={{ whiteSpace:"nowrap", flex:1 }}>{item.label}</span>
                   {item.badge && (
-                    <span style={{ background:item.badgeColor||t.accent, color:t.white,
+                    <span style={{ background:t.accent, color:t.white,
                       borderRadius:3, padding:"1px 5px", fontSize:9, fontWeight:700 }}>
                       {item.badge}
                     </span>
@@ -74,6 +92,13 @@ export function Sidebar({ active, setActive, open, setOpen }) {
       </nav>
 
       <div style={{ borderTop:`1px solid ${t.border}`, padding:"8px 6px" }}>
+        <button onClick={() => toggleTheme()}
+          style={{ display:"flex", alignItems:"center", gap:9, width:"100%", padding:"7px 10px",
+            borderRadius:5, border:"none", background:"transparent", color:t.textSecondary,
+            fontSize:12, cursor:"pointer", justifyContent:open?"flex-start":"center" }}>
+          <span>{theme === "noir" ? "☀️" : "🌙"}</span>
+          {open && (theme === "noir" ? "Modo Claro" : "Modo Noturno")}
+        </button>
         <button onClick={() => setOpen(o=>!o)}
           style={{ display:"flex", alignItems:"center", gap:9, width:"100%", padding:"7px 10px",
             borderRadius:5, border:"none", background:"transparent", color:t.textSecondary,
@@ -81,6 +106,11 @@ export function Sidebar({ active, setActive, open, setOpen }) {
           <span>{open ? "◀" : "▶"}</span>
           {open && "Recolher"}
         </button>
+        {open && (
+          <div style={{ color:t.textMuted, fontSize:9, padding:"4px 10px", textAlign:"center" }}>
+            Ctrl+B
+          </div>
+        )}
         <div style={{ display:"flex", alignItems:"center", gap:9, padding:"8px 10px", marginTop:2,
           borderTop:`1px solid ${t.border}` }}>
           <div style={{ width:28, height:28, background:t.accent, borderRadius:"50%", display:"flex",
