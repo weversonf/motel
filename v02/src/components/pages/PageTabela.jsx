@@ -70,6 +70,23 @@ export function PageTabela({ reservations, setReservations, suites, setSuites, m
 
   const fmtValor = v => `R$ ${v.toFixed(2)}`;
 
+  const fmtDataHora = (d) => {
+    const date = new Date(d);
+    const day = String(date.getDate()).padStart(2,"0");
+    const month = String(date.getMonth()+1).padStart(2,"0");
+    const hour = String(date.getHours()).padStart(2,"0");
+    const min = String(date.getMinutes()).padStart(2,"0");
+    return `${day}/${month} às ${hour}:${min}`;
+  };
+
+  const fmtData = (d) => {
+    const date = new Date(d);
+    const day = String(date.getDate()).padStart(2,"0");
+    const month = String(date.getMonth()+1).padStart(2,"0");
+    const year = String(date.getFullYear()).slice(2);
+    return `${day}/${month}/${year}`;
+  };
+
   const canCheckin = (r) => r.status === "confirmado" || r.status === "pagar-motel";
   const canConfirm = (r) => r.status === "pendente" || r.status === "aguardando";
   const canCancel = (r) => r.status !== "cancelado" && r.status !== "check-in";
@@ -135,25 +152,25 @@ export function PageTabela({ reservations, setReservations, suites, setSuites, m
                       </Chip>
                     </td>
                     <td style={{ padding:"9px 12px",color:t.textSecondary,fontSize:12,fontFamily:"monospace",whiteSpace:"nowrap" }}>
-                      {new Date(r.reservationDate).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"2-digit"})}</td>
+                      {fmtData(r.reservationDate)}</td>
                     <td style={{ padding:"9px 12px",color:t.textSecondary,fontSize:12 }}>{r.motel}</td>
                     <td style={{ padding:"9px 12px",color:t.textPrimary,fontWeight:600,fontSize:12 }}>{r.suiteName}</td>
                     <td style={{ padding:"9px 12px",color:t.textPrimary,fontSize:12 }}>{r.guestName}</td>
                     <td style={{ padding:"9px 12px",color:t.textSecondary,fontSize:12,fontFamily:"monospace" }}>{r.cpf}</td>
                     <td style={{ padding:"9px 12px",color:t.textSecondary,fontSize:12,fontFamily:"monospace",whiteSpace:"nowrap" }}>
-                      {new Date(r.checkIn).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</td>
+                      {fmtDataHora(r.checkIn)}</td>
                     <td style={{ padding:"9px 12px",color:r.checkOut?t.textSecondary:t.textMuted,fontSize:12,fontFamily:"monospace",whiteSpace:"nowrap" }}>
-                      {r.checkOut?new Date(r.checkOut).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):"-"}</td>
+                      {r.checkOut?fmtDataHora(r.checkOut):"-"}</td>
                     <td style={{ padding:"9px 12px",color:t.accent,fontWeight:700,fontSize:12,whiteSpace:"nowrap" }}>{fmtValor(r.totalValue)}</td>
                     <td style={{ padding:"9px 12px",color:t.textMuted,fontSize:11,fontFamily:"monospace" }}>{r.protocolo}</td>
                     <td style={{ padding:"9px 8px" }}>
                       <div style={{ display:"flex",gap:3 }}>
                         {canCheckin(r) && (
                           <button title="Check-in" onClick={()=>handleCheckin(r)}
-                            style={{ background:`${t.checkin}18`,color:t.checkin,border:"none",borderRadius:4,width:28,height:28,cursor:"pointer",fontSize:13,transition:".15s" }}
+                            style={{ background:`${t.checkin}18`,color:t.checkin,border:"none",borderRadius:4,width:28,height:28,cursor:"pointer",fontSize:14,transition:".15s" }}
                             onMouseEnter={e=>{e.currentTarget.style.background=t.checkin;e.currentTarget.style.color="#fff"}}
                             onMouseLeave={e=>{e.currentTarget.style.background=`${t.checkin}18`;e.currentTarget.style.color=t.checkin}}>
-                            ▶</button>
+                            📍</button>
                         )}
                         {canConfirm(r) && (
                           <button title="Confirmar" onClick={()=>handleConfirm(r)}
