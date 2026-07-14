@@ -21,7 +21,7 @@ export function PageCalendario({ reservations, setReservations }) {
   const [filterStatus, setFS]   = useState("todos");
   const [filterMotel, setFM]    = useState("todos");
   const [viewMode, setVM]       = useState("month");
-  const [newR, setNewR]         = useState({ guestName:"", suiteId:"s1", type:"pernoite", checkIn:"", checkOut:"", paymentMethod:"pix", motel:"Motel Fortaleza Norte" });
+  const [newR, setNewR]         = useState({ guestName:"", suiteId:"s1", type:"pernoite", checkIn:"", checkOut:"", paymentMethod:"pix", motel:"Spa Urbano" });
 
   const year  = cur.getFullYear();
   const month = cur.getMonth();
@@ -51,7 +51,7 @@ export function PageCalendario({ reservations, setReservations }) {
       paymentMethod:newR.paymentMethod, paymentStatus:"pendente", asaasPaid:false,
     }]);
     setShowNew(false);
-    setNewR({ guestName:"", suiteId:"s1", type:"pernoite", checkIn:"", checkOut:"", paymentMethod:"pix", motel:"Motel Fortaleza Norte" });
+    setNewR({ guestName:"", suiteId:"s1", type:"pernoite", checkIn:"", checkOut:"", paymentMethod:"pix", motel:"Spa Urbano" });
   };
 
   const motels = [...new Set(reservations.map(r=>r.motel))];
@@ -263,8 +263,7 @@ export function PageCalendario({ reservations, setReservations }) {
                 <div>
                   <label style={{ color:t.textSecondary,fontSize:12,display:"block",marginBottom:5 }}>Motel</label>
                   <Select value={newR.motel} onChange={e=>setNewR(p=>({...p,motel:e.target.value}))}>
-                    <option>Motel Fortaleza Norte</option>
-                    <option>Motel Fortaleza Sul</option>
+                    {motels.map(m=><option key={m}>{m}</option>)}
                   </Select>
                 </div>
               </div>

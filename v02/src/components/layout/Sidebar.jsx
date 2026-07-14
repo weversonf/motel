@@ -65,7 +65,7 @@ export function Sidebar({ active, setActive, open, setOpen }) {
           );
           const isActive = active === item.id;
           return (
-            <button key={item.id} onClick={() => setActive(item.id)}
+            <button key={item.id} onClick={() => setActive(item.id)} title={item.label}
               style={{ display:"flex", alignItems:"center", gap:9, width:"100%", padding: open ? "7px 10px" : "8px 10px",
                 borderRadius:5, border:"none", background:isActive ? `${t.accent}22` : "transparent",
                 color: isActive ? t.accent : t.textSecondary, textAlign:"left",
