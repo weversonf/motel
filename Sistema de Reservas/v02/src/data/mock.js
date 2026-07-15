@@ -10,7 +10,7 @@ export const MOTEIS_DATA = [
   { id:"spa",     name:"Spa Urbano",  cor:"#ff44ff", icon:"🏩", token:"spa_sk_live_xxx", suites:["s1","s2","s3","s4","s5"] },
   { id:"assahi",  name:"Assahi",      cor:"#ff8800", icon:"🏢", token:"ass_sk_live_xxx", suites:["s6","s7","s8","s9","s10","s11"] },
   { id:"dragon",  name:"Dragon",      cor:"#ff4444", icon:"🐉", token:"drg_sk_live_xxx", suites:["s12","s13","s14","s15"] },
-  { id:"dreams",  name:"Dreams",      cor:"#00ff88", icon:"💚", token:"drm_sk_live_xxx", suites:["s16","s17","s18","s19","s20","s21","s22","s23"] },
+  { id:"dreams",  name:"Dreams",      cor:"#00ff88", icon:"💚", token:"drm_sk_live_xxx", suites:["s16","s18","s19","s20","s21","s22","s23"] },
 ];
 
 export const SUITES_DATA = [
@@ -34,7 +34,6 @@ export const SUITES_DATA = [
   { id:"s15", motelId:"dragon", name:"Suíte Sucesso",      status:"em_limpeza", floor:2, priceRotativo:552, pricePernoite:986, capacity:4, descricao:'TV 75" Smart, Piscina Aquecida, Poltrona Erótica, Hidro, Pole Dance, Sauna, Alexa, Ar Split, Secador.', qtde:4, camareira:"Maria S." },
   // Dreams
   { id:"s16", motelId:"dreams", name:"Suíte Delirius",      status:"disponivel", floor:1, priceRotativo:127, pricePernoite:242, capacity:2, descricao:"TV, Sistema de DVD, Ar Split, Secador, Prancha para Cabelo e Portão Automático.", qtde:31 },
-  { id:"s17", motelId:"dreams", name:"Suíte Romântica",     status:"disponivel", floor:1, priceRotativo:152, pricePernoite:286, capacity:2, descricao:"Hidromassagem com iluminação Cromoterapia, Sala de Jantar, Poltrona, TV, Ar Split, Secador.", qtde:1 },
   { id:"s18", motelId:"dreams", name:"Suíte Sonho",         status:"ocupada",    floor:1, priceRotativo:167, pricePernoite:312, capacity:2, descricao:"TV Smart, Alexa, Poltrona Erótica, Ar Split, Secador, Prancha para Cabelo e Portão Automático.", qtde:7, currentGuest:"Felipe N.", occupiedSince:new Date(Date.now()-5400000) },
   { id:"s19", motelId:"dreams", name:"Suíte Fantasia",      status:"suja",       floor:2, priceRotativo:180, pricePernoite:335, capacity:2, descricao:"Piscina ao Ar Livre, Hidromassagem, Poltrona Erótica, TV Smart, Ar Split, Secador.", qtde:6 },
   { id:"s20", motelId:"dreams", name:"Suíte Sonho Amado",   status:"disponivel", floor:2, priceRotativo:193, pricePernoite:357, capacity:2, descricao:"TV Smart, Alexa, Hidromassagem, Poltrona Erótica, Ar Split, Secador.", qtde:8 },
