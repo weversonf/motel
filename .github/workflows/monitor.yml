@@ -1,0 +1,30 @@
+name: Monitor Site
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verificar site
+        run: node server/script.mjs
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_AUTHORIZED_IDS: ${{ secrets.TELEGRAM_AUTHORIZED_IDS }}
+
+      - name: Commitar log atualizado
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore(monitor): atualizar log do servidor"
+          commit_user_name: "monitor-bot"
+          commit_user_email: "monitor-bot@users.noreply.github.com"
+          file_pattern: server/data/log.json
