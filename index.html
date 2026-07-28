@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="light">
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-W65FRBLG');</script>
+    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Pré-Reserva - Rede de Motéis v05</title>
+    <title>Pré-Reserva - Rede de Motéis v04</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
@@ -86,9 +93,20 @@
             .badge-pendente { color:#f59e0b; font-size:.75rem; margin-top:10px; text-align:center; }
             @media print { body * { visibility:hidden; } .voucher-print, .voucher-print * { visibility:visible; } .voucher-print { position:absolute; left:0; top:0; width:100%; padding:20px; } }
         .disclaimer { font-size:.7rem; color:var(--text3); text-align:center; padding:10px 20px; background:var(--disclaimer-bg); border-top:1px solid var(--bot-border); transition:background .3s; }
+        .regulamento-box { margin:12px 0; padding:10px 12px; background:rgba(0,0,0,.03); border-radius:10px; border:1px solid var(--bot-border); max-height:140px; overflow-y:auto; font-size:.72rem; color:var(--text2); line-height:1.5; scrollbar-width:thin; }
+        .regulamento-box::-webkit-scrollbar { width:3px; }
+        .regulamento-box::-webkit-scrollbar-thumb { background:var(--bot-border); border-radius:3px; }
+        .regulamento-box b { color:var(--text); }
+        .regulamento-check { display:flex; align-items:flex-start; gap:8px; margin:10px 0 14px; font-size:.78rem; color:var(--text); cursor:pointer; }
+        .regulamento-check input { margin-top:3px; accent-color:var(--primary); }
+        .btn-action:disabled { opacity:.5; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
     </style>
 </head>
 <body style="background:#f0e8f0">
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W65FRBLG"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
     <div class="chat-container">
         <div class="chat-header">
             <span>♾️</span> PRÉ-RESERVA ONLINE
@@ -241,8 +259,20 @@
                     + '💡 <b>Pagando com PIX você ganha:</b><br>'
                     + '<span style="color:' + corPreco + '">🔥 30% de desconto</span> ou <span style="color:' + corPreco + '">🎁 +3h grátis</span> (total 6h)'
                     + '</div>'
-                    + '<button class="btn-action" style="margin-bottom:8px;background:#28a745" onclick="window.mostrarOpcoesPix()">💳 Pagar com PIX</button>'
-                    + '<button class="btn-action" style="background:#666" onclick="window.confirmarCartao()">💳 Pagar com Cartão</button>'
+                    + '<div class="regulamento-box">'
+                    + '<b>⚠️ Regulamento da Promoção:</b><br><br>'
+                    + '● A promoção não inclui refeições.<br>'
+                    + '● A promoção não inclui produtos do frigobar, da suíte ou do sex shop.<br>'
+                    + '● A promoção não inclui café da manhã.<br>'
+                    + '● A promoção não é cumulativa com outras promoções vigentes.<br>'
+                    + '● A promoção é válida exclusivamente para um casal.<br>'
+                    + '● Em caso de não comparecimento (no-show), o valor pago não será reembolsado e a reserva não poderá ser remarcada.<br>'
+                    + '● Solicitações de reembolso (com desconto das taxas bancárias) ou remarcação da reserva deverão ser feitas com no mínimo 1 hora de antecedência em relação ao horário agendado. Após esse prazo, não será possível realizar alterações ou reembolso.<br><br>'
+                    + '<b>Ao adquirir a promoção, o cliente declara estar ciente e de acordo com todas as condições acima.</b>'
+                    + '</div>'
+                    + '<label class="regulamento-check"><input type="checkbox" id="aceiteRegulamento" onchange="window.toggleBotoesPagamento()"> <span>Li e concordo com todas as condições do regulamento acima</span></label>'
+                    + '<button class="btn-action" id="btnPix" style="margin-bottom:8px;background:#28a745" onclick="window.mostrarOpcoesPix()" disabled>💳 Pagar com PIX</button>'
+                    + '<button class="btn-action" id="btnCartao" style="background:#666" onclick="window.confirmarCartao()" disabled>💳 Pagar com Cartão</button>'
                     + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>'
                     + '<div class="badge-pendente">⏳ Pré-reserva - aguardando confirmação</div>';
             }
@@ -399,6 +429,22 @@
             setTimeout(nextStep, 400);
         };
 
+        function parseTime(str) {
+            if (!str) return 0;
+            var p = str.split(':');
+            return parseInt(p[0]) + parseInt(p[1]) / 60;
+        }
+        function parseDuration(str) {
+            if (!str) return 3;
+            var m = str.match(/(\d+)h/);
+            return m ? parseInt(m[1]) : 3;
+        }
+        function formatTime(h) {
+            var hours = Math.floor(h) % 24;
+            var mins = Math.round((h - Math.floor(h)) * 60);
+            return String(hours).padStart(2, '0') + ':' + String(mins).padStart(2, '0');
+        }
+
         async function verificarDisponibilidade(data) {
             var msgDiv = document.getElementById('disponibilidadeMsg');
             if (!msgDiv) return true;
@@ -420,6 +466,36 @@
                     if (sf) qtdeTotal = sf.qtde || 1;
                 }
                 var reservasSuite = reservasData.filter(function(r){ return r.motel === userData.motel && r.suite === userData.suite; });
+
+                // Verificação por PERÍODO (overlap de horários)
+                if (userData.horaRes && userData.duracao) {
+                    var userStart = parseTime(userData.horaRes);
+                    var userDur = parseDuration(userData.duracao);
+                    var userEnd = userStart + userDur;
+                    var conflitos = reservasSuite.filter(function(r) {
+                        var rStart = parseTime(r.hora_chegada || r.horaRes || '00:00');
+                        var rDur = parseDuration(r.duracao || '3h');
+                        var rEnd = rStart + rDur;
+                        return userStart < rEnd && rStart < userEnd;
+                    });
+                    if (conflitos.length >= qtdeTotal) {
+                        var horariosOcupados = conflitos.map(function(r){ return (r.hora_chegada || r.horaRes || '?') + ' (' + (r.duracao || '3h') + ')'; }).join(', ');
+                        var msg = '❌ <b>' + userData.suite + '</b> não disponível para ' + userData.horaRes + ' - ' + formatTime(userEnd) + '.<br><br>'
+                            + '🕐 <b>Horários ocupados:</b> ' + horariosOcupados + '<br><br>'
+                            + '<small style="color:#888">Escolha outro horário ou clique em ← Voltar</small>';
+                        msgDiv.innerHTML = msg;
+                        msgDiv.style.background = 'rgba(255,0,0,0.15)';
+                        msgDiv.style.color = '#ff6666';
+                        return false;
+                    }
+                    var vagasRestantes = qtdeTotal - conflitos.length;
+                    msgDiv.innerHTML = '✅ Horário disponível! (' + vagasRestantes + ' vaga(s) restante(s) para ' + userData.horaRes + ' - ' + formatTime(userEnd) + ')';
+                    msgDiv.style.background = 'rgba(0,255,0,0.1)';
+                    msgDiv.style.color = 'var(--primary)';
+                    return true;
+                }
+
+                // Verificação por DATA (sem horário definido ainda)
                 if (reservasSuite.length >= qtdeTotal) {
                     var motelsLivres = Object.keys(motels).filter(function(nomeMotel){
                         if (nomeMotel === userData.motel) return false;
@@ -517,7 +593,15 @@
                 var agora = new Date();
                 var dataEscolhida = new Date(userData.dataRes + 'T' + hora + ':00');
                 if (dataEscolhida < agora) { alert("⚠️ Horário inválido. Escolha um horário futuro."); return; }
-                addMsg(hora, 'user'); userData.horaRes = hora; step++;
+                userData.horaRes = hora;
+                var disponivel = await verificarDisponibilidade(userData.dataRes);
+                if (!disponivel) {
+                    userData.horaRes = '';
+                    document.getElementById('uiHoraRes').value = '';
+                    document.getElementById('uiHoraRes').focus();
+                    return;
+                }
+                addMsg(hora, 'user'); step++;
             }
             removerUIAnterior();
             setTimeout(nextStep, 500);
@@ -637,6 +721,12 @@
 
         window.confirmarCartao = function() { prepararFinalizar('cartao'); };
 
+        window.toggleBotoesPagamento = function() {
+            var aceito = document.getElementById('aceiteRegulamento').checked;
+            document.getElementById('btnPix').disabled = !aceito;
+            document.getElementById('btnCartao').disabled = !aceito;
+        };
+
         function prepararFinalizar(tipo) {
             userData.promocao = tipo;
             if (tipo === 'desconto30') {
@@ -680,7 +770,8 @@
                 status: isRecepcao ? 'pendente_recepcao' : isCartao ? 'pendente_cartao' : 'aguardando_pagamento',
                 origem: 'chat_web',
                 criado_em: new Date().toISOString(),
-                token_asaas: motelAtual ? (motelAtual.token_asaas || '') : ''
+                token_asaas: motelAtual ? (motelAtual.token_asaas || '') : '',
+                aceite_regulamento: true
             };
             if (!db) {
                 addMsg("❌ Sistema de banco de dados indisponível. Contate a recepção.", 'bot');
@@ -689,10 +780,10 @@
             var reservaId = null;
             try {
                 if (userData.alterandoReserva && userData.reservaExistenteId) {
-                    await db.collection("reservas").doc(userData.reservaExistenteId).update({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, token_asaas:payload.token_asaas });
+                    await db.collection("reservas").doc(userData.reservaExistenteId).update({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, token_asaas:payload.token_asaas, aceite_regulamento:payload.aceite_regulamento });
                     reservaId = userData.reservaExistenteId;
                 } else {
-                    var ref = await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:payload.token_asaas });
+                    var ref = await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:payload.token_asaas, aceite_regulamento:payload.aceite_regulamento });
                     reservaId = ref.id;
                 }
             } catch(e) {
