@@ -1,63 +1,45 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Reservas - clientes podem criar, admins veem tudo
+    match /reservas/{reservaId} {
+      allow create: if true; // Chat cria reserva
+      allow read: if request.auth != null || true; // Admin autenticado OU webhook
+      allow update: if request.auth != null 
+        && request.auth.token.role in ['admin', 'superadmin', 'funcionario'];
+      allow delete: if request.auth != null 
+        && request.auth.token.role == 'superadmin';
+    }
 
-    match /config/admin_exists {
+    // Configuração dos motéis - apenas admins
+    match /config/{docId} {
+      allow read: if true; // Chat precisa ler suítes/preços
+      allow write: if request.auth != null 
+        && request.auth.token.role in ['admin', 'superadmin'];
+    }
+
+    // Usuários - apenas o próprio ou admin
+    match /usuarios/{userId} {
+      allow read: if request.auth != null 
+        && (request.auth.uid == userId 
+            || request.auth.token.role in ['admin', 'superadmin']);
+      allow write: if request.auth != null 
+        && (request.auth.uid == userId 
+            || request.auth.token.role in ['admin', 'superadmin']);
+    }
+
+    // NPS - clientes criam, admins leem
+    match /nps/{npsId} {
+      allow create: if true;
+      allow read: if request.auth != null 
+        && request.auth.token.role in ['admin', 'superadmin'];
+    }
+
+    // Linktree - público para leitura
+    match /linktree/{linkId} {
       allow read: if true;
-      allow write: if request.auth != null;
-    }
-
-    // Motéis — leitura pública, escrita só admin/superadmin
-    match /config/motels {
-      allow read: if true;
-      allow write: if request.auth != null && (
-        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'admin' ||
-        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'superadmin');
-    }
-
-    match /usuarios/{uid} {
-      allow read: if request.auth != null && (
-        request.auth.uid == uid ||
-        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'admin' ||
-        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'superadmin');
-      allow write: if request.auth != null && (
-        request.auth.uid == uid ||
-        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'admin' ||
-        get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data.role == 'superadmin');
-    }
-
-    // Reservas — autenticados (chat anônimo ou dashboard)
-    // As alterações de status são auditadas via campos status_origem e status_operador_uid
-    match /reservas/{document} {
-      allow read, write: if request.auth != null;
-    }
-
-    // Estabelecimentos (motéis)
-    match /estabelecimentos/{estabId} {
-      allow read: if request.auth != null;
-
-      // Linktree / Encurtador — leitura pública (link.html), escrita autenticada
-      match /linktree/{linkId} {
-        allow read: if true;
-        allow write: if request.auth != null;
-      }
-
-      // Config NPS — leitura pública (nps.html), escrita autenticada
-      match /config/nps {
-        allow read: if true;
-        allow write: if request.auth != null;
-      }
-
-      // Respostas NPS — leitura autenticada, criação pública (nps.html)
-      match /nps_respostas/{respId} {
-        allow read: if request.auth != null;
-        allow create: if true;
-        allow update, delete: if request.auth != null;
-      }
-    }
-
-    match /{document=**} {
-      allow read, write: if false;
+      allow write: if request.auth != null 
+        && request.auth.token.role in ['admin', 'superadmin'];
     }
   }
 }

@@ -11,7 +11,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Pré-Reserva - Rede de Motéis v03</title>
+    <title>Pré-Reserva - Rede de Motéis v04</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
@@ -770,7 +770,8 @@
                 status: isRecepcao ? 'pendente_recepcao' : isCartao ? 'pendente_cartao' : 'aguardando_pagamento',
                 origem: 'chat_web',
                 criado_em: new Date().toISOString(),
-                token_asaas: motelAtual ? (motelAtual.token_asaas || '') : ''
+                token_asaas: motelAtual ? (motelAtual.token_asaas || '') : '',
+                aceite_regulamento: true
             };
             if (!db) {
                 addMsg("❌ Sistema de banco de dados indisponível. Contate a recepção.", 'bot');
@@ -779,10 +780,10 @@
             var reservaId = null;
             try {
                 if (userData.alterandoReserva && userData.reservaExistenteId) {
-                    await db.collection("reservas").doc(userData.reservaExistenteId).update({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, token_asaas:payload.token_asaas });
+                    await db.collection("reservas").doc(userData.reservaExistenteId).update({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, token_asaas:payload.token_asaas, aceite_regulamento:payload.aceite_regulamento });
                     reservaId = userData.reservaExistenteId;
                 } else {
-                    var ref = await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:payload.token_asaas });
+                    var ref = await db.collection("reservas").add({ motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, preco_original:payload.preco_original, promocao:payload.promocao, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, protocolo:payload.protocolo, status:payload.status, origem:payload.origem, criado_em:payload.criado_em, token_asaas:payload.token_asaas, aceite_regulamento:payload.aceite_regulamento });
                     reservaId = ref.id;
                 }
             } catch(e) {

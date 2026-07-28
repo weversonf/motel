@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Reserva Confirmada - Motéis Fortaleza</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f9f0f5 0%, #f0e6f6 100%);
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: none;
+            -ms-text-size-adjust: none;
+        }
+        table { border-spacing: 0; border-collapse: collapse; }
+        td { padding: 0; }
+        img { border: 0; display: block; }
+        .wrapper {
+            width: 100%;
+            table-layout: fixed;
+            background: linear-gradient(135deg, #f9f0f5 0%, #f0e6f6 100%);
+            padding: 40px 0 60px;
+        }
+        .main {
+            background: #ffffff;
+            margin: 0 auto;
+            width: 100%;
+            max-width: 600px;
+            border-spacing: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #2d1b3d;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(210, 1, 80, 0.15), 0 8px 20px rgba(0, 0, 0, 0.05);
+        }
+        .header {
+            background: linear-gradient(135deg, #d20150 0%, #a0013d 50%, #7a002e 100%);
+            padding: 32px 0 28px;
+            text-align: center;
+            position: relative;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b9d, #ffd700, #00d99f, #6c63ff, #ff6b9d);
+            background-size: 200% 100%;
+        }
+        .header-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 12px;
+        }
+        .logo-text {
+            font-size: 22px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+            display: block;
+        }
+        .logo-sub {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            display: block;
+        }
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            color: #ffffff;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-top: 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .content {
+            padding: 36px 32px 32px;
+        }
+        .content h1 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1a0a2e;
+            margin: 0 0 8px;
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+        }
+        .content .subtitle {
+            font-size: 15px;
+            color: #7a5a8a;
+            line-height: 1.6;
+            margin: 0 0 28px;
+        }
+        .content .subtitle strong {
+            color: #d20150;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e8dff0, transparent);
+            margin: 24px 0;
+        }
+        .info-grid {
+            background: #faf7fc;
+            border-radius: 16px;
+            padding: 4px 0;
+            margin: 20px 0;
+            border: 1px solid #f0e8f4;
+        }
+        .info-row {
+            padding: 14px 20px;
+            border-bottom: 1px solid #f0e8f4;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #a080b0;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 2px;
+        }
+        .info-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a0a2e;
+        }
+        .info-value .highlight {
+            color: #00b894;
+        }
+        .info-value .muted {
+            color: #7a5a8a;
+            font-weight: 400;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #00d99f, #00b894);
+            color: #ffffff;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+        .button-container {
+            text-align: center;
+            margin: 32px 0 8px;
+        }
+        .button {
+            background: linear-gradient(135deg, #d20150 0%, #a0013d 100%);
+            color: #ffffff;
+            padding: 15px 36px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 15px;
+            display: inline-block;
+            box-shadow: 0 4px 16px rgba(210, 1, 80, 0.3);
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+        .button-secondary {
+            background: #f5f0f8;
+            color: #d20150;
+            padding: 12px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .footer {
+            background: #1a0a2e;
+            padding: 32px 32px 28px;
+            text-align: center;
+        }
+        .footer-logo {
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -0.3px;
+        }
+        .footer p {
+            margin: 12px 0 0;
+            padding: 0;
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+            line-height: 1.6;
+        }
+        .footer a {
+            color: #ff6b9d;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .footer .social-links {
+            margin: 16px 0 0;
+        }
+        .footer .social-links a {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+            margin: 0 4px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.6);
+            text-decoration: none;
+        }
+        @media only screen and (max-width: 480px) {
+            .content { padding: 28px 20px 24px; }
+            .content h1 { font-size: 22px; }
+            .info-row { padding: 12px 16px; }
+            .footer { padding: 24px 20px 20px; }
+            .header { padding: 24px 0 20px; }
+        }
+    </style>
+</head>
+<body>
+    <center class="wrapper">
+        <table class="main" width="100%">
+            <!-- Header -->
+            <tr>
+                <td class="header">
+                    <span class="header-icon">🏨</span>
+                    <span class="logo-text">Motéis Fortaleza</span>
+                    <span class="logo-sub">Sistema de Reservas</span>
+                    <span class="badge">&#9989; Pagamento Confirmado</span>
+                </td>
+            </tr>
+
+            <!-- Content -->
+            <tr>
+                <td class="content">
+                    <h1>Nova Reserva Confirmada</h1>
+                    <p class="subtitle">
+                        Prezado(a) <strong>Administrador(a)</strong>,
+                        <br>
+                        Uma nova reserva foi realizada e o pagamento foi <strong>confirmado com sucesso</strong>. Abaixo estão os detalhes completos:
+                    </p>
+
+                    <div class="info-grid">
+                        <div class="info-row">
+                            <div class="info-label">&#128279; Protocolo</div>
+                            <div class="info-value">#[NUMERO_DA_RESERVA]</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">&#127968; Motel / Suíte</div>
+                            <div class="info-value">[MOTEL] &#8212; <span class="muted">[TIPO_DO_QUARTO]</span></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">&#128197; Check-in</div>
+                            <div class="info-value">[DATA_CHECKIN] &#8212; <span class="muted">[HORA_CHECKIN]</span></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">&#128197; Check-out</div>
+                            <div class="info-value">[DATA_CHECKOUT] &#8212; <span class="muted">[HORA_CHECKOUT]</span></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">&#128101; Hóspedes</div>
+                            <div class="info-value">[NUMERO_DE_HOSPEDES]</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">&#128176; Valor Total</div>
+                            <div class="info-value">R$ <strong>[VALOR_TOTAL]</strong></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">&#128994; Status do Pagamento</div>
+                            <div class="info-value"><span class="status-badge">&#10003; Confirmado</span></div>
+                        </div>
+                    </div>
+
+                    <p class="subtitle" style="margin-bottom:0;font-size:14px;">
+                        Para gerenciar esta reserva ou visualizar mais detalhes, acesse o painel administrativo:
+                    </p>
+
+                    <div class="button-container">
+                        <a href="[LINK_PAINEL_ADMIN]" class="button">&#128279; Acessar Painel Administrativo</a>
+                        <br>
+                        <a href="[LINK_PAINEL_ADMIN]" class="button-secondary">&#128196; Ver Detalhes da Reserva</a>
+                    </div>
+                </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+                <td class="footer">
+                    <div class="footer-logo">Motéis Fortaleza</div>
+                    <p>
+                        Este e-mail foi enviado automaticamente pelo nosso sistema de gestão de reservas.<br>
+                        Para suporte, entre em contato com a equipe de TI.
+                    </p>
+                    <div class="social-links">
+                        <a href="#">&#120143;</a>
+                        <a href="#">&#120156;</a>
+                        <a href="#">&#120157;</a>
+                    </div>
+                    <p style="margin-top:16px;font-size:11px;color:rgba(255,255,255,0.3);">
+                        &copy; 2026 Motéis Fortaleza. Todos os direitos reservados.
+                    </p>
+                </td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>

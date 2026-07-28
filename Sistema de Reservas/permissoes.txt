@@ -1,17 +1,22 @@
-PERMISSÕES DO SISTEMA — ROSE
-=============================
+PERMISSÕES DO SISTEMA
+=====================
 Legenda:  ✅ = Acesso liberado  |  ❌ = Acesso negado
 
-MENU                      | Funcionário | Admin | Adm Master
---------------------------|:-----------:|:-----:|:----------:
-Calendário                |     ✅      |   ✅  |     ✅
-Tabela                    |     ✅      |   ✅  |     ✅
-Relatórios                |     ✅      |   ✅  |     ✅
-Sistema → Configurações   |     ✅      |   ✅  |     ✅
-Sistema → Usuários        |     ❌      |   ✅  |     ✅
-Sistema → API             |     ❌      |   ✅  |     ✅
-Ferramentas → Encurtador  |     ✅      |   ✅  |     ✅
-Ferramentas → Pesquisa NPS (EM BREVE)| ❌ | ❌ | ✅
+MENU                      | Atendimento | Funcionário | Admin | Superadmin
+--------------------------|:-----------:|:-----------:|:-----:|:----------:
+Calendário                |     ✅ *    |     ✅      |   ✅  |     ✅
+Tabela                    |     ✅ *    |     ✅      |   ✅  |     ✅
+Relatórios                |     ✅ *    |     ✅      |   ✅  |     ✅
+Sistema → Configurações   |     ✅ *    |     ✅      |   ✅  |     ✅
+Sistema → Usuários        |     ❌      |     ❌      |   ✅  |     ✅
+Sistema → API             |     ❌      |     ❌      |   ✅  |     ✅
+Ferramentas → Encurtador  |     ✅      |     ✅      |   ✅  |     ✅
+Ferramentas → NPS         |     ❌      |     ❌      |   ❌  |     ✅
+Check-in (Dar Entrada)    |     ✅      |     ✅      |   ✅  |     ✅
+Cancelar Reserva          |     ❌      |     ✅      |   ✅  |     ✅
+Excluir Reserva           |     ❌      |     ❌      |   ✅  |     ✅
+
+* Atendimento: visualização limitada apenas ao motel vinculado no cadastro
 
 PÁGINAS PÚBLICAS
 ----------------
@@ -23,3 +28,10 @@ REGRAS DO FIRESTORE (firestore.rules)
 estabelecimentos/{id}/linktree/{link}      →  Leitura: pública  | Escrita: autenticado
 estabelecimentos/{id}/config/nps            →  Leitura: pública  | Escrita: autenticado
 estabelecimentos/{id}/nps_respostas/{resp}  →  Leitura: autenticado | Criação: pública
+
+NÍVEL ATENDIMENTO
+-----------------
+- Criado via painel Admin (Usuários) com opção "Atendimento"
+- Campo "motel" define qual motel o usuário pode visualizar
+- Firestore rules restringem leitura/escrita de reservas ao motel vinculado
+- Filtros de motel e botões "Todos" ficam ocultos para este nível

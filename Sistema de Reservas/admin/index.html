@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Reservas v12</title>
+    <title>Painel de Reservas v13</title>
     <link rel="icon" type="image/svg+xml" href="../favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -3287,6 +3287,7 @@
         h += '<div><div class="detail-label">Protocolo</div><div class="detail-value" style="font-family:monospace;font-size:.8rem">' + (r.protocolo || '-') + '</div></div>';
         h += '<div><div class="detail-label">Status</div><div class="detail-value">' + statusLabel + '</div></div>';
         h += '<div><div class="detail-label">Origem</div><div class="detail-value">' + (r.origem || '-') + '</div></div>';
+        h += '<div><div class="detail-label">Aceite Regulamento</div><div class="detail-value">' + (r.aceite_regulamento ? '✅ De acordo' : '❌ Não informado') + '</div></div>';
         h += '<div><div class="detail-label">Criação</div><div class="detail-value">' + (r.criado_em ? (function(d){ var dt=new Date(d); return ('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2)+' '+('0'+dt.getHours()).slice(-2)+':'+('0'+dt.getMinutes()).slice(-2); })(r.criado_em) : '-') + '</div></div>';
         h += '</div>';
         if (r.preco_original && Number(r.preco_original) !== Number(r.preco)) {

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moteis Fortaleza - Painel v11</title>
+    <title>Moteis Fortaleza - Painel v12</title>
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -2450,6 +2450,7 @@
     let anoAtual = new Date().getFullYear();
     let visaoCalendario = 'calendario';
     let userRole = null;
+    let userMotel = null;
     let dadosMotels = {};
     let reservas = [];
     let usuarios = [];
@@ -2475,7 +2476,7 @@
                 var snap = await getDoc(doc(db, "usuarios", user.uid));
                 console.log('User doc exists:', snap.exists());
                 var data = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
-                await entrarSistema(user, data.role, data.nome);
+                await entrarSistema(user, data.role, data.nome, data.motel);
             } catch(e) {
                 console.warn('Auto-login error:', e);
                 mostrarLogin();
@@ -2497,18 +2498,20 @@
         document.getElementById('loginCarregando').style.display = v ? '' : 'none';
     }
 
-    async function entrarSistema(usuarioAuth, role, nome) {
+    async function entrarSistema(usuarioAuth, role, nome, motel) {
         uidAtual = usuarioAuth.uid;
         userRole = role;
+        userMotel = motel || null;
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('app').className = 'app logado';
         document.getElementById('userAvatar').textContent = (nome || 'U').charAt(0).toUpperCase();
         document.getElementById('userNome').textContent = nome || 'Usuário';
-        var label = role === 'superadmin' ? 'Super Admin' : role === 'admin' ? 'Administrador' : 'Atendimento';
+        var label = role === 'superadmin' ? 'Super Admin' : role === 'admin' ? 'Administrador' : role === 'atendimento' ? 'Atendimento (' + (motel || 'Sem motel') + ')' : 'Atendimento';
         document.getElementById('userRole').textContent = label;
         var acessoTotal = role === 'superadmin' || role === 'admin';
+        var isAtendimento = role === 'atendimento';
         document.getElementById('navRelatorios').style.display = '';
-        document.getElementById('navGerenciar').style.display = acessoTotal ? '' : 'none';
+        document.getElementById('navGerenciar').style.display = (acessoTotal || isAtendimento) ? '' : 'none';
         document.getElementById('navAPI').style.display = acessoTotal ? '' : 'none';
         document.getElementById('navUsuarios').style.display = acessoTotal ? '' : 'none';
         var temFilhoSistema = ['navGerenciar','navUsuarios','navAPI'].some(function(id) {
@@ -2537,7 +2540,7 @@
             const snap = await getDoc(doc(db, "usuarios", cred.user.uid));
             console.log('fazerLogin: user doc exists:', snap.exists());
             var userData = snap.exists() ? snap.data() : { role: 'funcionario', nome: 'Usuário' };
-            await entrarSistema(cred.user, userData.role, userData.nome);
+            await entrarSistema(cred.user, userData.role, userData.nome, userData.motel);
             authInitialized = true;
         } catch(e) {
             console.warn('fazerLogin: erro:', e.code, e.message);
@@ -2575,6 +2578,7 @@
         signOut(auth);
         uidAtual = null;
         userRole = null;
+        userMotel = null;
         document.getElementById('loginOverlay').style.display = '';
         document.getElementById('app').className = 'app';
         document.getElementById('emailInput').value = '';
@@ -2585,6 +2589,12 @@
     async function iniciar() {
         await carregarMotels();
         await carregarReservas();
+        if (userRole === 'atendimento' && userMotel) {
+            document.getElementById('filterMotel').value = userMotel;
+            document.querySelectorAll('.motel-filter-btn').forEach(function(btn) {
+                btn.classList.toggle('active', btn.dataset.motel === userMotel);
+            });
+        }
         renderMotelFilters();
         atualizarEstatisticas();
         renderCalendario();
@@ -2658,6 +2668,11 @@
     function renderMotelFilters() {
         const container = document.querySelector('.motel-filters');
         if (!container) return;
+        if (userRole === 'atendimento') {
+            container.style.display = 'none';
+            return;
+        }
+        container.style.display = '';
         let html = '<button class="motel-filter-btn active" data-motel="todos" onclick="window.filtrarPorMotel(\'todos\')">Todos</button>';
         Object.keys(dadosMotels).forEach(n => {
             html += `<button class="motel-filter-btn" data-motel="${n}" onclick="window.filtrarPorMotel('${n}')" style="--cor:${dadosMotels[n].cor}">${dadosMotels[n].icone} ${n}</button>`;
@@ -2668,7 +2683,10 @@
     // ====== ESTATÍSTICAS ======
     function atualizarEstatisticas() {
         const hoje = new Date().toISOString().split('T')[0];
-        const t = reservas;
+        var t = reservas;
+        if (userRole === 'atendimento' && userMotel) {
+            t = t.filter(function(r) { return r.motel === userMotel; });
+        }
         document.getElementById('totalReservas').textContent = t.length;
         document.getElementById('reservasHoje').textContent = t.filter(r => r.data_reserva === hoje).length;
         document.getElementById('pendentes').textContent = t.filter(r => r.status === 'aguardando_pagamento').length;
@@ -2861,6 +2879,11 @@
     function popularFiltrosTabela() {
         var selMotel = document.getElementById('filterMotel');
         if (!selMotel) return;
+        if (userRole === 'atendimento') {
+            selMotel.style.display = 'none';
+        } else {
+            selMotel.style.display = '';
+        }
         var atual = selMotel.value;
         selMotel.innerHTML = '<option value="">Motel</option>';
         Object.keys(dadosMotels).forEach(function(n) {
@@ -2874,7 +2897,7 @@
         var selSuite = document.getElementById('filterSuite');
         if (!selSuite) return;
         var atual = selSuite.value;
-        var motel = selMotel ? selMotel.value : '';
+        var motel = selMotel ? (selMotel.value || (userRole === 'atendimento' && userMotel ? userMotel : '')) : '';
         var suites = motel && dadosMotels[motel] ? dadosMotels[motel].suites : [];
         // collect all unique suites from all reservations if no motel selected
         if (!motel) {
@@ -2906,7 +2929,10 @@
 
     function getFiltradas() {
         const f1 = document.getElementById('filterData')?.value || '';
-        const f2 = document.getElementById('filterMotel')?.value || '';
+        var f2 = document.getElementById('filterMotel')?.value || '';
+        if (userRole === 'atendimento' && userMotel) {
+            f2 = userMotel;
+        }
         const f3 = document.getElementById('filterStatus')?.value || '';
         const f4 = document.getElementById('filterSuite')?.value || '';
         const f5 = document.getElementById('filterCliente')?.value || '';
@@ -2962,7 +2988,7 @@
         const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
         document.getElementById('mesAno').textContent = `${meses[mesAtual]} ${anoAtual}`;
 
-        const filterMotor = document.getElementById('filterMotel')?.value || '';
+        const filterMotor = (userRole === 'atendimento' && userMotel) ? userMotel : (document.getElementById('filterMotel')?.value || '');
         const filterStatus = document.getElementById('filterStatus')?.value || '';
 
         let h = '';
@@ -3007,7 +3033,7 @@
         const fmt = function(dt) { return ('0'+dt.getDate()).slice(-2)+'/'+('0'+(dt.getMonth()+1)).slice(-2); };
         document.getElementById('mesAno').textContent = fmt(semanaInicio) + ' - ' + fmt(fim) + ' de ' + semanaInicio.getFullYear();
 
-        const filterMotor = document.getElementById('filterMotel')?.value || '';
+        const filterMotor = (userRole === 'atendimento' && userMotel) ? userMotel : (document.getElementById('filterMotel')?.value || '');
         const filterStatus = document.getElementById('filterStatus')?.value || '';
 
         var dias = [];
@@ -3184,8 +3210,9 @@
             var labelPromo = ev.promocao === '30%_OFF' ? '🔥 -30%' : ev.promocao === '3h+3h' ? '⏱️ +3h' : ev.promocao === 'recepcao' ? '🏨' : '';
             var btnConfirmar = ''; // botão "Confirmar" removido — pagamento é confirmado apenas via Asaas ou check-in
             var podeExcluir = userRole === 'superadmin' || userRole === 'admin';
-            var btnCheckIn = (ev.status !== 'check_in' && ev.status !== 'cancelado') ? '<button class="btn-icon checkin" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'check_in\')" title="Dar Entrada"><i class="fas fa-map-pin"></i></button>' : '';
-            var btnCancel = (ev.status !== 'check_in') ? '<button class="btn-icon cancel" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'cancelado\')" title="Cancelar"><i class="fas fa-times"></i></button>' : '';
+            var podeCheckIn = userRole === 'superadmin' || userRole === 'admin' || userRole === 'atendimento';
+            var btnCheckIn = (ev.status !== 'check_in' && ev.status !== 'cancelado' && podeCheckIn) ? '<button class="btn-icon checkin" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'check_in\')" title="Dar Entrada"><i class="fas fa-map-pin"></i></button>' : '';
+            var btnCancel = (ev.status !== 'check_in' && podeExcluir) ? '<button class="btn-icon cancel" onclick="event.stopPropagation();window.alterarStatus(\'' + ev.id + '\',\'cancelado\')" title="Cancelar"><i class="fas fa-times"></i></button>' : '';
             h += `<tr data-id="${ev.id}" style="cursor:pointer" onclick="window.verDetalhesReserva('${ev.id}')"><td><span class="status ${sc}" title="${st}">${sl}</span></td><td style="text-align:center"><span class="motel-tag" style="background:${cor}15;color:${cor};border:1px solid ${cor}30">${ev.motel || '-'}</span></td><td>${ev.suite || '-'}</td><td>${ev.cliente_nome || '-'}</td><td style="color:var(--text-tertiary);font-size:0.75rem">${ev.cliente_cpf || '-'}</td><td>${ev.data_reserva ? ev.data_reserva.split('-').reverse().join('/') : '-'}</td><td style="color:var(--text-secondary)">${ev.hora_chegada || ev.horaRes || '-'}</td><td style="font-weight:600">R$ ${ev.preco || 0}${labelPromo ? ' ' + labelPromo : ''}</td><td style="font-size:0.7rem;color:var(--text-tertiary);letter-spacing:0.5px;font-family:monospace">${ev.protocolo || '-'}</td><td>${btnConfirmar}${btnCheckIn}${btnCancel}${podeExcluir ? '<button class="btn-icon delete" onclick="event.stopPropagation();window.excluirReserva(\'' + ev.id + '\')" title="Excluir">🗑</button>' : ''}</td></tr>`;
         });
         h += '</tbody></table>';
@@ -3195,6 +3222,14 @@
     window.alterarStatus = async function(id, s) {
         var r = reservas.find(function(x) { return x.id === id; });
         if (!r) return;
+        if (userRole === 'atendimento' && userMotel && r.motel !== userMotel) {
+            alert('Você só pode operar reservas do motel ' + userMotel + '.');
+            return;
+        }
+        if (userRole === 'atendimento' && s === 'cancelado') {
+            alert('Atendimento não pode cancelar reservas. Solicite a um administrador.');
+            return;
+        }
         if (s === 'confirmado') {
             if (r.status === 'aguardando_pagamento') {
                 alert('Confirmação manual não permitida para PIX. A reserva deve ser confirmada pelo Asaas.');
@@ -3543,6 +3578,10 @@
     }
 
     window.salvarSuites = async function() {
+        if (userRole === 'atendimento') {
+            alert('Atendimento não pode alterar configurações.');
+            return;
+        }
         const btn = document.getElementById('btnSalvar'), fb = document.getElementById('saveFeedback');
         btn.disabled = true;
         fb.textContent = '⏳ Salvando...';
@@ -3591,15 +3630,18 @@
         var h = '<div style="font-size:.8rem;color:var(--text-tertiary);margin-bottom:12px">Os usuários fazem login com e-mail + senha via Firebase Auth. A senha do master é gerenciada pelo próprio Firebase.</div>';
         lista.forEach(function(u) {
             var isSuper = u.role === 'superadmin';
-            var roleLabel = isSuper ? 'Super Admin' : u.role === 'admin' ? 'Admin' : 'Funcionário';
+            var roleLabel = isSuper ? 'Super Admin' : u.role === 'admin' ? 'Admin' : u.role === 'atendimento' ? 'Atendimento' : 'Funcionário';
+            var motelLabel = u.motel ? ' [' + u.motel + ']' : '';
             h += '<div class="user-row">'
                 + '<input class="unome" value="' + (u.nome || '') + '" placeholder="Nome" data-uid="' + u.uid + '" data-campo="nome" onchange="window.atualizarUserFirebase(this)">'
                 + '<span class="uuser" style="padding:8px 10px;flex:1;font-size:.8rem;color:var(--text-secondary)">' + u.email + '</span>'
                 + (isSuper ? '<span class="urole" style="padding:8px 10px;color:var(--accent-primary);font-weight:600">Super Admin</span>'
                 : '<select class="urole" data-uid="' + u.uid + '" onchange="window.atualizarUserFirebase(this)">'
                 + '<option value="funcionario"' + (u.role === 'funcionario' ? ' selected' : '') + '>Funcionário</option>'
+                + '<option value="atendimento"' + (u.role === 'atendimento' ? ' selected' : '') + '>Atendimento</option>'
                 + '<option value="admin"' + (u.role === 'admin' ? ' selected' : '') + '>Admin</option>'
                 + '</select>')
+                + (isSuper ? '' : '<select class="urole" data-uid="' + u.uid + '" data-campo="motel" onchange="window.atualizarUserFirebase(this)" style="max-width:120px"><option value="">Sem motel</option>' + Object.keys(dadosMotels).map(function(n) { return '<option value="' + n + '"' + (u.motel === n ? ' selected' : '') + '>' + n + '</option>'; }).join('') + '</select>')
                 + (isSuper ? '' : '<button class="udel" onclick="window.removerUserFirebase(\'' + u.uid + '\')" title="Remover">✕</button>')
                 + (isSuper ? '' : '<button class="udel" style="background:var(--orange-soft);color:var(--accent-primary)" onclick="window.resetarSenhaUsuario(\'' + u.uid + '\',\'' + u.email + '\')" title="Resetar senha">🔑</button>')
                 + '</div>';
@@ -3618,8 +3660,9 @@
     };
 
     window.adicionarUsuario = function() {
+        var motelOptions = Object.keys(dadosMotels).map(function(n) { return '<option value="' + n + '">' + n + '</option>'; }).join('');
         document.getElementById('modalFormBox').className = 'modal-box';
-        document.getElementById('modalFormBox').innerHTML = '<h3 id="modalTitle">➕ Novo Usuário</h3><p id="modalSubtitle">Preencha os dados para criar o acesso</p><input type="email" id="modalEmail" placeholder="E-mail do usuário"><input type="text" id="modalNome" placeholder="Nome do usuário"><select id="modalRole"><option value="funcionario">Funcionário (Atendimento)</option><option value="admin">Admin</option></select><div class="modal-actions"><button class="modal-btn-secondary" onclick="window.fecharModal()">Cancelar</button><button class="modal-btn-primary" onclick="window.criarUsuario()">Criar</button></div>';
+        document.getElementById('modalFormBox').innerHTML = '<h3 id="modalTitle">➕ Novo Usuário</h3><p id="modalSubtitle">Preencha os dados para criar o acesso</p><input type="email" id="modalEmail" placeholder="E-mail do usuário"><input type="text" id="modalNome" placeholder="Nome do usuário"><select id="modalRole"><option value="funcionario">Funcionário (Geral)</option><option value="atendimento">Atendimento (Motel específico)</option><option value="admin">Admin</option></select><select id="modalMotel"><option value="">Motel (para Atendimento)</option>' + motelOptions + '</select><div class="modal-actions"><button class="modal-btn-secondary" onclick="window.fecharModal()">Cancelar</button><button class="modal-btn-primary" onclick="window.criarUsuario()">Criar</button></div>';
         document.getElementById('modalFormBox').style.display = '';
         document.getElementById('modalResultBox').style.display = 'none';
         document.getElementById('modalOverlay').classList.add('mostrar');
@@ -3634,6 +3677,7 @@
         var email = document.getElementById('modalEmail').value.trim();
         var nome = document.getElementById('modalNome').value.trim() || email.split('@')[0];
         var role = document.getElementById('modalRole').value;
+        var motel = document.getElementById('modalMotel').value;
         if (!email) { document.getElementById('modalEmail').focus(); return; }
         var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&';
         var senha = '';
@@ -3646,9 +3690,10 @@
             var data = await resp.json();
             if (data.error) { alert('Erro: ' + (data.error.message || JSON.stringify(data.error))); return; }
             if (!data.localId) { alert('Erro ao criar usuário.'); return; }
-            await setDoc(doc(db, "usuarios", data.localId), { nome: nome, email: email, role: role });
+            await setDoc(doc(db, "usuarios", data.localId), { nome: nome, email: email, role: role, motel: motel });
             document.getElementById('resultEmail').textContent = email;
-            document.getElementById('resultRole').textContent = role === 'admin' ? 'Admin' : 'Funcionário';
+            var roleLabel = role === 'admin' ? 'Admin' : role === 'atendimento' ? 'Atendimento' : 'Funcionário';
+            document.getElementById('resultRole').textContent = roleLabel + (motel ? ' (' + motel + ')' : '');
             document.getElementById('resultSenha').textContent = senha;
             document.getElementById('btnCopySenha').textContent = '📋 Copiar Senha';
             document.getElementById('btnCopySenha').className = 'btn-copy';
