@@ -900,6 +900,7 @@
                         if (db) {
                             var qP = await db.collection("reservas").where("payment_id", "==", pid).limit(1).get();
                             if (!qP.empty) {
+                                restaurarDadosReserva(qP.docs[0].data());
                                 await qP.docs[0].ref.update({ 
                                     status: 'confirmado',
                                     status_atualizado_em: new Date().toISOString(),
@@ -927,6 +928,27 @@
             }, 300000);
         };
 
+        function restaurarDadosReserva(dados) {
+            if (!dados) return;
+            if (dados.motel) userData.motel = dados.motel;
+            if (dados.suite) userData.suite = dados.suite;
+            if (dados.duracao) userData.duracao = dados.duracao;
+            if (dados.data_reserva) userData.dataRes = dados.data_reserva;
+            if (dados.hora_chegada) userData.horaRes = dados.hora_chegada;
+            if (dados.cliente_nome) userData.nome = dados.cliente_nome;
+            if (dados.cliente_cpf) userData.cpf = dados.cliente_cpf;
+            if (dados.protocolo) userData.protocolo = dados.protocolo;
+            if (dados.payment_id) userData.paymentId = dados.payment_id;
+            if (dados.preco !== undefined && dados.preco !== null && dados.preco !== '') {
+                var preco = Number(dados.preco);
+                if (Number.isFinite(preco)) userData.preco = preco;
+            }
+            if (dados.preco_original !== undefined && dados.preco_original !== null && dados.preco_original !== '') {
+                var precoOriginal = Number(dados.preco_original);
+                if (Number.isFinite(precoOriginal)) userData.precoOriginal = precoOriginal;
+            }
+        }
+
         window.verificarPagamento = async function(cpfForcado) {
             var reservaDocId = null;
             if (!userData.paymentId) {
@@ -946,6 +968,7 @@
                     if (!q.empty) {
                         reservaDocId = q.docs[0].id;
                         var d = q.docs[0].data();
+                        restaurarDadosReserva(d);
                         if (d.payment_id) {
                             userData.paymentId = d.payment_id;
                             userData.cpf = d.cliente_cpf || cpfBusca;
@@ -962,6 +985,7 @@
                     if (!q.empty) {
                         reservaDocId = q.docs[0].id;
                         var d = q.docs[0].data();
+                        restaurarDadosReserva(d);
                         if (d.payment_id) {
                             userData.paymentId = d.payment_id;
                             userData.cpf = d.cliente_cpf || cpfBusca;
@@ -998,11 +1022,17 @@
                         var ref = reservaDocId ? db.collection("reservas").doc(reservaDocId) : null;
                         if (!ref && userData.paymentId) {
                             var qP = await db.collection("reservas").where("payment_id", "==", userData.paymentId).limit(1).get();
-                            if (!qP.empty) ref = qP.docs[0].ref;
+                            if (!qP.empty) {
+                                restaurarDadosReserva(qP.docs[0].data());
+                                ref = qP.docs[0].ref;
+                            }
                         }
                         if (!ref && userData.protocolo) {
                             var q2 = await db.collection("reservas").where("protocolo", "==", userData.protocolo).limit(1).get();
-                            if (!q2.empty) ref = q2.docs[0].ref;
+                            if (!q2.empty) {
+                                restaurarDadosReserva(q2.docs[0].data());
+                                ref = q2.docs[0].ref;
+                            }
                         }
                         if (ref) {
                             await ref.update({ 
