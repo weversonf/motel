@@ -19,8 +19,12 @@
     <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="light">
-    <title>Pré-Reserva - Rede de Motéis v04</title>
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#6d28d9">
+    <title>Pré-Reserva Online | Motéis Fortaleza</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
@@ -109,6 +113,108 @@
         .regulamento-check { display:flex; align-items:flex-start; gap:8px; margin:10px 0 14px; font-size:.78rem; color:var(--text); cursor:pointer; }
         .regulamento-check input { margin-top:3px; accent-color:var(--primary); }
         .btn-action:disabled { opacity:.5; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+
+        /* Interface premium da pré-reserva */
+        :root, [data-theme="light"] {
+            --bg: #f4f1fb;
+            --surface: rgba(255,255,255,.96);
+            --text: #201a2e;
+            --text2: #746b85;
+            --text3: #9f97ad;
+            --bot-bg: #f7f4ff;
+            --bot-text: #302648;
+            --bot-border: #e9e3f2;
+            --header-bg: rgba(255,255,255,.94);
+            --header-border: #ebe5f4;
+            --input-bg: #fbfaff;
+            --input-border: #ded6eb;
+            --card-bg: #ffffff;
+            --card-border: #ebe7f2;
+            --disclaimer-bg: #fbfaff;
+            --shadow: rgba(64, 37, 106, .13);
+        }
+        [data-theme="noir"] {
+            --bg: #100c18;
+            --surface: #171120;
+            --text: #f7f3ff;
+            --text2: #c9bdd9;
+            --text3: #8f819e;
+            --bot-bg: #21182d;
+            --bot-text: #f1e9fb;
+            --bot-border: rgba(232,221,255,.11);
+            --header-bg: #171120;
+            --header-border: rgba(232,221,255,.11);
+            --input-bg: #21182d;
+            --input-border: #3c304a;
+            --card-bg: #1d1627;
+            --card-border: #34263f;
+            --disclaimer-bg: #171120;
+            --shadow: rgba(0,0,0,.36);
+        }
+        * { font-family:'Manrope', system-ui, -apple-system, sans-serif; }
+        body { min-height:100dvh; padding:18px; background:radial-gradient(circle at 8% 0%, rgba(168,85,247,.18), transparent 30%), radial-gradient(circle at 100% 100%, rgba(236,72,153,.12), transparent 34%), var(--bg); }
+        body::before { content:''; position:fixed; inset:0; pointer-events:none; background-image:linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px); background-size:28px 28px; mask-image:linear-gradient(to bottom, black, transparent 72%); opacity:.4; }
+        .chat-container { position:relative; z-index:1; width:100%; max-width:450px; height:90vh; max-height:780px; border-radius:20px; border:1px solid var(--bot-border); box-shadow:0 18px 48px var(--shadow); backdrop-filter:blur(16px); }
+        .chat-header { min-height:80px; padding:14px 18px; justify-content:space-between; gap:12px; color:var(--text); text-align:left; text-transform:none; letter-spacing:normal; }
+        .chat-brand { display:flex; align-items:center; gap:10px; min-width:0; }
+        .chat-brand-mark { display:grid; place-items:center; width:42px; height:42px; flex:0 0 auto; overflow:hidden; border-radius:14px; background:#fff; box-shadow:0 8px 20px rgba(139,92,246,.22); }
+        .chat-brand-mark img { width:32px; height:28px; object-fit:contain; }
+        .chat-brand-copy { display:flex; flex-direction:column; min-width:0; line-height:1.22; }
+        .chat-brand-copy strong { color:var(--text); font-size:.9rem; font-weight:800; white-space:nowrap; }
+        .chat-brand-copy span { margin-top:3px; color:var(--text2); font-size:.66rem; font-weight:700; letter-spacing:.07em; text-transform:uppercase; }
+        .header-actions { display:flex; align-items:center; gap:8px; }
+        .theme-toggle { position:static; transform:none; display:grid; place-items:center; width:32px; height:32px; padding:0; border-radius:11px; background:var(--bot-bg); font-size:.82rem; }
+        .chat-box { padding:20px; gap:13px; background:transparent; }
+        .msg { padding:13px 16px; max-width:90%; border-radius:18px; font-size:.87rem; line-height:1.6; box-shadow:none; }
+        .msg.bot { border-bottom-left-radius:6px; box-shadow:0 3px 14px rgba(42,25,74,.035); }
+        .msg.user { border-bottom-right-radius:6px; box-shadow:0 8px 18px color-mix(in srgb, var(--primary) 20%, transparent); }
+        .ui-box { gap:9px; }
+        .ui-box input,.ui-box select { min-height:49px; border-radius:15px; padding:13px 14px; font-family:inherit; }
+        .ui-box input:focus,.ui-box select:focus { box-shadow:0 0 0 4px color-mix(in srgb, var(--primary) 14%, transparent); }
+        .btn-action { min-height:48px; border-radius:15px; font-family:inherit; font-weight:800; box-shadow:0 7px 18px color-mix(in srgb, var(--primary) 18%, transparent); }
+        .btn-action:hover { transform:translateY(-2px); }
+        .card-row { gap:10px; padding:3px 1px 12px; }
+        .card-select { min-width:118px; padding:14px 11px 12px; border-radius:18px; }
+        .card-select:focus-visible,.motel-card:focus-visible { outline:3px solid var(--cor); outline-offset:3px; }
+        .card-select:hover { transform:translateY(-3px); }
+        .motel-row { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); overflow:visible; padding-bottom:4px; }
+        .motel-row .motel-card { min-width:0; width:auto; }
+        .motel-card { position:relative; min-width:154px; width:154px; padding:0; border:1px solid color-mix(in srgb, var(--cor) 24%, var(--card-border)); background:var(--card-bg); text-align:left; box-shadow:0 7px 16px rgba(45,29,72,.055); }
+        .motel-card:hover { border-color:var(--cor); box-shadow:0 12px 25px var(--cor-sombra); transform:translateY(-4px); }
+        .motel-logo-stage { position:relative; display:flex; align-items:center; justify-content:center; min-height:104px; padding:11px; overflow:hidden; background:linear-gradient(135deg, var(--logo-bg), var(--logo-bg-alt)); }
+        .motel-logo-stage::after { content:''; position:absolute; width:110px; height:110px; border-radius:50%; border:1px solid rgba(255,255,255,.18); transform:translate(35px,-37px); }
+        .motel-logo-stage img { position:relative; z-index:1; width:100%; height:77px; object-fit:contain; filter:drop-shadow(0 3px 7px rgba(0,0,0,.19)); }
+        .motel-card-copy { display:block; padding:10px 11px 11px; }
+        .motel-card-topline { display:flex; align-items:center; justify-content:space-between; gap:5px; color:var(--text3); font-size:.61rem; font-weight:800; letter-spacing:.045em; text-transform:uppercase; }
+        .motel-card-topline span:first-child { display:inline-flex; width:18px; height:18px; align-items:center; justify-content:center; border-radius:7px; background:color-mix(in srgb, var(--cor) 14%, transparent); font-size:.72rem; }
+        .motel-card .card-nome { display:block; margin-top:5px; color:var(--text); font-size:.83rem; letter-spacing:0; }
+        .motel-card .card-sub { display:block; margin-top:3px; color:var(--text2); font-size:.65rem; }
+        .quick-card { min-width:124px; padding:14px 12px; text-align:left; }
+        .quick-card .card-logo { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:11px; background:color-mix(in srgb, var(--cor) 13%, transparent); font-size:1rem; }
+        .quick-card .card-nome { display:block; margin-top:9px; }
+        .quick-card .card-sub { display:block; margin-top:3px; }
+        .suite-card { width:100%; min-width:0; padding:0; text-align:left; }
+        .suite-card > div { padding:14px 15px !important; }
+        .duration-card { width:100%; min-width:0; padding:0; }
+        .duration-card > div { padding:14px 15px !important; display:flex; justify-content:space-between; align-items:center; }
+        .input-area { padding:13px 16px; background:var(--disclaimer-bg); }
+        .input-area input { min-height:46px; border-radius:15px; padding:12px 14px; }
+        .input-area button { border-radius:15px; padding:12px 16px; }
+        .disclaimer { display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 16px 12px; font-size:.66rem; font-weight:600; letter-spacing:.01em; }
+        .disclaimer span { color:var(--primary); }
+        .resumo-item { padding:8px 0; }
+        .regulamento-box { background:color-mix(in srgb, var(--bot-bg) 72%, transparent); border-radius:14px; }
+        @media (max-width:520px) {
+            body { align-items:center; padding:10px; }
+            .chat-container { width:100%; height:90dvh; min-height:0; border:1px solid var(--bot-border); border-radius:20px; box-shadow:0 18px 48px var(--shadow); }
+            .chat-header { min-height:74px; padding:12px 15px; }
+            .chat-box { padding:17px 15px; }
+            .msg { max-width:93%; font-size:.86rem; }
+            .motel-card { min-width:150px; width:150px; }
+            .motel-row .motel-card { min-width:0; width:auto; }
+            .motel-logo-stage { min-height:100px; }
+        }
+        @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation-duration:.01ms !important; transition-duration:.01ms !important; scroll-behavior:auto !important; } }
     </style>
 </head>
 <body style="background:#f0e8f0">
@@ -116,18 +222,26 @@
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W65FRBLG"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- End Google Tag Manager (noscript) -->
-    <div class="chat-container">
-        <div class="chat-header">
-            <span>♾️</span> PRÉ-RESERVA ONLINE
-            <button class="theme-toggle" onclick="window.toggleTheme()" id="themeBtn">🌙</button>
-        </div>
-        <div class="chat-box" id="chat"></div>
+    <main class="chat-container" aria-label="Pré-reserva online Motéis Fortaleza">
+        <header class="chat-header">
+            <div class="chat-brand">
+                <span class="chat-brand-mark"><img src="assets/logos/logo-moteis-fortaleza.png" alt="Motéis Fortaleza"></span>
+                <div class="chat-brand-copy">
+                    <strong>Motéis Fortaleza</strong>
+                    <span>Pré-reserva online</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" type="button" onclick="window.toggleTheme()" id="themeBtn" aria-label="Alternar tema" title="Alternar tema">🌙</button>
+            </div>
+        </header>
+        <section class="chat-box" id="chat" aria-live="polite"></section>
         <div class="input-area" id="inputArea">
             <input type="text" id="userInput" placeholder="Digite seu nome..." onkeypress="window.handleEnter(event)">
             <button onclick="window.handleText()">Enviar</button>
         </div>
-        <div class="disclaimer">Pré-reserva sujeita a confirmação da recepção</div>
-    </div>
+        <div class="disclaimer"><span aria-hidden="true">✦</span> Pré-reserva sujeita à confirmação da recepção</div>
+    </main>
 
     <script>
         // Firebase config
@@ -186,6 +300,30 @@
             ]}
         };
 
+        var BRAND_ASSETS = {
+            "Dreams": { logo:"assets/logos/logo-dreams.png", stage:"#075c43", stageAlt:"#00a66a", descricao:"Uma experiência para sonhar" },
+            "Assahi": { logo:"assets/logos/logo-assahi.png", stage:"#a44707", stageAlt:"#ff8a00", descricao:"Exclusividade em cada detalhe" },
+            "Motel Dragon": { logo:"assets/logos/logo-dragon.png", stage:"#711818", stageAlt:"#df3f3f", descricao:"Intensidade e sofisticação" },
+            "Spa Urbano": { logo:"assets/logos/logo-spa.png", stage:"#5d145e", stageAlt:"#c52bd0", descricao:"Pausa para o seu momento" }
+        };
+
+        function obterMarca(nome) {
+            return BRAND_ASSETS[nome] || { logo:"", stage:"#312043", stageAlt:"#6d28d9", descricao:"Motéis Fortaleza" };
+        }
+
+        function renderMotelCard(nome, motel, acao) {
+            var marca = obterMarca(nome);
+            var suites = motel && motel.suites ? motel.suites.length : 0;
+            var logo = marca.logo ? '<img src="' + marca.logo + '" alt="Logo ' + nome + '" loading="eager">' : '<span class="card-logo">' + (motel.icone || '✦') + '</span>';
+            return '<button type="button" class="card-select motel-card" style="--cor:' + motel.cor + ';--cor-sombra:' + motel.cor + '66;--logo-bg:' + marca.stage + ';--logo-bg-alt:' + marca.stageAlt + '" onclick="' + acao + '(\'' + nome + '\')" aria-label="Selecionar ' + nome + '">'
+                + '<span class="motel-logo-stage">' + logo + '</span>'
+                + '<span class="motel-card-copy">'
+                + '<span class="motel-card-topline"><span>' + (motel.icone || '✦') + '</span><span>Conheça</span></span>'
+                + '<span class="card-nome">' + nome + '</span>'
+                + '<span class="card-sub">' + suites + ' suítes · Ver opções</span>'
+                + '</span></button>';
+        }
+
         var APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzAVBD7ReZHQN-vLMEQem8HhnOuAobesEq3OI4W78y1lRAUHhDT_FOUoZg7nV-p9GYV1w/exec";
 
         // Theme toggle (same approach as dashboard_v02)
@@ -227,7 +365,6 @@
         window.handleEnter = function(e) { if (e.key === 'Enter') window.handleText(); };
         function toggleUI(show) { inputArea.style.display = show ? 'flex' : 'none'; }
         function removerUIAnterior() { document.querySelectorAll('.ui-box').forEach(function(u){ u.remove(); }); }
-
         var local = new Date();
         local.setMinutes(local.getMinutes() - local.getTimezoneOffset());
         var hojeLocal = local.toISOString().split('T')[0];
@@ -312,13 +449,10 @@
             div.className = 'ui-box msg bot';
             div.style.background = 'transparent'; div.style.border = 'none'; div.style.padding = '0';
             var row = document.createElement('div');
-            row.className = 'card-row';
+            row.className = 'card-row motel-row';
             Object.keys(motels).forEach(function(nome) {
                 var m = motels[nome];
-                row.innerHTML += '<div class="card-select" style="--cor:' + m.cor + ';--cor-sombra:' + m.cor + '66" onclick="window.selectMotel(\'' + nome + '\')">'
-                    + '<div class="card-logo">' + m.icone + '</div>'
-                    + '<div class="card-nome">' + nome + '</div>'
-                    + '<div class="card-sub">' + m.suites.length + ' suítes</div></div>';
+                row.innerHTML += renderMotelCard(nome, m, 'window.selectMotel');
             });
             div.appendChild(row);
             div.innerHTML += '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>';
@@ -351,9 +485,9 @@
             div.style.background = 'transparent'; div.style.border = 'none';
             div.innerHTML = '<div style="font-size:.85rem;color:#666;margin-bottom:8px">Selecione as características desejadas:</div>'
                 + '<div class="card-row">'
-                + '<div class="card-select" style="--cor:#d20150;--cor-sombra:#d2015033" onclick="window.filtrarSuites(\'hidro\')"><div class="card-logo">🛁</div><div class="card-nome">Hidro</div></div>'
-                + '<div class="card-select" style="--cor:#00aaff;--cor-sombra:#00aaff33" onclick="window.filtrarSuites(\'piscina\')"><div class="card-logo">🏊</div><div class="card-nome">Piscina</div></div>'
-                + '<div class="card-select" style="--cor:#666;--cor-sombra:#66666633" onclick="window.filtrarSuites(\'todas\')"><div class="card-logo">📋</div><div class="card-nome">Ver Todas</div></div>'
+                + '<button type="button" class="card-select quick-card" style="--cor:#d20150;--cor-sombra:#d2015033" onclick="window.filtrarSuites(\'hidro\')"><span class="card-logo">🛁</span><span class="card-nome">Hidromassagem</span></button>'
+                + '<button type="button" class="card-select quick-card" style="--cor:#00aaff;--cor-sombra:#00aaff33" onclick="window.filtrarSuites(\'piscina\')"><span class="card-logo">🏊</span><span class="card-nome">Piscina</span></button>'
+                + '<button type="button" class="card-select quick-card" style="--cor:#666;--cor-sombra:#66666633" onclick="window.filtrarSuites(\'todas\')"><span class="card-logo">📋</span><span class="card-nome">Todas</span></button>'
                 + '</div>'
                 + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>';
             chat.appendChild(div);
@@ -388,13 +522,13 @@
                 var disp = s.qtde ? '<span style="color:#888;font-size:.7rem">' + s.qtde + ' un.</span>' : '';
                 var matchCount = tagsSel.filter(function(t) { return (s.tags || []).includes(t); }).length;
                 var estrela = matchCount > 0 && matchCount === bestCount ? ' ⭐ Melhor opção' : '';
-                var tagsHtml = (s.tags || []).map(function(t) { return '<span style="display:inline-block;padding:1px 6px;border-radius:4px;font-size:.6rem;background:' + motel.cor + '22;color:' + motel.cor + ';margin-right:2px">' + t + '</span>'; }).join('');
-                div.innerHTML += '<div class="card-select" style="--cor:' + motel.cor + ';--cor-sombra:' + motel.cor + '66" onclick="window.selectSuite(\'' + s.nome + '\')">'
-                    + '<div style="padding:10px 12px">'
-                    + '<div style="font-weight:bold;color:' + motel.cor + ';font-size:.9rem">' + s.nome + estrela + ' ' + disp + '</div>'
-                    + (s.descricao ? '<div style="font-size:.7rem;color:#888;margin:2px 0">' + s.descricao + '</div>' : '')
-                    + (tagsHtml ? '<div style="margin-top:4px">' + tagsHtml + '</div>' : '')
-                    + '<div style="font-size:.75rem;color:#aaa;margin-top:4px">3h R$ ' + s.preco3 + ' · 12h R$ ' + s.preco12 + ' · 24h R$ ' + s.preco24 + '</div></div></div>';
+                var tagsHtml = (s.tags || []).map(function(t) { return '<span style="display:inline-block;padding:2px 7px;border-radius:999px;font-size:.6rem;background:' + motel.cor + '18;color:' + motel.cor + ';margin-right:3px;font-weight:700">' + t + '</span>'; }).join('');
+                div.innerHTML += '<button type="button" class="card-select suite-card" style="--cor:' + motel.cor + ';--cor-sombra:' + motel.cor + '66" onclick="window.selectSuite(\'' + s.nome + '\')" aria-label="Selecionar ' + s.nome + '">'
+                    + '<div>'
+                    + '<div style="font-weight:800;color:' + motel.cor + ';font-size:.9rem">' + s.nome + estrela + ' ' + disp + '</div>'
+                    + (s.descricao ? '<div style="font-size:.7rem;color:var(--text2);margin:4px 0;line-height:1.45">' + s.descricao + '</div>' : '')
+                    + (tagsHtml ? '<div style="margin-top:6px">' + tagsHtml + '</div>' : '')
+                    + '<div style="font-size:.74rem;color:var(--text3);margin-top:8px;font-weight:700">3h R$ ' + s.preco3 + ' · 12h R$ ' + s.preco12 + ' · 24h R$ ' + s.preco24 + '</div></div></button>';
             });
             div.innerHTML += '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>';
             chat.appendChild(div);
@@ -417,13 +551,13 @@
             var s = motels[userData.motel].suites.find(function(x){ return x.nome === userData.suite; });
             var cor = motels[userData.motel].cor;
             div.innerHTML = ''
-                + '<div class="card-select" style="--cor:' + cor + ';--cor-sombra:' + cor + '66" onclick="window.selectDuracao(\'3h\',' + s.preco3 + ')">'
-                + '<div style="padding:14px;font-weight:bold;color:var(--cor);text-align:center;font-size:1rem">⏱️ 3 Horas <span style="color:#888;font-weight:normal">R$ ' + s.preco3 + '</span></div></div>'
-                + '<div class="card-select" style="--cor:' + cor + ';--cor-sombra:' + cor + '66" onclick="window.selectDuracao(\'12h\',' + s.preco12 + ')">'
-                + '<div style="padding:14px;font-weight:bold;color:var(--cor);text-align:center;font-size:1rem">🌙 12 Horas <span style="color:#888;font-weight:normal">R$ ' + s.preco12 + '</span></div></div>'
-                + '<div class="card-select" style="--cor:' + cor + ';--cor-sombra:' + cor + '66" onclick="window.selectDuracao(\'24h\',' + s.preco24 + ')">'
-                + '<div style="padding:14px;font-weight:bold;color:var(--cor);text-align:center;font-size:1rem">🌞 24 Horas <span style="color:#888;font-weight:normal">R$ ' + s.preco24 + '</span></div></div>'
-                + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>';
+                + '<button type="button" class="card-select duration-card" style="--cor:' + cor + ';--cor-sombra:' + cor + '66" onclick="window.selectDuracao(\'3h\',' + s.preco3 + ')" aria-label="Selecionar período de 3 horas">'
+                + '<div><span style="font-weight:800;color:var(--cor);font-size:.96rem">⏱️ 3 horas</span><span style="color:var(--text2);font-weight:700">R$ ' + s.preco3 + '</span></div></button>'
+                + '<button type="button" class="card-select duration-card" style="--cor:' + cor + ';--cor-sombra:' + cor + '66" onclick="window.selectDuracao(\'12h\',' + s.preco12 + ')" aria-label="Selecionar período de 12 horas">'
+                + '<div><span style="font-weight:800;color:var(--cor);font-size:.96rem">🌙 12 horas</span><span style="color:var(--text2);font-weight:700">R$ ' + s.preco12 + '</span></div></button>'
+                + '<button type="button" class="card-select duration-card" style="--cor:' + cor + ';--cor-sombra:' + cor + '66" onclick="window.selectDuracao(\'24h\',' + s.preco24 + ')" aria-label="Selecionar período de 24 horas">'
+                + '<div><span style="font-weight:800;color:var(--cor);font-size:.96rem">🌞 24 horas</span><span style="color:var(--text2);font-weight:700">R$ ' + s.preco24 + '</span></div></button>'
+                + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:var(--text2);font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:var(--text2);font-size:.8rem;cursor:pointer;text-decoration:underline">⌂ Menu</span></div>';
             chat.appendChild(div);
             chat.scrollTop = chat.scrollHeight;
         }
@@ -626,8 +760,8 @@
             div.className = 'ui-box msg bot';
             div.style.background = 'transparent'; div.style.border = 'none';
             div.innerHTML = '<div class="card-row">'
-                + '<div class="card-select" style="--cor:#d20150;--cor-sombra:#d2015066" onclick="window.verCatalogo()"><div class="card-logo">🛏️</div><div class="card-nome">Ver Suítes</div><div class="card-sub">Catálogo completo</div></div>'
-                + '<div class="card-select" style="--cor:#28a745;--cor-sombra:#28a74566" onclick="window.iniciarReserva()"><div class="card-logo">📲</div><div class="card-nome">Fazer Reserva</div><div class="card-sub">Pré-reserva online</div></div>'
+                + '<button type="button" class="card-select quick-card" style="--cor:#7c3aed;--cor-sombra:#7c3aed66" onclick="window.verCatalogo()"><span class="card-logo">🛏️</span><span class="card-nome">Ver suítes</span><span class="card-sub">Catálogo completo</span></button>'
+                + '<button type="button" class="card-select quick-card" style="--cor:#10b981;--cor-sombra:#10b98166" onclick="window.iniciarReserva()"><span class="card-logo">📲</span><span class="card-nome">Fazer pré-reserva</span><span class="card-sub">Em poucos passos</span></button>'
                 + '</div>';
             chat.appendChild(div);
             chat.scrollTop = chat.scrollHeight;
@@ -658,13 +792,10 @@
             div.className = 'ui-box msg bot';
             div.style.background = 'transparent'; div.style.border = 'none'; div.style.padding = '0';
             var row = document.createElement('div');
-            row.className = 'card-row';
+            row.className = 'card-row motel-row';
             Object.keys(motels).forEach(function(nome) {
                 var m = motels[nome];
-                row.innerHTML += '<div class="card-select" style="--cor:' + m.cor + ';--cor-sombra:' + m.cor + '66" onclick="window.verSuitesCatalogo(\'' + nome + '\')">'
-                    + '<div class="card-logo">' + m.icone + '</div>'
-                    + '<div class="card-nome">' + nome + '</div>'
-                    + '<div class="card-sub">' + m.suites.length + ' suítes</div></div>';
+                row.innerHTML += renderMotelCard(nome, m, 'window.verSuitesCatalogo');
             });
             div.appendChild(row);
             div.innerHTML += '<div style="text-align:center;margin-top:8px"><span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar ao menu</span></div>';
