@@ -6,7 +6,7 @@
     <title>Dreams Motel | Uma experiência além do sonho</title>
     <meta name="description" content="Dreams Motel em Cajazeiras, Fortaleza. Suítes confortáveis, privacidade, garagem privativa e uma experiência especial na BR 116.">
     <meta name="keywords" content="Dreams Motel, motel em Fortaleza, motel Cajazeiras, suíte com hidromassagem, BR 116">
-    <meta name="theme-color" content="#0f5a43">
+    <meta name="theme-color" content="#b8ff3d">
     <link rel="canonical" href="https://weversonf.github.io/motel/LP/Dreams/">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="pt_BR">
@@ -21,17 +21,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --navy: #10291f;
-            --blue: #0f5a43;
-            --blue-mid: #138a66;
-            --sky: #65d4b2;
-            --silver: #e8efeb;
-            --silver-dark: #adbeb4;
+            --navy: #050806;
+            --blue: #0b2418;
+            --blue-mid: #55ff97;
+            --sky: #b8ff3d;
+            --silver: #d9f7e5;
+            --silver-dark: #8fbea6;
             --white: #ffffff;
-            --ink: #142a22;
-            --muted: #5d6d64;
-            --line: rgba(15, 90, 67, .14);
-            --shadow: 0 24px 70px rgba(16, 41, 31, .16);
+            --ink: #0a140d;
+            --muted: #52655a;
+            --line: rgba(85, 255, 151, .24);
+            --shadow: 0 24px 70px rgba(0, 0, 0, .28);
             --display: 'Montserrat', sans-serif;
             --body: 'Inter', sans-serif;
         }
@@ -40,7 +40,7 @@
         body {
             margin: 0;
             color: var(--ink);
-            background: #f8fbfd;
+            background: #f4fff8;
             font-family: var(--body);
             -webkit-font-smoothing: antialiased;
         }
@@ -71,7 +71,7 @@
         .hero { position: relative; min-height: 760px; overflow: hidden; background: var(--navy); color: var(--white); }
         .hero-bg, .hero-bg::after { position: absolute; inset: 0; }
         .hero-bg { background: center/cover no-repeat url('assets/hero.jpg'); transform: scale(1.03); animation: heroZoom 14s ease-in-out infinite alternate; }
-        .hero-bg::after { content: ''; background: linear-gradient(90deg, rgba(16,41,31,.9) 0%, rgba(16,41,31,.58) 45%, rgba(16,41,31,.18) 100%), linear-gradient(0deg, rgba(16,41,31,.68), transparent 45%); }
+        .hero-bg::after { content: ''; background: linear-gradient(90deg, rgba(0,0,0,.92) 0%, rgba(0,0,0,.68) 45%, rgba(0,0,0,.22) 100%), linear-gradient(0deg, rgba(0,0,0,.78), transparent 45%); }
         .hero-bg.slide-2 { background-image: url('assets/slider2.jpg'); }
         .hero-bg.slide-3 { background-image: url('assets/slider3.jpg'); }
         @keyframes heroZoom { from { transform: scale(1.03); } to { transform: scale(1.09); } }
@@ -86,8 +86,8 @@
         .menu-toggle { display: none; border: 0; background: transparent; color: var(--white); font-size: 22px; cursor: pointer; }
         .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border: 1px solid transparent; border-radius: 3px; font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; transition: transform .25s ease, background .25s ease, border-color .25s ease, color .25s ease; }
         .btn:hover { transform: translateY(-2px); }
-        .btn-primary { color: var(--navy); background: var(--sky); box-shadow: 0 12px 30px rgba(101,212,178,.22); }
-        .btn-primary:hover { background: #93e6c6; }
+        .btn-primary { color: var(--navy); background: var(--sky); box-shadow: 0 12px 30px rgba(184,255,61,.32); }
+        .btn-primary:hover { background: #d8ff80; }
         .btn-ghost { color: var(--white); border-color: rgba(255,255,255,.38); background: rgba(255,255,255,.05); }
         .btn-ghost:hover { border-color: var(--sky); color: var(--sky); }
         .hero-content { position: relative; z-index: 2; display: flex; align-items: center; min-height: 760px; padding: 138px 0 110px; }
@@ -124,10 +124,10 @@
         .feature-list i { color: var(--blue-mid); font-size: 18px; }
         .feature-list strong { display: block; margin-top: 12px; color: var(--ink); font: 600 12px var(--display); letter-spacing: .08em; text-transform: uppercase; }
         .feature-list span { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.5; }
-        .suites-section { background: linear-gradient(180deg, #eef7f2 0%, #f8fbfd 100%); }
+        .suites-section { background: linear-gradient(180deg, #eafff1 0%, #f4fff8 100%); }
         .suites-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-        .suite-card { overflow: hidden; background: var(--white); border: 1px solid rgba(15,90,67,.1); box-shadow: 0 16px 45px rgba(16,41,31,.08); transition: transform .35s ease, box-shadow .35s ease; }
-        .suite-card:hover { transform: translateY(-7px); box-shadow: 0 25px 65px rgba(16,41,31,.14); }
+        .suite-card { overflow: hidden; background: var(--white); border: 1px solid rgba(85,255,151,.22); box-shadow: 0 16px 45px rgba(0,0,0,.12); transition: transform .35s ease, box-shadow .35s ease; }
+        .suite-card:hover { transform: translateY(-7px); box-shadow: 0 25px 65px rgba(0,0,0,.2); }
         .suite-image { position: relative; overflow: hidden; aspect-ratio: 1.28; }
         .suite-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
         .suite-card:hover .suite-image img { transform: scale(1.06); }
@@ -166,7 +166,7 @@
         .location .eyebrow { color: var(--sky); }
         .location-info { display: grid; gap: 10px; margin-top: 22px; color: rgba(255,255,255,.85); font-size: 13px; }
         .location-info i { width: 18px; color: var(--sky); }
-        .footer { padding: 60px 0 28px; color: rgba(255,255,255,.68); background: #081a14; }
+        .footer { padding: 60px 0 28px; color: rgba(255,255,255,.68); background: #030604; }
         .footer-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 44px; padding-bottom: 38px; border-bottom: 1px solid rgba(255,255,255,.12); }
         .footer-brand { max-width: 320px; }
         .footer-brand img { width: 120px; height: 70px; object-fit: contain; object-position: center; margin-bottom: 18px; }
@@ -178,17 +178,17 @@
         .reservation-widget { position: fixed; right: 48px; bottom: 48px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; }
         .widget-bubble { position: relative; margin-bottom: 12px; padding: 12px 24px; border-radius: 16px; color: var(--navy); background: var(--white); box-shadow: 0 10px 30px rgba(0,0,0,.18); font-size: 12px; font-weight: 900; letter-spacing: .1em; line-height: 1; text-transform: uppercase; white-space: nowrap; }
         .widget-bubble::after { content: ''; position: absolute; right: 22px; bottom: -7px; border-top: 8px solid var(--white); border-left: 8px solid transparent; }
-        .widget-trigger { display: flex; align-items: center; justify-content: center; width: 80px; height: 80px; border: 0; border-radius: 50%; color: var(--white); background: #25D366; cursor: pointer; font-size: 36px; box-shadow: 0 14px 30px rgba(37,211,102,.28); transition: transform .3s ease, background .3s ease; }
+        .widget-trigger { display: flex; align-items: center; justify-content: center; width: 80px; height: 80px; border: 0; border-radius: 50%; color: var(--navy); background: var(--sky); cursor: pointer; font-size: 36px; box-shadow: 0 14px 30px rgba(184,255,61,.34); transition: transform .3s ease, background .3s ease; }
         .widget-trigger:hover { transform: scale(1.06); }
         .widget-trigger.is-open { background: var(--blue); }
-        .chat-container { position: absolute; right: 0; bottom: 98px; display: flex; flex-direction: column; width: min(360px, calc(100vw - 36px)); height: min(500px, 80vh); overflow: hidden; border: 1px solid rgba(255,255,255,.62); border-radius: 17px; background: var(--white); box-shadow: 0 24px 70px rgba(16,41,31,.28); opacity: 0; pointer-events: none; transform: translateY(12px) scale(.97); transform-origin: bottom right; transition: opacity .3s ease, transform .3s ease; }
+        .chat-container { position: absolute; right: 0; bottom: 98px; display: flex; flex-direction: column; width: min(360px, calc(100vw - 36px)); height: min(500px, 80vh); overflow: hidden; border: 1px solid rgba(255,255,255,.62); border-radius: 17px; background: var(--white); box-shadow: 0 24px 70px rgba(0,0,0,.34); opacity: 0; pointer-events: none; transform: translateY(12px) scale(.97); transform-origin: bottom right; transition: opacity .3s ease, transform .3s ease; }
         .chat-container.is-open { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
         .chat-header { display: flex; align-items: center; justify-content: space-between; min-height: 58px; padding: 10px 14px; color: var(--white); background: var(--navy); }
         .chat-brand { display: flex; align-items: center; gap: 10px; }
         .chat-brand img { width: auto; height: 30px; max-width: 64px; object-fit: contain; }
         .chat-label { color: var(--sky); font: 600 10px var(--display); letter-spacing: .12em; text-transform: uppercase; }
         .chat-close { display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 50%; color: var(--white); background: rgba(255,255,255,.1); cursor: pointer; font-size: 16px; }
-        .chat-close:hover { background: rgba(101,212,178,.24); }
+        .chat-close:hover { background: rgba(184,255,61,.24); }
         .chat-container iframe { flex: 1; width: 100%; border: 0; background: var(--white); }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
         .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
