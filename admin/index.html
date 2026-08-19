@@ -2438,6 +2438,8 @@
     let userMotel = null;
     let dadosMotels = {};
     let reservas = [];
+    let reservasCarregando = false;
+    let reservasErro = null;
     let usuarios = [];
     let uidAtual = null;
 
@@ -2624,15 +2626,49 @@
         }
     }
 
+    function timestampReserva(r) {
+        var valor = r.criado_em || r.createdAt || r.data_criacao || r.timestamp || r.criada_em;
+        if (valor && typeof valor.toDate === 'function') return valor.toDate().getTime();
+        if (valor && typeof valor.seconds === 'number') return valor.seconds * 1000;
+        if (typeof valor === 'number') return valor;
+        if (typeof valor === 'string') {
+            var parsed = Date.parse(valor);
+            if (!isNaN(parsed)) return parsed;
+        }
+        var dataHora = (r.data_reserva || '') + 'T' + (r.hora_chegada || r.horaRes || '00:00');
+        var fallback = Date.parse(dataHora);
+        return isNaN(fallback) ? 0 : fallback;
+    }
+
     async function carregarReservas() {
+        reservasCarregando = true;
+        reservasErro = null;
         try {
-            const q = query(collection(db, "reservas"), orderBy("criado_em", "desc"));
-            const s = await getDocs(q);
-            reservas = s.docs.map(d => ({ id: d.id, ...d.data() }));
+            // Não usar orderBy aqui: reservas antigas podem não possuir criado_em.
+            // A ordenação local mantém todos os documentos, sem exigir índice composto.
+            const s = await getDocs(collection(db, "reservas"));
+            reservas = s.docs
+                .map(d => ({ id: d.id, ...d.data() }))
+                .sort(function(a, b) { return timestampReserva(b) - timestampReserva(a); });
+            console.info('[RESERVAS] carregadas:', reservas.length);
+            return reservas;
         } catch (e) {
-            console.warn("Erro ao carregar reservas:", e);
+            reservas = [];
+            reservasErro = e;
+            console.error('[RESERVAS] erro ao carregar:', e);
+            return [];
+        } finally {
+            reservasCarregando = false;
         }
     }
+
+    window.tentarCarregarReservas = async function() {
+        await carregarReservas();
+        popularFiltrosTabela();
+        atualizarEstatisticas();
+        renderCalendario();
+        renderTabela();
+    };
 
     function renderMotelFilters() {
         const container = document.querySelector('.motel-filters');
@@ -2883,6 +2919,20 @@
     window.filtrarTabela = function() {
         // cliente e cpf só filtram com 3+ caracteres
         renderTabela();
+    }
+
+    window.limparFiltrosTabela = function() {
+        ['filterData','filterMotel','filterStatus','filterSuite','filterCliente','filterCpf'].forEach(function(id) {
+            var el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        filtroMotelAtual = 'todos';
+        document.querySelectorAll('.motel-filter-btn').forEach(function(btn) {
+            btn.classList.toggle('active', btn.dataset.motel === 'todos');
+        });
+        popularFiltrosTabela();
+        renderTabela();
+        renderCalendario();
     }
 
     function getFiltradas() {
@@ -3158,8 +3208,26 @@
 
     // ====== TABELA ======
     function renderTabela() {
-        const w = document.getElementById('tabelaWrapper'), r = getFiltradas();
-        if (!r.length) { w.innerHTML = '<div class="empty"><p style="font-size:2rem;margin-bottom:12px">📭</p><p>Nenhuma reserva encontrada</p></div>'; return; }
+        const w = document.getElementById('tabelaWrapper');
+        if (!w) return;
+        if (reservasCarregando) {
+            w.innerHTML = '<div class="empty"><p style="font-size:2rem;margin-bottom:12px">⏳</p><p>Carregando reservas...</p></div>';
+            return;
+        }
+        if (reservasErro) {
+            var detalhe = reservasErro.code ? 'Código: ' + reservasErro.code : 'Verifique a conexão e as permissões do Firebase.';
+            w.innerHTML = '<div class="empty"><p style="font-size:2rem;margin-bottom:12px">⚠️</p><p>Não foi possível carregar as reservas.</p><small style="display:block;margin:10px auto 16px;max-width:520px;color:var(--text-secondary)">' + detalhe + '</small><button class="btn-primary" type="button" onclick="window.tentarCarregarReservas()">Tentar novamente</button></div>';
+            return;
+        }
+        const r = getFiltradas();
+        if (!r.length) {
+            var temFiltro = ['filterData','filterMotel','filterStatus','filterSuite','filterCliente','filterCpf'].some(function(id) {
+                var el = document.getElementById(id);
+                return el && String(el.value || '').trim();
+            });
+            w.innerHTML = '<div class="empty"><p style="font-size:2rem;margin-bottom:12px">📭</p><p>' + (temFiltro ? 'Nenhuma reserva corresponde aos filtros atuais' : 'Nenhuma reserva encontrada no banco de dados') + '</p>' + (temFiltro ? '<button class="btn-secondary" type="button" onclick="window.limparFiltrosTabela()" style="margin-top:14px">Limpar filtros</button>' : '') + '</div>';
+            return;
+        }
         let h = '<table><thead><tr><th>Status</th><th style="text-align:center">Motel</th><th>Suíte</th><th>Cliente</th><th>CPF</th><th>Data</th><th>Horário</th><th>Valor</th><th>Protocolo</th><th>Ações</th></tr></thead><tbody>';
         r.forEach(ev => {
             const sc = ev.status === 'confirmado' ? 'status-confirmado' : ev.status === 'check_in' ? 'status-check-in' : ev.status === 'aguardando_pagamento' ? 'status-aguardando' : (ev.status === 'pendente_cartao' || ev.status === 'pendente_recepcao') ? 'status-pagar-motel' : ev.status === 'cancelado' ? 'status-cancelado' : 'status-pendente';
