@@ -30,7 +30,7 @@
     <!-- Google Fonts: Montserrat & Inter (Modern Sans-Serif) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -48,7 +48,8 @@
                         }
                     },
                     fontFamily: {
-                        sans: ['Montserrat', 'Inter', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Montserrat', 'sans-serif'],
                     }
                 }
             }
@@ -56,6 +57,20 @@
     </script>
 
     <style>
+        body.font-sans {
+            font-family: 'Inter', sans-serif;
+        }
+        body.font-sans h1,
+        body.font-sans h2,
+        body.font-sans h3,
+        body.font-sans h4,
+        body.font-sans h5,
+        body.font-sans h6,
+        body.font-sans .nav-link,
+        body.font-sans .btn-dragon,
+        body.font-sans button {
+            font-family: 'Montserrat', sans-serif;
+        }
         .hero-overlay {
             background: linear-gradient(to bottom, rgba(13, 13, 13, 0.3) 0%, rgba(13, 13, 13, 0.95) 100%);
         }
