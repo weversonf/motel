@@ -250,6 +250,49 @@
         .suite-features { border-color: rgba(77,224,162,.22); }
         .location { background: #050806; }
         .footer { background: #000000; }
+        /* Shared Motéis Fortaleza shell — Dreams color treatment */
+        .group-header { position: fixed; inset: 0 0 auto; z-index: 50; border-bottom: 1px solid rgba(191,245,211,.1); background: rgba(5,8,6,.86); backdrop-filter: blur(18px); }
+        .group-nav { display: flex; align-items: center; justify-content: space-between; min-height: 96px; }
+        .group-brand { display: inline-flex; align-items: center; width: 118px; height: 64px; }
+        .group-brand img { width: 118px; height: 64px; object-fit: contain; object-position: center; }
+        .group-nav-links { display: flex; align-items: center; gap: 34px; }
+        .group-nav-link { color: rgba(255,255,255,.78); font: 500 10px var(--display); letter-spacing: .2em; text-transform: uppercase; transition: color .25s ease; }
+        .group-nav-link:hover { color: var(--sky); }
+        .group-nav-reserve { min-height: 44px; padding: 0 26px; border: 1px solid rgba(191,245,211,.52); border-radius: 999px; color: var(--navy); background: var(--sky); font: 600 10px var(--display); letter-spacing: .2em; text-transform: uppercase; cursor: pointer; transition: transform .25s ease, background .25s ease, box-shadow .25s ease; }
+        .group-nav-reserve:hover { transform: translateY(-2px); background: #d9ffe7; box-shadow: 0 12px 28px rgba(77,224,162,.2); }
+        .group-menu-toggle { display: none; border: 0; color: var(--sky); background: transparent; font-size: 22px; cursor: pointer; }
+        .group-mobile-nav { display: none; }
+        .group-footer address { color: rgba(255,255,255,.58); font-size: 13px; font-style: normal; line-height: 1.7; }
+        .group-footer-phone { margin-top: 14px; color: var(--sky); font-size: 16px; }
+        .group-footer-link { display: inline-block; margin-top: 16px; color: var(--sky); font: 600 10px var(--display); letter-spacing: .2em; text-transform: uppercase; transition: color .25s ease; }
+        .group-footer-link:hover { color: var(--white); }
+        .widget-bubble { position: relative; margin-bottom: 16px; padding: 12px 20px; border-radius: 16px; color: var(--navy); background: var(--white); box-shadow: 0 12px 30px rgba(0,0,0,.2); font: 600 10px var(--display); letter-spacing: .16em; line-height: 1; text-transform: uppercase; white-space: nowrap; }
+        .widget-bubble::after { content: ''; position: absolute; right: 22px; bottom: -7px; border-top: 8px solid var(--white); border-left: 8px solid transparent; }
+        .widget-trigger { display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; border: 0; border-radius: 50%; color: var(--white); background: #25D366; cursor: pointer; font-size: 27px; box-shadow: 0 18px 40px rgba(37,211,102,.28); transition: transform .3s ease, background .3s ease, color .3s ease; }
+        .widget-trigger:hover { transform: scale(1.08); }
+        .widget-trigger.widget-open { color: var(--navy); background: var(--green-neon); box-shadow: 0 18px 40px rgba(77,224,162,.24); }
+        .chat-container { position: absolute; right: 0; bottom: 96px; display: flex; flex-direction: column; width: min(360px, calc(100vw - 36px)); height: min(500px, 80vh); overflow: hidden; border: 1px solid rgba(255,255,255,.14); border-radius: 24px; background: var(--white); box-shadow: 0 24px 70px rgba(0,0,0,.5); opacity: 0; pointer-events: none; transform: translateY(14px) scale(.96); transform-origin: bottom right; transition: opacity .3s ease, transform .3s ease; }
+        .chat-container.hidden-chat { opacity: 0; pointer-events: none; transform: translateY(14px) scale(.96); }
+        .chat-container.visible-chat { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+        .chat-header { display: flex; align-items: center; justify-content: space-between; min-height: 58px; padding: 10px 14px; color: var(--white); background: var(--navy); }
+        .chat-brand { display: flex; align-items: center; gap: 10px; }
+        .chat-brand img { width: auto; height: 30px; max-width: 64px; object-fit: contain; }
+        .chat-label { color: var(--sky); font: 600 10px var(--display); letter-spacing: .12em; text-transform: uppercase; }
+        .chat-close { display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 50%; color: var(--white); background: rgba(255,255,255,.1); cursor: pointer; font-size: 16px; }
+        .chat-close:hover { background: rgba(77,224,162,.24); }
+        .chat-container iframe { flex: 1; width: 100%; border: 0; background: var(--white); }
+        .reservation-widget { right: 24px; bottom: 32px; }
+        @media (min-width: 701px) { .reservation-widget { right: 40px; bottom: 40px; } }
+        @media (max-width: 700px) {
+            .group-nav { min-height: 78px; }
+            .group-brand, .group-brand img { width: 94px; height: 56px; }
+            .group-nav-links { display: none; }
+            .group-menu-toggle { display: block; }
+            .group-mobile-nav { flex-direction: column; align-items: stretch; gap: 0; padding: 8px 0 18px; border-top: 1px solid rgba(191,245,211,.1); background: rgba(5,8,6,.98); }
+            .group-mobile-nav.menu-open { display: flex; }
+            .group-mobile-nav .group-nav-link { padding: 15px 20px; }
+            .group-mobile-nav .group-nav-reserve { margin: 10px 20px 0; }
+        }
         .suites-carousel { position: relative; }
         .suite-carousel-controls { display: none; }
         @media (min-width: 1101px) {
@@ -289,25 +332,24 @@
     </script>
 </head>
 <body>
-    <div class="topbar">
-        <div class="container topbar-inner">
-            <div class="topbar-left"><a href="tel:+558532795788"><i class="fa-solid fa-phone"></i>(85) 3279-5788</a><span><i class="fa-solid fa-location-dot"></i>Cajazeiras • Fortaleza</span></div>
-            <div class="topbar-right"><a href="https://www.instagram.com/moteisfortaleza" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i>Instagram</a><a href="https://www.facebook.com/moteisfortaleza" target="_blank" rel="noopener"><i class="fa-brands fa-facebook-f"></i>Facebook</a></div>
-        </div>
-    </div>
-
-    <header class="header">
-        <div class="container nav">
-            <a class="brand" href="#inicio" aria-label="Dreams Motel - início"><img src="assets/logo-dreams.png" alt="Logo Dreams Motel"></a>
-            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
-            <nav class="nav-links" id="navLinks" aria-label="Navegação principal">
-                <a class="nav-link active" href="#inicio">Início</a>
-                <a class="nav-link" href="#experiencia">Experiência</a>
-                <a class="nav-link" href="#suites">Suítes</a>
-                <a class="nav-link" href="#galeria">Galeria</a>
-                <a class="nav-link" href="#contato">Contato</a>
-            </nav>
-            <div class="nav-actions"><button class="btn btn-primary" type="button" data-open-reservation>Reserve agora</button></div>
+    <header class="group-header">
+        <nav class="container group-nav" aria-label="Navegação principal">
+            <a class="group-brand" href="#inicio" aria-label="Dreams Motel — início"><img src="assets/logo-dreams.png" alt="Logo Dreams Motel"></a>
+            <div class="group-nav-links">
+                <a class="group-nav-link" href="#experiencia">Experiência</a>
+                <a class="group-nav-link" href="#suites">Suítes</a>
+                <a class="group-nav-link" href="#galeria">Galeria</a>
+                <a class="group-nav-link" href="#contato">Localização</a>
+                <button class="group-nav-reserve" type="button" data-open-reservation>Reservar</button>
+            </div>
+            <button class="group-menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
+        </nav>
+        <div class="container group-mobile-nav" id="mobileNav">
+            <a class="group-nav-link" href="#experiencia">Experiência</a>
+            <a class="group-nav-link" href="#suites">Suítes</a>
+            <a class="group-nav-link" href="#galeria">Galeria</a>
+            <a class="group-nav-link" href="#contato">Localização</a>
+            <button class="group-nav-reserve" type="button" data-open-reservation>Reservar agora</button>
         </div>
     </header>
 
@@ -367,40 +409,60 @@
         <section class="location" id="contato"><div class="container location-grid"><div><span class="eyebrow">Venha viver o seu momento</span><h2>Dreams Motel</h2><p>Uma experiência de conforto e privacidade na BR 116, em Cajazeiras, Fortaleza.</p><div class="location-info"><span><i class="fa-solid fa-location-dot"></i>BR 116 KM 06, 2430 — Cajazeiras, Fortaleza-CE</span><span><i class="fa-solid fa-phone"></i>(85) 3279-5788</span><span><i class="fa-solid fa-clock"></i>Atendimento 24 horas</span></div></div><button class="btn btn-primary" type="button" data-open-reservation>Reserve online <i class="fa-solid fa-arrow-right" style="margin-left:10px"></i></button></div></section>
     </main>
 
-    <footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><img src="assets/logo-dreams.png" alt="Logo Dreams Motel"><p>Conforto, privacidade e experiências especiais em Fortaleza. O seu momento começa no Dreams.</p></div><div><h4>Navegue</h4><div class="footer-list"><a href="#inicio">Início</a><a href="#experiencia">Experiência</a><a href="#suites">Suítes</a><a href="#galeria">Galeria</a></div></div><div><h4>Grupo Motéis Fortaleza</h4><div class="footer-list"><a href="https://weversonf.github.io/motel/site-moteis-fortaleza-novo/">Site principal</a><a href="https://www.instagram.com/moteisfortaleza" target="_blank" rel="noopener">Instagram</a><a href="https://moteisfortaleza.com/" target="_blank" rel="noopener">Site oficial</a><a href="https://moteisfortaleza.com/politica-de-privacidade/" target="_blank" rel="noopener">Privacidade</a></div></div></div><div class="footer-bottom"><span>© 2026 Dreams Motel. Todos os direitos reservados.</span><span>BR 116 • Cajazeiras • Fortaleza-CE</span></div></div></footer>
+    <footer class="group-footer footer">
+        <div class="container footer-grid">
+            <div class="footer-brand"><img src="assets/logo-dreams.png" alt="Logo Dreams Motel"><p>Suítes temáticas, conforto e privacidade para viver seu momento na BR-116, em Fortaleza.</p></div>
+            <div><h4>Localização</h4><address>BR 116 KM 06, 2430<br>Cajazeiras · Fortaleza, CE</address><p class="group-footer-phone">(85) 3279-5788</p></div>
+            <div><h4>Experiência</h4><p>Atendimento 24 horas, garagem privativa e ambientes preparados para você sair da rotina.</p><a class="group-footer-link" href="https://moteisfortaleza.com/st_hotel/dreams-motel/" target="_blank" rel="noopener">Site oficial</a></div>
+        </div>
+        <div class="container footer-bottom"><span>© 2026 Grupo Motéis Fortaleza · Dreams Motel</span><span>BR-116 · Cajazeiras · Fortaleza-CE</span></div>
+    </footer>
 
-    <div class="reservation-widget" aria-label="Reserva online"><div class="widget-bubble">Reserve agora</div><div class="chat-container" id="chatContainer" aria-hidden="true"><div class="chat-header"><div class="chat-brand"><img src="assets/logo-dreams.png" alt="Dreams Motel"><span class="chat-label">Reserva online</span></div><button class="chat-close" id="chatClose" type="button" aria-label="Fechar reserva"><i class="fa-solid fa-xmark"></i></button></div><iframe src="https://weversonf.github.io/motel/" title="Sistema online de reserva dos Motéis Fortaleza" loading="lazy"></iframe></div><button class="widget-trigger" id="widgetTrigger" type="button" aria-label="Abrir reserva online"><i class="fa-brands fa-whatsapp"></i><span class="sr-only">Abrir reserva online</span></button></div>
+    <div class="reservation-widget" aria-label="Reserva online">
+        <div class="widget-bubble">Reserve agora</div>
+        <div class="chat-container hidden-chat" id="chatContainer" aria-hidden="true">
+            <div class="chat-header"><div class="chat-brand"><img src="assets/logo-dreams.png" alt="Dreams Motel"><span class="chat-label">Reserva online</span></div><button class="chat-close" id="chatClose" type="button" aria-label="Fechar reserva"><i class="fa-solid fa-xmark"></i></button></div>
+            <iframe src="https://weversonf.github.io/motel/" title="Sistema online de reserva dos Motéis Fortaleza" loading="lazy"></iframe>
+        </div>
+        <button class="widget-trigger" id="widgetTrigger" type="button" aria-label="Abrir reserva online"><span id="widgetIcon" aria-hidden="true"><i class="fa-brands fa-whatsapp"></i></span><span class="sr-only">Abrir reserva online</span></button>
+    </div>
 
     <script>
         (() => {
             const reserveUrl = 'https://weversonf.github.io/motel/';
             const widgetTrigger = document.getElementById('widgetTrigger');
+            const widgetIcon = document.getElementById('widgetIcon');
             const chatContainer = document.getElementById('chatContainer');
             const chatClose = document.getElementById('chatClose');
             const menuToggle = document.getElementById('menuToggle');
-            const navLinks = document.getElementById('navLinks');
+            const mobileNav = document.getElementById('mobileNav');
             const heroBg = document.getElementById('heroBg');
             const suiteTrack = document.querySelector('[data-suite-track]');
             const suitePrev = document.querySelector('[data-suite-prev]');
             const suiteNext = document.querySelector('[data-suite-next]');
             let slideIndex = 0;
             let suiteTimer = null;
+            let chatOpen = false;
 
             function isMobile() { return window.matchMedia('(max-width: 767px)').matches; }
             function openReservation() {
                 if (isMobile()) { window.location.href = reserveUrl; return; }
-                chatContainer.classList.add('is-open');
+                chatOpen = true;
+                chatContainer.classList.remove('hidden-chat');
+                chatContainer.classList.add('visible-chat');
                 chatContainer.setAttribute('aria-hidden', 'false');
-                widgetTrigger.classList.add('is-open');
+                widgetTrigger.classList.add('widget-open');
                 widgetTrigger.setAttribute('aria-label', 'Fechar reserva online');
-                widgetTrigger.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i><span class="sr-only">Fechar reserva online</span>';
+                widgetIcon.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i>';
             }
             function closeReservation() {
-                chatContainer.classList.remove('is-open');
+                chatOpen = false;
+                chatContainer.classList.remove('visible-chat');
+                chatContainer.classList.add('hidden-chat');
                 chatContainer.setAttribute('aria-hidden', 'true');
-                widgetTrigger.classList.remove('is-open');
+                widgetTrigger.classList.remove('widget-open');
                 widgetTrigger.setAttribute('aria-label', 'Abrir reserva online');
-                widgetTrigger.innerHTML = '<i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span class="sr-only">Abrir reserva online</span>';
+                widgetIcon.innerHTML = '<i class="fa-brands fa-whatsapp" aria-hidden="true"></i>';
             }
             function isDesktop() { return window.matchMedia('(min-width: 1101px)').matches; }
             function shiftSuites(direction) {
@@ -419,14 +481,14 @@
                     suiteTimer = window.setInterval(() => shiftSuites(1), 6500);
                 }
             }
-            widgetTrigger.addEventListener('click', () => chatContainer.classList.contains('is-open') ? closeReservation() : openReservation());
+            widgetTrigger.addEventListener('click', () => chatOpen ? closeReservation() : openReservation());
             suitePrev?.addEventListener('click', () => { shiftSuites(-1); resetSuiteRotation(); });
             suiteNext?.addEventListener('click', () => { shiftSuites(1); resetSuiteRotation(); });
             window.addEventListener('resize', resetSuiteRotation);
             chatClose.addEventListener('click', closeReservation);
             document.querySelectorAll('[data-open-reservation]').forEach((button) => button.addEventListener('click', openReservation));
-            menuToggle.addEventListener('click', () => { const isOpen = navLinks.classList.toggle('is-open'); menuToggle.setAttribute('aria-expanded', String(isOpen)); menuToggle.innerHTML = isOpen ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>'; });
-            document.querySelectorAll('.nav-link').forEach((link) => link.addEventListener('click', () => { navLinks.classList.remove('is-open'); menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.innerHTML = '<i class="fa-solid fa-bars"></i>'; }));
+            menuToggle.addEventListener('click', () => { const isOpen = mobileNav.classList.toggle('menu-open'); menuToggle.setAttribute('aria-expanded', String(isOpen)); menuToggle.innerHTML = isOpen ? '<i class="fa-solid fa-xmark" aria-hidden="true"></i>' : '<i class="fa-solid fa-bars" aria-hidden="true"></i>'; });
+            mobileNav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => { mobileNav.classList.remove('menu-open'); menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.innerHTML = '<i class="fa-solid fa-bars" aria-hidden="true"></i>'; }));
             window.setInterval(() => { slideIndex = (slideIndex + 1) % 3; heroBg.classList.remove('slide-2', 'slide-3'); if (slideIndex === 1) heroBg.classList.add('slide-2'); if (slideIndex === 2) heroBg.classList.add('slide-3'); }, 7000);
             resetSuiteRotation();
             const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }), { threshold: .12 });
