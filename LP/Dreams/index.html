@@ -22,8 +22,8 @@
     <style>
         :root {
             --navy: #050806;
-            --blue: #0b2418;
-            --blue-mid: #55ff97;
+            --green-deep: #0b2418;
+            --green-neon: #55ff97;
             --sky: #b8ff3d;
             --silver: #d9f7e5;
             --silver-dark: #8fbea6;
@@ -52,7 +52,7 @@
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            color: var(--blue-mid);
+            color: var(--green-neon);
             font: 600 11px/1 var(--display);
             letter-spacing: .22em;
             text-transform: uppercase;
@@ -106,7 +106,7 @@
         .trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--white); box-shadow: var(--shadow); }
         .trust-item { display: flex; align-items: center; gap: 14px; min-height: 96px; padding: 20px 30px; border-right: 1px solid var(--line); }
         .trust-item:last-child { border-right: 0; }
-        .trust-item i { color: var(--blue-mid); font-size: 22px; }
+        .trust-item i { color: var(--green-neon); font-size: 22px; }
         .trust-item strong { display: block; color: var(--ink); font: 600 12px var(--display); letter-spacing: .08em; text-transform: uppercase; }
         .trust-item span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
         .section { padding: 120px 0; }
@@ -121,7 +121,7 @@
         .intro-copy p + p { margin-top: 16px; }
         .feature-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 30px; }
         .feature-list article { padding: 20px; border: 1px solid var(--line); background: rgba(255,255,255,.72); }
-        .feature-list i { color: var(--blue-mid); font-size: 18px; }
+        .feature-list i { color: var(--green-neon); font-size: 18px; }
         .feature-list strong { display: block; margin-top: 12px; color: var(--ink); font: 600 12px var(--display); letter-spacing: .08em; text-transform: uppercase; }
         .feature-list span { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.5; }
         .suites-section { background: linear-gradient(180deg, #eafff1 0%, #f4fff8 100%); }
@@ -135,17 +135,17 @@
         .suite-body { padding: 26px; }
         .suite-title-row { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
         .suite-body h3 { color: var(--ink); font-size: 23px; }
-        .suite-price { color: var(--blue-mid); font: 600 12px var(--display); white-space: nowrap; }
+        .suite-price { color: var(--green-neon); font: 600 12px var(--display); white-space: nowrap; }
         .suite-body p { margin-top: 14px; font-size: 13px; line-height: 1.7; }
         .suite-features { display: flex; flex-wrap: wrap; gap: 7px 13px; margin: 20px 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
         .suite-features span { display: inline-flex; align-items: center; gap: 5px; }
-        .suite-features i { color: var(--blue-mid); }
+        .suite-features i { color: var(--green-neon); }
         .suite-body .btn { width: 100%; }
         .experience-grid { display: grid; grid-template-columns: .95fr 1.05fr; align-items: center; gap: 76px; }
         .experience-copy h2 { margin: 17px 0 20px; color: var(--ink); font-size: clamp(32px, 4vw, 50px); line-height: 1.08; }
         .experience-points { display: grid; gap: 12px; margin-top: 28px; }
         .experience-point { display: flex; align-items: start; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--line); }
-        .experience-point i { color: var(--blue-mid); margin-top: 3px; }
+        .experience-point i { color: var(--green-neon); margin-top: 3px; }
         .experience-point strong { display: block; color: var(--ink); font: 600 12px var(--display); letter-spacing: .08em; text-transform: uppercase; }
         .experience-point span { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
         .photo-stack { display: grid; grid-template-columns: 1.3fr .7fr; gap: 14px; align-items: end; }
@@ -180,7 +180,7 @@
         .widget-bubble::after { content: ''; position: absolute; right: 22px; bottom: -7px; border-top: 8px solid var(--white); border-left: 8px solid transparent; }
         .widget-trigger { display: flex; align-items: center; justify-content: center; width: 80px; height: 80px; border: 0; border-radius: 50%; color: var(--navy); background: var(--sky); cursor: pointer; font-size: 36px; box-shadow: 0 14px 30px rgba(184,255,61,.34); transition: transform .3s ease, background .3s ease; }
         .widget-trigger:hover { transform: scale(1.06); }
-        .widget-trigger.is-open { background: var(--blue); }
+        .widget-trigger.is-open { background: var(--green-deep); }
         .chat-container { position: absolute; right: 0; bottom: 98px; display: flex; flex-direction: column; width: min(360px, calc(100vw - 36px)); height: min(500px, 80vh); overflow: hidden; border: 1px solid rgba(255,255,255,.62); border-radius: 17px; background: var(--white); box-shadow: 0 24px 70px rgba(0,0,0,.34); opacity: 0; pointer-events: none; transform: translateY(12px) scale(.97); transform-origin: bottom right; transition: opacity .3s ease, transform .3s ease; }
         .chat-container.is-open { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
         .chat-header { display: flex; align-items: center; justify-content: space-between; min-height: 58px; padding: 10px 14px; color: var(--white); background: var(--navy); }
@@ -233,6 +233,25 @@
             .reservation-widget { right: 48px; bottom: 48px; }
             .chat-container { display: none; }
         }
+        /* Dreams dark neon identity */
+        body { color: var(--white); background: #050806; }
+        .section, .gallery-section { color: var(--white); background: #050806; }
+        .section-head h2, .intro-copy h2, .experience-copy h2 { color: var(--white); }
+        .section-head p, .intro-copy p, .experience-copy p, .experience-point span { color: rgba(255,255,255,.68); }
+        .trust-grid { background: #0b2418; box-shadow: 0 24px 70px rgba(0,0,0,.42); }
+        .trust-item { border-color: rgba(85,255,151,.2); }
+        .trust-item strong, .feature-list strong, .experience-point strong, .suite-body h3 { color: var(--white); }
+        .trust-item span, .feature-list span, .suite-body p, .suite-features { color: rgba(255,255,255,.64); }
+        .feature-list article { border-color: rgba(85,255,151,.24); background: #0b2418; }
+        .suites-section { background: linear-gradient(180deg, #050806 0%, #07160d 100%); }
+        .suite-card { background: #0b2418; border-color: rgba(85,255,151,.28); box-shadow: 0 16px 45px rgba(0,0,0,.34); }
+        .suite-card:hover { box-shadow: 0 25px 65px rgba(0,0,0,.52); }
+        .suite-tag { color: #050806; background: var(--sky); }
+        .suite-features { border-color: rgba(85,255,151,.22); }
+        .location { background: #050806; }
+        .footer { background: #000000; }
+        @media (max-width: 1100px) { .suites-grid { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 700px) { .suites-grid { grid-template-columns: 1fr; } }
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
             .reveal { opacity: 1; transform: none; }
@@ -315,9 +334,10 @@
             <div class="container">
                 <div class="section-head reveal"><div><span class="eyebrow">Escolha o seu momento</span><h2>Suítes que combinam com o seu desejo.</h2></div><p>Conheça algumas das experiências do Dreams Motel e escolha o ambiente ideal para o seu momento.</p></div>
                 <div class="suites-grid">
-                    <article class="suite-card reveal"><div class="suite-image"><img src="assets/hero.jpg" alt="Suíte Master do Dreams Motel" loading="lazy"><span class="suite-tag">Essencial</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Master</h3><span class="suite-price">A partir de R$ 127</span></div><p>Uma suíte confortável e prática, ideal para quem busca uma pausa especial com tudo o que precisa.</p><div class="suite-features"><span><i class="fa-solid fa-bed"></i>Queen-size</span><span><i class="fa-solid fa-wifi"></i>Wi-Fi</span><span><i class="fa-solid fa-snowflake"></i>Ar-condicionado</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
-                    <article class="suite-card reveal"><div class="suite-image"><img src="assets/room-b2.jpg" alt="Suíte Luxo do Dreams Motel" loading="lazy"><span class="suite-tag">Conforto</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Luxo</h3><span class="suite-price">A partir de R$ 189</span></div><p>Mais espaço, cama king-size e hidromassagem para transformar a sua estadia em uma experiência completa.</p><div class="suite-features"><span><i class="fa-solid fa-bed"></i>King-size</span><span><i class="fa-solid fa-bath"></i>Hidromassagem</span><span><i class="fa-solid fa-snowflake"></i>Ar-condicionado</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
-                    <article class="suite-card reveal"><div class="suite-image"><img src="assets/room-b3.jpg" alt="Suíte Premium do Dreams Motel" loading="lazy"><span class="suite-tag">Experiência</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Premium</h3><span class="suite-price">A partir de R$ 249</span></div><p>Uma opção ampla para quem deseja mais espaço, hidromassagem e uma atmosfera ainda mais especial.</p><div class="suite-features"><span><i class="fa-solid fa-bed"></i>King-size</span><span><i class="fa-solid fa-bath"></i>Hidro + sala</span><span><i class="fa-solid fa-star"></i>Mais espaço</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
+                    <article class="suite-card reveal"><div class="suite-image"><img src="assets/room-b1.jpg" alt="Suíte Sonho do Dreams Motel" loading="lazy"><span class="suite-tag">Suíte oficial</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Sonho</h3><span class="suite-price">Consulte valores</span></div><p>Uma experiência acolhedora e temática para viver o seu momento com conforto, privacidade e discrição.</p><div class="suite-features"><span><i class="fa-solid fa-bed"></i>Ambiente temático</span><span><i class="fa-solid fa-car"></i>Garagem privativa</span><span><i class="fa-solid fa-clock"></i>24 horas</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
+                    <article class="suite-card reveal"><div class="suite-image"><img src="assets/room-b2.jpg" alt="Suíte Delirius do Dreams Motel" loading="lazy"><span class="suite-tag">Suíte oficial</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Delirius</h3><span class="suite-price">Consulte valores</span></div><p>Uma atmosfera marcante e envolvente para quem procura uma experiência especial no Dreams Motel.</p><div class="suite-features"><span><i class="fa-solid fa-wand-magic-sparkles"></i>Ambientação temática</span><span><i class="fa-solid fa-lock"></i>Privacidade</span><span><i class="fa-solid fa-car"></i>Entrada reservada</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
+                    <article class="suite-card reveal"><div class="suite-image"><img src="assets/room-b3.jpg" alt="Suíte Romântica do Dreams Motel" loading="lazy"><span class="suite-tag">Suíte oficial</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Romântica</h3><span class="suite-price">Consulte valores</span></div><p>Um cenário pensado para celebrar, desacelerar e transformar uma ocasião em uma lembrança memorável.</p><div class="suite-features"><span><i class="fa-solid fa-heart"></i>Clima romântico</span><span><i class="fa-solid fa-bed"></i>Conforto completo</span><span><i class="fa-solid fa-shield-halved"></i>Discrição</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
+                    <article class="suite-card reveal"><div class="suite-image"><img src="assets/slider2.jpg" alt="Suíte Fantasia do Dreams Motel" loading="lazy"><span class="suite-tag">Suíte oficial</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Fantasia</h3><span class="suite-price">Consulte valores</span></div><p>Uma proposta ousada e sensorial para sair da rotina e viver o Dreams de um jeito único.</p><div class="suite-features"><span><i class="fa-solid fa-star"></i>Experiência temática</span><span><i class="fa-solid fa-car"></i>Garagem privativa</span><span><i class="fa-solid fa-clock"></i>Check-in livre</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
                 </div>
             </div>
         </section>
@@ -325,7 +345,7 @@
         <section class="section">
             <div class="container experience-grid">
                 <div class="experience-copy reveal"><span class="eyebrow">Mais do que uma estadia</span><h2>Feito para você esquecer o relógio.</h2><p>O Dreams combina a energia de Fortaleza com ambientes reservados e uma estrutura acolhedora. Aqui, o seu tempo pode seguir outro ritmo.</p><div class="experience-points"><div class="experience-point"><i class="fa-solid fa-heart"></i><div><strong>Para celebrar</strong><span>Surpreenda em uma data especial ou simplesmente crie uma nova lembrança.</span></div></div><div class="experience-point"><i class="fa-solid fa-spa"></i><div><strong>Para relaxar</strong><span>Desacelere em uma suíte confortável, com privacidade e tranquilidade.</span></div></div><div class="experience-point"><i class="fa-solid fa-location-dot"></i><div><strong>Localização estratégica</strong><span>Na BR 116, em Cajazeiras, com acesso fácil para você chegar sem complicação.</span></div></div></div></div>
-                <div class="photo-stack reveal"><img class="large" src="assets/slider2.jpg" alt="Área de lazer e piscina em ambiente azul" loading="lazy"><div class="small-col"><img class="small" src="assets/slider3.jpg" alt="Detalhe de ambiente do Dreams Motel" loading="lazy"><img class="small" src="assets/gallery3.jpg" alt="Quarto aconchegante do Dreams Motel" loading="lazy"></div></div>
+                <div class="photo-stack reveal"><img class="large" src="assets/slider2.jpg" alt="Ambiente colorido de suíte oficial do Dreams Motel" loading="lazy"><div class="small-col"><img class="small" src="assets/slider3.jpg" alt="Detalhe de ambiente do Dreams Motel" loading="lazy"><img class="small" src="assets/gallery3.jpg" alt="Quarto aconchegante do Dreams Motel" loading="lazy"></div></div>
             </div>
         </section>
 
