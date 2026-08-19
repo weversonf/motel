@@ -1,8 +1,17 @@
 {
-  "checks": [],
-  "uptimeCount": 0,
+  "checks": [
+    {
+      "timestamp": "2026-08-19T13:11:27.020Z",
+      "status": "up",
+      "statusCode": 200,
+      "responseTime": 2256,
+      "error": null,
+      "finalUrl": "https://moteisfortaleza.com/"
+    }
+  ],
+  "uptimeCount": 1,
   "downCount": 0,
-  "lastStatus": null,
+  "lastStatus": "up",
   "lastChanged": null,
   "startTime": "2026-07-21T14:00:00.000Z"
 }
