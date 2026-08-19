@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dreams Motel | Uma experiência além do sonho</title>
+    <meta name="description" content="Dreams Motel em Cajazeiras, Fortaleza. Suítes confortáveis, privacidade, garagem privativa e uma experiência especial na BR 116.">
+    <meta name="keywords" content="Dreams Motel, motel em Fortaleza, motel Cajazeiras, suíte com hidromassagem, BR 116">
+    <meta name="theme-color" content="#0b3a63">
+    <link rel="canonical" href="https://weversonf.github.io/motel/LP/Dreams/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Dreams Motel | Uma experiência além do sonho">
+    <meta property="og:description" content="Conforto, privacidade e experiências especiais no Dreams Motel, em Cajazeiras.">
+    <meta property="og:image" content="https://weversonf.github.io/motel/LP/Dreams/assets/hero.jpg">
+    <meta property="og:url" content="https://weversonf.github.io/motel/LP/Dreams/">
+    <link rel="icon" type="image/png" href="assets/logo-dreams.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #071b2d;
+            --blue: #0b3a63;
+            --blue-mid: #145d89;
+            --sky: #5ec8e6;
+            --silver: #e7edf3;
+            --silver-dark: #a9b9c7;
+            --white: #ffffff;
+            --ink: #102335;
+            --muted: #5d6e7d;
+            --line: rgba(11, 58, 99, .14);
+            --shadow: 0 24px 70px rgba(7, 27, 45, .16);
+            --display: 'Montserrat', sans-serif;
+            --body: 'Inter', sans-serif;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: #f8fbfd;
+            font-family: var(--body);
+            -webkit-font-smoothing: antialiased;
+        }
+        img { display: block; max-width: 100%; }
+        a { color: inherit; text-decoration: none; }
+        button { font: inherit; }
+        .container { width: min(1180px, calc(100% - 48px)); margin: 0 auto; }
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--blue-mid);
+            font: 600 11px/1 var(--display);
+            letter-spacing: .22em;
+            text-transform: uppercase;
+        }
+        .eyebrow::before { content: ''; width: 30px; height: 1px; background: var(--sky); }
+        h1, h2, h3, h4, p { margin: 0; }
+        h1, h2, h3, h4, .nav-link, .btn, .widget-bubble { font-family: var(--display); }
+        h1, h2, h3, h4 { font-weight: 500; letter-spacing: -.035em; }
+        p { color: var(--muted); line-height: 1.8; }
+        .topbar { position: absolute; inset: 0 0 auto; z-index: 5; border-bottom: 1px solid rgba(255,255,255,.17); color: rgba(255,255,255,.82); }
+        .topbar-inner { display: flex; justify-content: space-between; align-items: center; min-height: 38px; font-size: 11px; }
+        .topbar a { transition: color .25s ease; }
+        .topbar a:hover { color: var(--sky); }
+        .topbar-left, .topbar-right { display: flex; align-items: center; gap: 18px; }
+        .topbar i { color: var(--sky); margin-right: 6px; }
+        .hero { position: relative; min-height: 760px; overflow: hidden; background: var(--navy); color: var(--white); }
+        .hero-bg, .hero-bg::after { position: absolute; inset: 0; }
+        .hero-bg { background: center/cover no-repeat url('assets/hero.jpg'); transform: scale(1.03); animation: heroZoom 14s ease-in-out infinite alternate; }
+        .hero-bg::after { content: ''; background: linear-gradient(90deg, rgba(7,27,45,.9) 0%, rgba(7,27,45,.58) 45%, rgba(7,27,45,.18) 100%), linear-gradient(0deg, rgba(7,27,45,.68), transparent 45%); }
+        .hero-bg.slide-2 { background-image: url('assets/slider2.jpg'); }
+        .hero-bg.slide-3 { background-image: url('assets/slider3.jpg'); }
+        @keyframes heroZoom { from { transform: scale(1.03); } to { transform: scale(1.09); } }
+        .header { position: absolute; inset: 38px 0 auto; z-index: 6; }
+        .nav { display: flex; align-items: center; justify-content: space-between; min-height: 86px; border-bottom: 1px solid rgba(255,255,255,.18); }
+        .brand { display: inline-flex; align-items: center; width: 118px; height: 64px; }
+        .brand img { width: 118px; height: 64px; object-fit: contain; object-position: center; }
+        .nav-links { display: flex; align-items: center; gap: 30px; }
+        .nav-link { color: rgba(255,255,255,.84); font-size: 11px; font-weight: 500; letter-spacing: .12em; text-transform: uppercase; transition: color .25s ease; }
+        .nav-link:hover, .nav-link.active { color: var(--sky); }
+        .nav-actions { display: flex; align-items: center; gap: 12px; }
+        .menu-toggle { display: none; border: 0; background: transparent; color: var(--white); font-size: 22px; cursor: pointer; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border: 1px solid transparent; border-radius: 3px; font-size: 11px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; cursor: pointer; transition: transform .25s ease, background .25s ease, border-color .25s ease, color .25s ease; }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { color: var(--navy); background: var(--sky); box-shadow: 0 12px 30px rgba(94,200,230,.22); }
+        .btn-primary:hover { background: #8bdbed; }
+        .btn-ghost { color: var(--white); border-color: rgba(255,255,255,.38); background: rgba(255,255,255,.05); }
+        .btn-ghost:hover { border-color: var(--sky); color: var(--sky); }
+        .hero-content { position: relative; z-index: 2; display: flex; align-items: center; min-height: 760px; padding: 138px 0 110px; }
+        .hero-copy { max-width: 690px; }
+        .hero-copy .eyebrow { color: var(--sky); }
+        .hero-copy h1 { max-width: 680px; margin: 23px 0 22px; font-size: clamp(44px, 6vw, 76px); line-height: 1.04; }
+        .hero-copy h1 span { color: var(--sky); }
+        .hero-copy p { max-width: 570px; color: rgba(255,255,255,.78); font-size: 17px; }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 13px; margin-top: 34px; }
+        .hero-meta { display: flex; flex-wrap: wrap; gap: 20px; margin-top: 48px; color: rgba(255,255,255,.72); font-size: 12px; }
+        .hero-meta span { display: inline-flex; align-items: center; gap: 8px; }
+        .hero-meta i { color: var(--sky); }
+        .scroll-note { position: absolute; right: 0; bottom: 54px; display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,.7); font: 500 10px var(--display); letter-spacing: .18em; text-transform: uppercase; writing-mode: vertical-rl; }
+        .scroll-note::before { content: ''; width: 1px; height: 48px; background: var(--sky); }
+        .trust-bar { position: relative; z-index: 3; margin-top: -48px; }
+        .trust-grid { display: grid; grid-template-columns: repeat(3, 1fr); background: var(--white); box-shadow: var(--shadow); }
+        .trust-item { display: flex; align-items: center; gap: 14px; min-height: 96px; padding: 20px 30px; border-right: 1px solid var(--line); }
+        .trust-item:last-child { border-right: 0; }
+        .trust-item i { color: var(--blue-mid); font-size: 22px; }
+        .trust-item strong { display: block; color: var(--ink); font: 600 12px var(--display); letter-spacing: .08em; text-transform: uppercase; }
+        .trust-item span { display: block; margin-top: 4px; color: var(--muted); font-size: 12px; }
+        .section { padding: 120px 0; }
+        .section-head { display: flex; align-items: end; justify-content: space-between; gap: 28px; margin-bottom: 48px; }
+        .section-head h2 { max-width: 600px; margin-top: 16px; color: var(--ink); font-size: clamp(32px, 4vw, 52px); line-height: 1.08; }
+        .section-head p { max-width: 420px; font-size: 14px; }
+        .intro-grid { display: grid; grid-template-columns: 1.03fr .97fr; align-items: center; gap: 78px; }
+        .image-frame { position: relative; padding: 0 0 25px 25px; }
+        .image-frame::before { content: ''; position: absolute; left: 0; bottom: 0; width: 73%; height: 74%; border: 1px solid var(--sky); }
+        .image-frame img { position: relative; width: 100%; aspect-ratio: 1.08; object-fit: cover; box-shadow: var(--shadow); }
+        .intro-copy h2 { margin: 18px 0 22px; color: var(--ink); font-size: clamp(32px, 4vw, 48px); line-height: 1.08; }
+        .intro-copy p + p { margin-top: 16px; }
+        .feature-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-top: 30px; }
+        .feature-list article { padding: 20px; border: 1px solid var(--line); background: rgba(255,255,255,.72); }
+        .feature-list i { color: var(--blue-mid); font-size: 18px; }
+        .feature-list strong { display: block; margin-top: 12px; color: var(--ink); font: 600 12px var(--display); letter-spacing: .08em; text-transform: uppercase; }
+        .feature-list span { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+        .suites-section { background: linear-gradient(180deg, #eef6fa 0%, #f8fbfd 100%); }
+        .suites-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+        .suite-card { overflow: hidden; background: var(--white); border: 1px solid rgba(11,58,99,.1); box-shadow: 0 16px 45px rgba(7,27,45,.08); transition: transform .35s ease, box-shadow .35s ease; }
+        .suite-card:hover { transform: translateY(-7px); box-shadow: 0 25px 65px rgba(7,27,45,.14); }
+        .suite-image { position: relative; overflow: hidden; aspect-ratio: 1.28; }
+        .suite-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+        .suite-card:hover .suite-image img { transform: scale(1.06); }
+        .suite-tag { position: absolute; left: 16px; top: 16px; padding: 8px 10px; color: var(--navy); background: var(--silver); font: 600 10px var(--display); letter-spacing: .1em; text-transform: uppercase; }
+        .suite-body { padding: 26px; }
+        .suite-title-row { display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+        .suite-body h3 { color: var(--ink); font-size: 23px; }
+        .suite-price { color: var(--blue-mid); font: 600 12px var(--display); white-space: nowrap; }
+        .suite-body p { margin-top: 14px; font-size: 13px; line-height: 1.7; }
+        .suite-features { display: flex; flex-wrap: wrap; gap: 7px 13px; margin: 20px 0; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+        .suite-features span { display: inline-flex; align-items: center; gap: 5px; }
+        .suite-features i { color: var(--blue-mid); }
+        .suite-body .btn { width: 100%; }
+        .experience-grid { display: grid; grid-template-columns: .95fr 1.05fr; align-items: center; gap: 76px; }
+        .experience-copy h2 { margin: 17px 0 20px; color: var(--ink); font-size: clamp(32px, 4vw, 50px); line-height: 1.08; }
+        .experience-points { display: grid; gap: 12px; margin-top: 28px; }
+        .experience-point { display: flex; align-items: start; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+        .experience-point i { color: var(--blue-mid); margin-top: 3px; }
+        .experience-point strong { display: block; color: var(--ink); font: 600 12px var(--display); letter-spacing: .08em; text-transform: uppercase; }
+        .experience-point span { display: block; margin-top: 6px; color: var(--muted); font-size: 13px; }
+        .photo-stack { display: grid; grid-template-columns: 1.3fr .7fr; gap: 14px; align-items: end; }
+        .photo-stack img { width: 100%; height: 100%; object-fit: cover; box-shadow: var(--shadow); }
+        .photo-stack .large { aspect-ratio: .82; }
+        .photo-stack .small-col { display: grid; gap: 14px; }
+        .photo-stack .small { aspect-ratio: 1.1; }
+        .gallery-section { padding-top: 0; }
+        .gallery-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr; grid-template-rows: 230px 230px; gap: 12px; }
+        .gallery-item { overflow: hidden; }
+        .gallery-item:first-child { grid-row: span 2; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+        .gallery-item:hover img { transform: scale(1.05); }
+        .location { padding: 78px 0; color: var(--white); background: var(--navy); }
+        .location-grid { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 30px; }
+        .location h2 { margin-top: 16px; font-size: clamp(30px, 4vw, 46px); }
+        .location p { max-width: 620px; margin-top: 15px; color: rgba(255,255,255,.68); }
+        .location .eyebrow { color: var(--sky); }
+        .location-info { display: grid; gap: 10px; margin-top: 22px; color: rgba(255,255,255,.85); font-size: 13px; }
+        .location-info i { width: 18px; color: var(--sky); }
+        .footer { padding: 60px 0 28px; color: rgba(255,255,255,.68); background: #041421; }
+        .footer-grid { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 44px; padding-bottom: 38px; border-bottom: 1px solid rgba(255,255,255,.12); }
+        .footer-brand { max-width: 320px; }
+        .footer-brand img { width: 120px; height: 70px; object-fit: contain; object-position: center; margin-bottom: 18px; }
+        .footer-brand p { color: rgba(255,255,255,.58); font-size: 13px; }
+        .footer h4 { margin-bottom: 18px; color: var(--white); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; }
+        .footer-list { display: grid; gap: 10px; font-size: 13px; }
+        .footer-list a:hover { color: var(--sky); }
+        .footer-bottom { display: flex; justify-content: space-between; gap: 20px; padding-top: 22px; font-size: 11px; }
+        .reservation-widget { position: fixed; right: 48px; bottom: 48px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; }
+        .widget-bubble { position: relative; margin-bottom: 12px; padding: 12px 24px; border-radius: 16px; color: var(--navy); background: var(--white); box-shadow: 0 10px 30px rgba(0,0,0,.18); font-size: 12px; font-weight: 900; letter-spacing: .1em; line-height: 1; text-transform: uppercase; white-space: nowrap; }
+        .widget-bubble::after { content: ''; position: absolute; right: 22px; bottom: -7px; border-top: 8px solid var(--white); border-left: 8px solid transparent; }
+        .widget-trigger { display: flex; align-items: center; justify-content: center; width: 80px; height: 80px; border: 0; border-radius: 50%; color: var(--white); background: #25D366; cursor: pointer; font-size: 36px; box-shadow: 0 14px 30px rgba(37,211,102,.32); transition: transform .3s ease, background .3s ease; }
+        .widget-trigger:hover { transform: scale(1.06); }
+        .widget-trigger.is-open { background: var(--blue); }
+        .chat-container { position: absolute; right: 0; bottom: 98px; display: flex; flex-direction: column; width: min(360px, calc(100vw - 36px)); height: min(500px, 80vh); overflow: hidden; border: 1px solid rgba(255,255,255,.62); border-radius: 17px; background: var(--white); box-shadow: 0 24px 70px rgba(7,27,45,.28); opacity: 0; pointer-events: none; transform: translateY(12px) scale(.97); transform-origin: bottom right; transition: opacity .3s ease, transform .3s ease; }
+        .chat-container.is-open { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+        .chat-header { display: flex; align-items: center; justify-content: space-between; min-height: 58px; padding: 10px 14px; color: var(--white); background: var(--navy); }
+        .chat-brand { display: flex; align-items: center; gap: 10px; }
+        .chat-brand img { width: auto; height: 30px; max-width: 64px; object-fit: contain; }
+        .chat-label { color: var(--sky); font: 600 10px var(--display); letter-spacing: .12em; text-transform: uppercase; }
+        .chat-close { display: grid; place-items: center; width: 30px; height: 30px; border: 0; border-radius: 50%; color: var(--white); background: rgba(255,255,255,.1); cursor: pointer; font-size: 16px; }
+        .chat-close:hover { background: rgba(94,200,230,.24); }
+        .chat-container iframe { flex: 1; width: 100%; border: 0; background: var(--white); }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+        .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s ease, transform .7s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        @media (max-width: 900px) {
+            .nav-links { gap: 17px; }
+            .intro-grid, .experience-grid { grid-template-columns: 1fr; gap: 48px; }
+            .intro-copy { order: -1; }
+            .suites-grid { grid-template-columns: repeat(2, 1fr); }
+            .location-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 700px) {
+            .container { width: min(100% - 34px, 560px); }
+            .topbar-right { display: none; }
+            .topbar-inner { justify-content: flex-start; }
+            .header { inset-top: 38px; }
+            .nav { min-height: 78px; }
+            .brand, .brand img { width: 94px; height: 56px; }
+            .menu-toggle { display: block; }
+            .nav-links { position: absolute; left: 0; right: 0; top: 78px; display: none; flex-direction: column; align-items: stretch; gap: 0; padding: 8px 0; border: 1px solid rgba(255,255,255,.15); background: rgba(7,27,45,.96); }
+            .nav-links.is-open { display: flex; }
+            .nav-link { padding: 15px 20px; }
+            .nav-actions { display: none; }
+            .hero, .hero-content { min-height: 710px; }
+            .hero-content { padding: 128px 0 88px; }
+            .hero-copy h1 { font-size: clamp(38px, 12vw, 58px); }
+            .hero-copy p { font-size: 15px; }
+            .hero-actions { flex-direction: column; align-items: stretch; }
+            .scroll-note { display: none; }
+            .trust-grid { grid-template-columns: 1fr; }
+            .trust-item { min-height: 76px; border-right: 0; border-bottom: 1px solid var(--line); }
+            .trust-item:last-child { border-bottom: 0; }
+            .section { padding: 82px 0; }
+            .section-head { display: block; margin-bottom: 32px; }
+            .section-head p { margin-top: 18px; }
+            .feature-list, .suites-grid { grid-template-columns: 1fr; }
+            .gallery-grid { grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 150px); }
+            .gallery-item:first-child { grid-row: span 2; }
+            .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+            .footer-bottom { display: block; }
+            .footer-bottom span { display: block; margin-top: 8px; }
+            .reservation-widget { right: 48px; bottom: 48px; }
+            .chat-container { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+            .reveal { opacity: 1; transform: none; }
+        }
+    </style>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Motel",
+      "name": "Dreams Motel",
+      "description": "Motel em Cajazeiras, Fortaleza, com suítes confortáveis, privacidade e atendimento 24 horas.",
+      "image": "https://weversonf.github.io/motel/LP/Dreams/assets/hero.jpg",
+      "telephone": "+55 85 3279-5788",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "BR 116 KM 06, 2430",
+        "addressLocality": "Fortaleza",
+        "addressRegion": "CE",
+        "addressCountry": "BR"
+      },
+      "areaServed": "Fortaleza",
+      "url": "https://weversonf.github.io/motel/LP/Dreams/"
+    }
+    </script>
+</head>
+<body>
+    <div class="topbar">
+        <div class="container topbar-inner">
+            <div class="topbar-left"><a href="tel:+558532795788"><i class="fa-solid fa-phone"></i>(85) 3279-5788</a><span><i class="fa-solid fa-location-dot"></i>Cajazeiras • Fortaleza</span></div>
+            <div class="topbar-right"><a href="https://www.instagram.com/moteisfortaleza" target="_blank" rel="noopener"><i class="fa-brands fa-instagram"></i>Instagram</a><a href="https://www.facebook.com/moteisfortaleza" target="_blank" rel="noopener"><i class="fa-brands fa-facebook-f"></i>Facebook</a></div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container nav">
+            <a class="brand" href="#inicio" aria-label="Dreams Motel - início"><img src="assets/logo-dreams.png" alt="Logo Dreams Motel"></a>
+            <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false"><i class="fa-solid fa-bars"></i></button>
+            <nav class="nav-links" id="navLinks" aria-label="Navegação principal">
+                <a class="nav-link active" href="#inicio">Início</a>
+                <a class="nav-link" href="#experiencia">Experiência</a>
+                <a class="nav-link" href="#suites">Suítes</a>
+                <a class="nav-link" href="#galeria">Galeria</a>
+                <a class="nav-link" href="#contato">Contato</a>
+            </nav>
+            <div class="nav-actions"><button class="btn btn-primary" type="button" data-open-reservation>Reserve agora</button></div>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero" id="inicio" aria-label="Dreams Motel">
+            <div class="hero-bg" id="heroBg" aria-hidden="true"></div>
+            <div class="container hero-content">
+                <div class="hero-copy reveal">
+                    <span class="eyebrow">Dreams Motel • Cajazeiras</span>
+                    <h1>Uma experiência que vai <span>além do sonho.</span></h1>
+                    <p>Conforto, privacidade e ambientes pensados para transformar algumas horas em um momento especial.</p>
+                    <div class="hero-actions"><button class="btn btn-primary" type="button" data-open-reservation>Reserve agora <i class="fa-solid fa-arrow-right" style="margin-left:10px"></i></button><a class="btn btn-ghost" href="#suites">Conheça as suítes</a></div>
+                    <div class="hero-meta"><span><i class="fa-solid fa-clock"></i>Atendimento 24h</span><span><i class="fa-solid fa-car"></i>Garagem privativa</span><span><i class="fa-solid fa-shield-halved"></i>Privacidade total</span></div>
+                </div>
+                <span class="scroll-note">Explore a experiência</span>
+            </div>
+        </section>
+
+        <div class="container trust-bar reveal">
+            <div class="trust-grid">
+                <div class="trust-item"><i class="fa-solid fa-water"></i><div><strong>Conforto sem pressa</strong><span>Ambientes preparados para relaxar</span></div></div>
+                <div class="trust-item"><i class="fa-solid fa-lock"></i><div><strong>Discrição e segurança</strong><span>Entrada e garagem privativas</span></div></div>
+                <div class="trust-item"><i class="fa-solid fa-utensils"></i><div><strong>Experiência completa</strong><span>Gastronomia e atendimento 24 horas</span></div></div>
+            </div>
+        </div>
+
+        <section class="section" id="experiencia">
+            <div class="container intro-grid">
+                <div class="image-frame reveal"><img src="assets/room-b1.jpg" alt="Ambiente confortável de uma suíte do Dreams Motel" loading="lazy"></div>
+                <div class="intro-copy reveal"><span class="eyebrow">O seu momento começa aqui</span><h2>Conforto para deixar o tempo mais leve.</h2><p>Localizado na BR 116, em Cajazeiras, o Dreams Motel reúne praticidade, conforto e uma atmosfera acolhedora para quem deseja sair da rotina.</p><p>Da chegada à despedida, cada detalhe foi pensado para que você tenha liberdade, tranquilidade e uma experiência do seu jeito.</p><div class="feature-list"><article><i class="fa-solid fa-bed"></i><strong>Suítes especiais</strong><span>Opções para diferentes estilos de experiência.</span></article><article><i class="fa-solid fa-car"></i><strong>Acesso reservado</strong><span>Mais praticidade e privacidade desde a chegada.</span></article><article><i class="fa-solid fa-wifi"></i><strong>Conforto completo</strong><span>Estrutura para relaxar sem preocupações.</span></article><article><i class="fa-solid fa-moon"></i><strong>Momentos únicos</strong><span>Um espaço para celebrar, descansar e se conectar.</span></article></div></div>
+            </div>
+        </section>
+
+        <section class="section suites-section" id="suites">
+            <div class="container">
+                <div class="section-head reveal"><div><span class="eyebrow">Escolha o seu momento</span><h2>Suítes que combinam com o seu desejo.</h2></div><p>Conheça algumas das experiências do Dreams Motel e escolha o ambiente ideal para o seu momento.</p></div>
+                <div class="suites-grid">
+                    <article class="suite-card reveal"><div class="suite-image"><img src="assets/hero.jpg" alt="Suíte Master do Dreams Motel" loading="lazy"><span class="suite-tag">Essencial</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Master</h3><span class="suite-price">A partir de R$ 127</span></div><p>Uma suíte confortável e prática, ideal para quem busca uma pausa especial com tudo o que precisa.</p><div class="suite-features"><span><i class="fa-solid fa-bed"></i>Queen-size</span><span><i class="fa-solid fa-wifi"></i>Wi-Fi</span><span><i class="fa-solid fa-snowflake"></i>Ar-condicionado</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
+                    <article class="suite-card reveal"><div class="suite-image"><img src="assets/room-b2.jpg" alt="Suíte Luxo do Dreams Motel" loading="lazy"><span class="suite-tag">Conforto</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Luxo</h3><span class="suite-price">A partir de R$ 189</span></div><p>Mais espaço, cama king-size e hidromassagem para transformar a sua estadia em uma experiência completa.</p><div class="suite-features"><span><i class="fa-solid fa-bed"></i>King-size</span><span><i class="fa-solid fa-bath"></i>Hidromassagem</span><span><i class="fa-solid fa-snowflake"></i>Ar-condicionado</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
+                    <article class="suite-card reveal"><div class="suite-image"><img src="assets/room-b3.jpg" alt="Suíte Premium do Dreams Motel" loading="lazy"><span class="suite-tag">Experiência</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Premium</h3><span class="suite-price">A partir de R$ 249</span></div><p>Uma opção ampla para quem deseja mais espaço, hidromassagem e uma atmosfera ainda mais especial.</p><div class="suite-features"><span><i class="fa-solid fa-bed"></i>King-size</span><span><i class="fa-solid fa-bath"></i>Hidro + sala</span><span><i class="fa-solid fa-star"></i>Mais espaço</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container experience-grid">
+                <div class="experience-copy reveal"><span class="eyebrow">Mais do que uma estadia</span><h2>Feito para você esquecer o relógio.</h2><p>O Dreams combina a energia de Fortaleza com ambientes reservados e uma estrutura acolhedora. Aqui, o seu tempo pode seguir outro ritmo.</p><div class="experience-points"><div class="experience-point"><i class="fa-solid fa-heart"></i><div><strong>Para celebrar</strong><span>Surpreenda em uma data especial ou simplesmente crie uma nova lembrança.</span></div></div><div class="experience-point"><i class="fa-solid fa-spa"></i><div><strong>Para relaxar</strong><span>Desacelere em uma suíte confortável, com privacidade e tranquilidade.</span></div></div><div class="experience-point"><i class="fa-solid fa-location-dot"></i><div><strong>Localização estratégica</strong><span>Na BR 116, em Cajazeiras, com acesso fácil para você chegar sem complicação.</span></div></div></div></div>
+                <div class="photo-stack reveal"><img class="large" src="assets/slider2.jpg" alt="Área de lazer e piscina em ambiente azul" loading="lazy"><div class="small-col"><img class="small" src="assets/slider3.jpg" alt="Detalhe de ambiente do Dreams Motel" loading="lazy"><img class="small" src="assets/gallery3.jpg" alt="Quarto aconchegante do Dreams Motel" loading="lazy"></div></div>
+            </div>
+        </section>
+
+        <section class="section gallery-section" id="galeria">
+            <div class="container"><div class="section-head reveal"><div><span class="eyebrow">Veja de perto</span><h2>Detalhes que fazem a diferença.</h2></div><p>Uma seleção de imagens para você sentir um pouco da atmosfera antes mesmo de chegar.</p></div><div class="gallery-grid"><div class="gallery-item reveal"><img src="assets/gallery1.jpg" alt="Ambiente do Dreams Motel" loading="lazy"></div><div class="gallery-item reveal"><img src="assets/gallery2.jpg" alt="Detalhe de suíte do Dreams Motel" loading="lazy"></div><div class="gallery-item reveal"><img src="assets/gallery3.jpg" alt="Quarto confortável do Dreams Motel" loading="lazy"></div><div class="gallery-item reveal"><img src="assets/gallery4.jpg" alt="Ambiente interno do Dreams Motel" loading="lazy"></div><div class="gallery-item reveal"><img src="assets/gallery5.jpg" alt="Detalhe de decoração do Dreams Motel" loading="lazy"></div></div></div>
+        </section>
+
+        <section class="location" id="contato"><div class="container location-grid"><div><span class="eyebrow">Venha viver o seu momento</span><h2>Dreams Motel</h2><p>Uma experiência de conforto e privacidade na BR 116, em Cajazeiras, Fortaleza.</p><div class="location-info"><span><i class="fa-solid fa-location-dot"></i>BR 116 KM 06, 2430 — Cajazeiras, Fortaleza-CE</span><span><i class="fa-solid fa-phone"></i>(85) 3279-5788</span><span><i class="fa-solid fa-clock"></i>Atendimento 24 horas</span></div></div><button class="btn btn-primary" type="button" data-open-reservation>Reserve online <i class="fa-solid fa-arrow-right" style="margin-left:10px"></i></button></div></section>
+    </main>
+
+    <footer class="footer"><div class="container"><div class="footer-grid"><div class="footer-brand"><img src="assets/logo-dreams.png" alt="Logo Dreams Motel"><p>Conforto, privacidade e experiências especiais em Fortaleza. O seu momento começa no Dreams.</p></div><div><h4>Navegue</h4><div class="footer-list"><a href="#inicio">Início</a><a href="#experiencia">Experiência</a><a href="#suites">Suítes</a><a href="#galeria">Galeria</a></div></div><div><h4>Grupo Motéis Fortaleza</h4><div class="footer-list"><a href="https://weversonf.github.io/motel/site-moteis-fortaleza-novo/">Site principal</a><a href="https://www.instagram.com/moteisfortaleza" target="_blank" rel="noopener">Instagram</a><a href="https://moteisfortaleza.com/" target="_blank" rel="noopener">Site oficial</a><a href="https://moteisfortaleza.com/politica-de-privacidade/" target="_blank" rel="noopener">Privacidade</a></div></div></div><div class="footer-bottom"><span>© 2026 Dreams Motel. Todos os direitos reservados.</span><span>BR 116 • Cajazeiras • Fortaleza-CE</span></div></div></footer>
+
+    <div class="reservation-widget" aria-label="Reserva online"><div class="widget-bubble">Reserve agora</div><div class="chat-container" id="chatContainer" aria-hidden="true"><div class="chat-header"><div class="chat-brand"><img src="assets/logo-dreams.png" alt="Dreams Motel"><span class="chat-label">Reserva online</span></div><button class="chat-close" id="chatClose" type="button" aria-label="Fechar reserva"><i class="fa-solid fa-xmark"></i></button></div><iframe src="https://weversonf.github.io/motel/" title="Sistema online de reserva dos Motéis Fortaleza" loading="lazy"></iframe></div><button class="widget-trigger" id="widgetTrigger" type="button" aria-label="Abrir reserva online"><i class="fa-brands fa-whatsapp"></i><span class="sr-only">Abrir reserva online</span></button></div>
+
+    <script>
+        (() => {
+            const reserveUrl = 'https://weversonf.github.io/motel/';
+            const widgetTrigger = document.getElementById('widgetTrigger');
+            const chatContainer = document.getElementById('chatContainer');
+            const chatClose = document.getElementById('chatClose');
+            const menuToggle = document.getElementById('menuToggle');
+            const navLinks = document.getElementById('navLinks');
+            const heroBg = document.getElementById('heroBg');
+            let slideIndex = 0;
+
+            function isMobile() { return window.matchMedia('(max-width: 767px)').matches; }
+            function openReservation() {
+                if (isMobile()) { window.location.href = reserveUrl; return; }
+                chatContainer.classList.add('is-open');
+                chatContainer.setAttribute('aria-hidden', 'false');
+                widgetTrigger.classList.add('is-open');
+                widgetTrigger.setAttribute('aria-label', 'Fechar reserva online');
+                widgetTrigger.innerHTML = '<i class="fa-solid fa-xmark" aria-hidden="true"></i><span class="sr-only">Fechar reserva online</span>';
+            }
+            function closeReservation() {
+                chatContainer.classList.remove('is-open');
+                chatContainer.setAttribute('aria-hidden', 'true');
+                widgetTrigger.classList.remove('is-open');
+                widgetTrigger.setAttribute('aria-label', 'Abrir reserva online');
+                widgetTrigger.innerHTML = '<i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span class="sr-only">Abrir reserva online</span>';
+            }
+            widgetTrigger.addEventListener('click', () => chatContainer.classList.contains('is-open') ? closeReservation() : openReservation());
+            chatClose.addEventListener('click', closeReservation);
+            document.querySelectorAll('[data-open-reservation]').forEach((button) => button.addEventListener('click', openReservation));
+            menuToggle.addEventListener('click', () => { const isOpen = navLinks.classList.toggle('is-open'); menuToggle.setAttribute('aria-expanded', String(isOpen)); menuToggle.innerHTML = isOpen ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>'; });
+            document.querySelectorAll('.nav-link').forEach((link) => link.addEventListener('click', () => { navLinks.classList.remove('is-open'); menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.innerHTML = '<i class="fa-solid fa-bars"></i>'; }));
+            setInterval(() => { slideIndex = (slideIndex + 1) % 3; heroBg.classList.remove('slide-2', 'slide-3'); if (slideIndex === 1) heroBg.classList.add('slide-2'); if (slideIndex === 2) heroBg.classList.add('slide-3'); }, 7000);
+            const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }), { threshold: .12 });
+            document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
+        })();
+    </script>
+</body>
+</html>
