@@ -1,15 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XMYGG4TG8X"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-XMYGG4TG8X');
-    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -84,22 +75,44 @@
             </div>
             <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-               <ul class="nav navbar-nav" id="responsive-menu">
+              <ul class="nav navbar-nav" id="responsive-menu">
                 <li class="active">
-                  <a href="#">Início</a>
+                  <a href="index.html">Início</a>
+                </li>
+                <li class="submenu dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"
+                    >Motéis<i class="fa fa-angle-down" aria-hidden="true"></i
+                  ></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="motel/assahi-motel.html">Assahi Motel</a></li>
+                    <li><a href="motel/dragon-motel.html">Dragon Motel</a></li>
+                    <li><a href="motel/dreams-motel.html">Dreams Motel</a></li>
+                    <li><a href="motel/spa-urbano.html">Spa Urbano</a></li>
+                  </ul>
                 </li>
                 <li>
-                  <a href="#">Motéis</a>
+                  <a href="#suites">Suítes</a>
                 </li>
                 <li>
-                  <a href="#">Reservas</a>
+                  <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+fazer+uma+reserva." target="_blank">Reservas</a>
                 </li>
                 <li>
-                  <a href="#">Contato</a>
+                  <a href="#contato">Contato</a>
+                </li>
+                <li class="submenu dropdown">
+                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"
+                    >Dashboard<i class="fa fa-angle-down" aria-hidden="true"></i
+                  ></a>
+                  <ul class="dropdown-menu">
+                    <li><a href="dashboard/dashboard.html">Dashboard</a></li>
+                    <li><a href="dashboard/profile.html">Perfil</a></li>
+                    <li><a href="dashboard/appointment.html">Reservas</a></li>
+                    <li><a href="dashboard/events.html">Histórico</a></li>
+                  </ul>
                 </li>
               </ul>
               <div class="nav-btn">
-                <a href="#" class="btn btn-orange">Reserve com Desconto</a>
+                <a href="#" class="btn btn-orange">Reserve Agora</a>
               </div>
             </div>
             <!-- /.navbar-collapse -->
@@ -129,7 +142,7 @@
                   <i class="fa fa-bed"></i> King-size
                 </p>
                 <a href="motel/assahi-motel.html" data-animation="animated fadeInUp" class="slider-btn btn-or mar-right-10"><i class="fa fa-book"></i> Ver Suíte</a>
-                <a href="#" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-or"><i class="fa fa-whatsapp"></i> Reservar</a>
+                <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+reservar+a+Su%C3%ADte+Mandala+no+Assahi+Motel" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-wt"><i class="fa fa-whatsapp"></i> Reservar</a>
               </div>
             </div>
             <div class="swiper-slide" style="background-image: url(../img/suites/suite-sucesso.jpg)">
@@ -144,7 +157,7 @@
                   <i class="fa fa-bed"></i> King-size
                 </p>
                 <a href="motel/dragon-motel.html" data-animation="animated fadeInUp" class="slider-btn btn-or mar-right-10"><i class="fa fa-book"></i> Ver Suíte</a>
-                <a href="#" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-or"><i class="fa fa-whatsapp"></i> Reservar</a>
+                <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+reservar+a+Su%C3%ADte+Sucesso+no+Dragon+Motel" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-wt"><i class="fa fa-whatsapp"></i> Reservar</a>
               </div>
             </div>
             <div class="swiper-slide" style="background-image: url(../img/suites/suite-diamante.jpg)">
@@ -159,7 +172,7 @@
                   <i class="fa fa-bath"></i> Hidro &amp; Ofuro
                 </p>
                 <a href="motel/spa-urbano.html" data-animation="animated fadeInUp" class="slider-btn btn-or mar-right-10"><i class="fa fa-book"></i> Ver Suíte</a>
-                <a href="#" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-or"><i class="fa fa-whatsapp"></i> Reservar</a>
+                <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+reservar+a+Su%C3%ADte+Diamante+no+Spa+Urbano" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-wt"><i class="fa fa-whatsapp"></i> Reservar</a>
               </div>
             </div>
             <div class="swiper-slide" style="background-image: url(../img/suites/suite-sonho.jpg)">
@@ -174,7 +187,7 @@
                   <i class="fa fa-wifi"></i> Wi-Fi Grátis
                 </p>
                 <a href="motel/dreams-motel.html" data-animation="animated fadeInUp" class="slider-btn btn-or mar-right-10"><i class="fa fa-book"></i> Ver Suíte</a>
-                <a href="#" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-or"><i class="fa fa-whatsapp"></i> Reservar</a>
+                <a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+fazer+uma+reserva+no+Dreams+Motel" target="_blank" data-animation="animated fadeInUp" class="slider-btn btn-wt"><i class="fa fa-whatsapp"></i> Reservar</a>
               </div>
             </div>
           </div>
