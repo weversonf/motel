@@ -3266,6 +3266,7 @@
                           r.status === 'pendente_cartao' ? '💳 Pagar no Motel' :
                           r.status === 'pendente_recepcao' ? '💳 Pagar no Motel' :
                           r.status === 'cancelado' ? '❌ Cancelado' : (r.status || '-');
+        var pagaNoMotel = r.status === 'pendente_cartao' || r.status === 'pendente_recepcao';
         var h = '<div style="padding:0">';
         h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">';
         h += '<h3 style="margin:0">📋 Detalhes da Reserva</h3>';
@@ -3279,7 +3280,7 @@
         h += '<div><div class="detail-label">Data</div><div class="detail-value">' + (r.data_reserva ? r.data_reserva.split('-').reverse().join('/') : '-') + '</div></div>';
         h += '<div><div class="detail-label">Horário</div><div class="detail-value">' + (r.hora_chegada || r.horaRes || '-') + '</div></div>';
         h += '<div><div class="detail-label">Duração</div><div class="detail-value">' + (r.duracao || '-') + '</div></div>';
-        h += '<div><div class="detail-label">Valor pago</div><div class="detail-value" style="font-weight:700;color:var(--green)">R$ ' + (r.preco || 0) + ',00</div></div>';
+        h += '<div><div class="detail-label">' + (pagaNoMotel ? 'Valor a pagar' : 'Valor pago') + '</div><div class="detail-value" style="font-weight:700;color:' + (pagaNoMotel ? '#f39c12' : 'var(--green)') + '">R$ ' + (r.preco || 0) + ',00</div></div>';
         if (r.preco_original && Number(r.preco_original) !== Number(r.preco)) {
             h += '<div><div class="detail-label">Valor original</div><div class="detail-value" style="text-decoration:line-through;color:var(--text-tertiary)">R$ ' + r.preco_original + ',00</div></div>';
         }
