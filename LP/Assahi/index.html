@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assahí Motel | Suítes temáticas de alto luxo em Fortaleza</title>
+    <meta name="description" content="Viva uma experiência singular no Assahí Motel, em Fátima, Fortaleza. Suítes temáticas inspiradas em ilhas paradisíacas, garagem privativa e serviço com discrição.">
+    <meta name="keywords" content="Assahí Motel, motel Fortaleza, motel Fátima, suíte Bora Bora Fortaleza, suíte temática Fortaleza, reserva motel">
+    <meta name="theme-color" content="#160b1c">
+    <link rel="canonical" href="https://weversonf.github.io/motel/LP/Assahi/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://weversonf.github.io/motel/LP/Assahi/">
+    <meta property="og:title" content="Assahí Motel | Uma ilha particular em Fortaleza">
+    <meta property="og:description" content="Suítes temáticas de alto luxo, privacidade e gastronomia em Fátima, Fortaleza.">
+    <meta property="og:image" content="assets/assahi-hero.jpg">
+    <link rel="icon" type="image/png" href="assets/logo-assahi.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        assahi: {
+                            ink: '#160B1C',
+                            dark: '#211027',
+                            surface: '#2C1534',
+                            magenta: '#B91E72',
+                            pink: '#F0A7CC',
+                            gold: '#D6B36A'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        :root { color-scheme: dark; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #160B1C; }
+        h1, h2, h3, h4, h5, h6, button, .nav-link, .display { font-family: 'Montserrat', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-weight: 500; }
+        .hero-overlay { background: linear-gradient(180deg, rgba(22,11,28,.12) 0%, rgba(22,11,28,.63) 55%, #160B1C 100%); }
+        .gold-gradient { background: linear-gradient(110deg, #F0A7CC, #D6B36A, #F7DFA6); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .btn-assahi { background: linear-gradient(135deg, #B91E72, #741047); box-shadow: 0 14px 34px rgba(185,30,114,.25); transition: transform .35s ease, filter .35s ease, box-shadow .35s ease; }
+        .btn-assahi:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 18px 42px rgba(185,30,114,.4); }
+        .suite-card img { transition: transform .9s cubic-bezier(.2,0,.2,1); }
+        .suite-card:hover img { transform: scale(1.06); }
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity .75s ease, transform .75s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        #chat-container { transform-origin: bottom right; transition: opacity .35s ease, transform .35s ease; }
+        #chat-container.hidden-chat { opacity: 0; transform: scale(.88) translateY(18px); pointer-events: none; }
+        #chat-container.visible-chat { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+        .menu-open { display: flex !important; }
+        @media (min-width: 768px) { #chat-container { width: 360px; height: 500px; max-height: 80vh; } }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        }
+    </style>
+</head>
+<body class="bg-assahi-ink text-white antialiased selection:bg-assahi-magenta selection:text-white">
+    <header class="fixed inset-x-0 top-0 z-50 border-b border-assahi-gold/10 bg-assahi-ink/85 backdrop-blur-xl">
+        <nav class="mx-auto flex h-24 max-w-7xl items-center justify-between px-6" aria-label="Navegação principal">
+            <a href="#inicio" class="flex items-center" aria-label="Assahí Motel — início"><img src="assets/logo-assahi.png" alt="Logo Assahí Motel" class="h-16 w-auto object-contain"></a>
+            <div class="hidden items-center gap-10 md:flex">
+                <a href="#experiencia" class="nav-link text-[9px] font-semibold uppercase tracking-[.24em] text-gray-300 transition hover:text-assahi-pink">Experiência</a>
+                <a href="#suites" class="nav-link text-[9px] font-semibold uppercase tracking-[.24em] text-gray-300 transition hover:text-assahi-pink">Suítes</a>
+                <a href="#localizacao" class="nav-link text-[9px] font-semibold uppercase tracking-[.24em] text-gray-300 transition hover:text-assahi-pink">Localização</a>
+                <a href="https://weversonf.github.io/motel/" class="btn-assahi rounded-full px-8 py-3 text-[9px] font-semibold uppercase tracking-[.26em] text-white">Reservar</a>
+            </div>
+            <button id="menu-toggle" class="text-assahi-pink md:hidden" aria-label="Abrir menu" aria-expanded="false"><i class="fas fa-bars text-2xl"></i></button>
+        </nav>
+        <div id="mobile-nav" class="hidden flex-col gap-5 border-t border-assahi-gold/10 bg-assahi-ink/95 px-6 py-7 md:hidden">
+            <a href="#experiencia" class="nav-link text-[10px] uppercase tracking-[.22em] text-gray-300">Experiência</a>
+            <a href="#suites" class="nav-link text-[10px] uppercase tracking-[.22em] text-gray-300">Suítes</a>
+            <a href="#localizacao" class="nav-link text-[10px] uppercase tracking-[.22em] text-gray-300">Localização</a>
+            <a href="https://weversonf.github.io/motel/" class="btn-assahi rounded-full px-7 py-3 text-center text-[10px] font-semibold uppercase tracking-[.22em]">Reservar agora</a>
+        </div>
+    </header>
+
+    <main id="inicio">
+        <section class="relative flex min-h-screen items-center justify-center overflow-hidden px-6 pt-24">
+            <img src="assets/assahi-hero.jpg" alt="Ambiente do Assahí Motel em Fortaleza" class="absolute inset-0 h-full w-full object-cover" width="1600" height="1100" fetchpriority="high">
+            <div class="hero-overlay absolute inset-0"></div>
+            <div class="relative z-10 mx-auto max-w-5xl text-center">
+                <p class="reveal mb-8 text-[10px] font-semibold uppercase tracking-[.5em] text-assahi-pink">Fátima · Fortaleza</p>
+                <h1 class="reveal mb-8 text-5xl font-normal leading-[1.05] tracking-[-.045em] text-white md:text-8xl">Uma ilha <span class="gold-gradient">particular</span>.</h1>
+                <p class="reveal mx-auto mb-12 max-w-2xl text-base font-light leading-relaxed tracking-wide text-gray-200 md:text-lg">Suítes temáticas, atendimento impecável e a privacidade que transforma uma noite em memória.</p>
+                <div class="reveal flex flex-col justify-center gap-5 sm:flex-row">
+                    <a href="#suites" class="btn-assahi rounded-full px-12 py-5 text-center text-[10px] font-semibold uppercase tracking-[.28em] text-white">Explorar suítes</a>
+                    <a href="https://weversonf.github.io/motel/" class="rounded-full border border-assahi-pink/70 px-12 py-5 text-center text-[10px] font-semibold uppercase tracking-[.28em] text-assahi-pink transition hover:bg-assahi-pink hover:text-assahi-ink">Fazer reserva</a>
+                </div>
+            </div>
+            <a href="#experiencia" class="absolute bottom-9 left-1/2 -translate-x-1/2 text-assahi-pink/70 transition hover:text-assahi-pink" aria-label="Rolar para a experiência"><i class="fas fa-chevron-down"></i></a>
+        </section>
+
+        <section id="experiencia" class="bg-assahi-ink px-6 py-28 md:py-36">
+            <div class="mx-auto grid max-w-7xl items-center gap-20 md:grid-cols-2">
+                <div class="reveal">
+                    <p class="mb-5 text-[10px] font-semibold uppercase tracking-[.42em] text-assahi-gold">Luxo com personalidade</p>
+                    <h2 class="mb-8 text-4xl font-normal leading-tight tracking-[-.035em] text-white md:text-6xl">Viaje sem sair de <span class="text-assahi-pink">Fortaleza.</span></h2>
+                    <p class="mb-10 text-lg font-light leading-relaxed text-gray-400">O Assahí reúne ambientes inspirados em ilhas paradisíacas, como Bora Bora e Honolulu, em um endereço reservado no bairro de Fátima. Cada detalhe foi pensado para acolher seus melhores momentos.</p>
+                    <div class="grid grid-cols-2 gap-8">
+                        <div class="border-l border-assahi-magenta/70 pl-5"><strong class="mb-2 block text-3xl font-normal text-white">100%</strong><span class="text-[9px] font-semibold uppercase tracking-[.24em] text-gray-500">Privacidade</span></div>
+                        <div class="border-l border-assahi-gold/60 pl-5"><strong class="mb-2 block text-3xl font-normal text-white">24h</strong><span class="text-[9px] font-semibold uppercase tracking-[.24em] text-gray-500">Gastronomia</span></div>
+                    </div>
+                </div>
+                <div class="reveal relative">
+                    <div class="absolute -inset-4 rounded-3xl border border-assahi-gold/20"></div>
+                    <img src="assets/suite-bora-bora.jpg" alt="Suíte Bora-Bora do Assahí Motel" class="relative h-[480px] w-full rounded-2xl object-cover shadow-2xl" loading="lazy" width="1200" height="900">
+                    <div class="absolute bottom-6 left-6 rounded-xl border border-white/10 bg-assahi-ink/80 px-5 py-4 backdrop-blur"><span class="block text-[9px] font-semibold uppercase tracking-[.25em] text-assahi-pink">A partir de</span><strong class="text-xl font-normal text-white">R$ 180,00 <small class="text-xs text-gray-400">· 3 horas</small></strong></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="suites" class="bg-assahi-dark px-6 py-28 md:py-36">
+            <div class="mx-auto max-w-[1440px]">
+                <div class="reveal mb-16 text-center md:mb-20">
+                    <p class="mb-5 text-[10px] font-semibold uppercase tracking-[.42em] text-assahi-gold">Escolha sua atmosfera</p>
+                    <h2 class="mb-5 text-4xl font-normal uppercase tracking-[-.035em] text-white md:text-6xl">Suítes <span class="text-assahi-pink">temáticas</span></h2>
+                    <div class="mx-auto h-px w-16 bg-assahi-gold/60"></div>
+                    <p class="mt-7 text-[10px] font-medium uppercase tracking-[.34em] text-gray-500">Uma experiência diferente a cada endereço</p>
+                </div>
+                <div class="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-4">
+                    <article class="suite-card reveal flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-assahi-ink/70"><div class="relative h-72 overflow-hidden"><img src="assets/suite-tahiti.jpg" alt="Suíte Tahiti Assahí Motel" class="h-full w-full object-cover" loading="lazy" width="1200" height="900"><div class="absolute inset-0 bg-gradient-to-t from-assahi-ink via-transparent to-transparent"></div></div><div class="flex flex-1 flex-col p-8"><h3 class="mb-3 text-xl font-medium uppercase tracking-tight text-white">Suíte Tahiti</h3><p class="mb-8 text-[9px] font-semibold uppercase tracking-[.22em] text-assahi-pink">Refúgio tropical</p><div class="mt-auto flex items-end justify-between border-t border-white/10 pt-6"><span class="text-[9px] uppercase tracking-[.18em] text-gray-500">Disponibilidade<br><strong class="text-sm font-normal text-white">Consulte valores</strong></span><a href="https://weversonf.github.io/motel/" class="rounded-lg border border-assahi-magenta px-4 py-3 text-[9px] font-semibold uppercase tracking-widest text-assahi-pink transition hover:bg-assahi-magenta hover:text-white">Reservar</a></div></div></article>
+                    <article class="suite-card reveal flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-assahi-ink/70"><div class="relative h-72 overflow-hidden"><img src="assets/suite-malibu.jpg" alt="Suíte Malibu Assahí Motel" class="h-full w-full object-cover" loading="lazy" width="1200" height="900"><div class="absolute inset-0 bg-gradient-to-t from-assahi-ink via-transparent to-transparent"></div></div><div class="flex flex-1 flex-col p-8"><h3 class="mb-3 text-xl font-medium uppercase tracking-tight text-white">Suíte Malibu</h3><p class="mb-8 text-[9px] font-semibold uppercase tracking-[.22em] text-assahi-pink">Design e conforto</p><div class="mt-auto flex items-end justify-between border-t border-white/10 pt-6"><span class="text-[9px] uppercase tracking-[.18em] text-gray-500">Disponibilidade<br><strong class="text-sm font-normal text-white">Consulte valores</strong></span><a href="https://weversonf.github.io/motel/" class="rounded-lg border border-assahi-magenta px-4 py-3 text-[9px] font-semibold uppercase tracking-widest text-assahi-pink transition hover:bg-assahi-magenta hover:text-white">Reservar</a></div></div></article>
+                    <article class="suite-card reveal flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-assahi-ink/70"><div class="relative h-72 overflow-hidden"><img src="assets/suite-bora-bora.jpg" alt="Suíte Bora-Bora Assahí Motel" class="h-full w-full object-cover" loading="lazy" width="1200" height="900"><div class="absolute inset-0 bg-gradient-to-t from-assahi-ink via-transparent to-transparent"></div></div><div class="flex flex-1 flex-col p-8"><h3 class="mb-3 text-xl font-medium uppercase tracking-tight text-white">Suíte Bora-Bora</h3><p class="mb-8 text-[9px] font-semibold uppercase tracking-[.22em] text-assahi-pink">Atmosfera paradisíaca</p><div class="mt-auto flex items-end justify-between border-t border-white/10 pt-6"><span class="text-[9px] uppercase tracking-[.18em] text-gray-500">Disponibilidade<br><strong class="text-sm font-normal text-white">Consulte valores</strong></span><a href="https://weversonf.github.io/motel/" class="rounded-lg border border-assahi-magenta px-4 py-3 text-[9px] font-semibold uppercase tracking-widest text-assahi-pink transition hover:bg-assahi-magenta hover:text-white">Reservar</a></div></div></article>
+                    <article class="suite-card reveal flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-assahi-ink/70"><div class="relative h-72 overflow-hidden"><img src="assets/suite-maui.jpg" alt="Suíte Maui Assahí Motel" class="h-full w-full object-cover" loading="lazy" width="1200" height="900"><div class="absolute inset-0 bg-gradient-to-t from-assahi-ink via-transparent to-transparent"></div></div><div class="flex flex-1 flex-col p-8"><h3 class="mb-3 text-xl font-medium uppercase tracking-tight text-white">Suíte Maui</h3><p class="mb-8 text-[9px] font-semibold uppercase tracking-[.22em] text-assahi-pink">Conforto em alto estilo</p><div class="mt-auto flex items-end justify-between border-t border-white/10 pt-6"><span class="text-[9px] uppercase tracking-[.18em] text-gray-500">Disponibilidade<br><strong class="text-sm font-normal text-white">Consulte valores</strong></span><a href="https://weversonf.github.io/motel/" class="rounded-lg border border-assahi-magenta px-4 py-3 text-[9px] font-semibold uppercase tracking-widest text-assahi-pink transition hover:bg-assahi-magenta hover:text-white">Reservar</a></div></div></article>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-assahi-ink px-6 py-28 md:py-36"><div class="mx-auto grid max-w-7xl grid-cols-2 gap-4 md:grid-cols-4"><img src="assets/suite-honolulu.jpg" alt="Ambiente da Suíte Honolulu" class="reveal h-80 w-full rounded-2xl object-cover" loading="lazy" width="1200" height="900"><img src="assets/suite-tahiti.jpg" alt="Ambiente da Suíte Tahiti" class="reveal h-80 w-full rounded-2xl object-cover md:mt-12" loading="lazy" width="1200" height="900"><img src="assets/suite-malibu.jpg" alt="Ambiente da Suíte Malibu" class="reveal h-80 w-full rounded-2xl object-cover" loading="lazy" width="1200" height="900"><img src="assets/suite-bora-bora.jpg" alt="Ambiente da Suíte Bora-Bora" class="reveal h-80 w-full rounded-2xl object-cover md:mt-12" loading="lazy" width="1200" height="900"></div></section>
+
+        <section id="localizacao" class="relative overflow-hidden border-t border-white/10 bg-assahi-dark px-6 py-36 text-center"><div class="absolute inset-0 bg-assahi-magenta/5"></div><div class="relative z-10 mx-auto max-w-4xl"><p class="reveal mb-6 text-[10px] font-semibold uppercase tracking-[.45em] text-assahi-gold">Fátima · Fortaleza</p><h2 class="reveal mb-12 text-4xl font-normal uppercase leading-tight tracking-[-.04em] text-white md:text-7xl">Seu próximo destino <span class="gold-gradient">inesquecível.</span></h2><a href="https://weversonf.github.io/motel/" class="btn-assahi reveal inline-flex rounded-full px-14 py-6 text-sm font-semibold uppercase tracking-[.3em] text-white">Fazer reserva</a></div></section>
+    </main>
+
+    <footer class="border-t border-white/10 bg-assahi-ink px-6 pb-12 pt-24"><div class="mx-auto mb-20 grid max-w-7xl gap-16 md:grid-cols-3"><div><img src="assets/logo-assahi.png" alt="Logo Assahí Motel" class="mb-8 h-16 w-auto object-contain"><p class="max-w-sm text-sm font-light leading-relaxed text-gray-500">Suítes temáticas de alto luxo para viver momentos únicos com conforto e discrição em Fortaleza.</p></div><div><h3 class="mb-7 text-[10px] font-semibold uppercase tracking-[.35em] text-white">Localização</h3><address class="not-italic text-sm font-light leading-relaxed text-gray-500">Av. Luciano Carneiro, 605<br>Fátima · Fortaleza, CE</address><p class="mt-5 text-lg font-normal text-assahi-pink">(85) 3256-2525</p></div><div><h3 class="mb-7 text-[10px] font-semibold uppercase tracking-[.35em] text-white">Experiência</h3><p class="text-sm font-light leading-relaxed text-gray-500">Garagem privativa, portão automático, cardápio diversificado e ambientes inspirados em ilhas paradisíacas.</p><a href="https://moteisfortaleza.com/st_hotel/assahi-motel/" class="mt-5 inline-block text-[10px] font-semibold uppercase tracking-[.24em] text-assahi-pink transition hover:text-white">Site oficial</a></div></div><p class="border-t border-white/10 pt-8 text-center text-[9px] font-semibold uppercase tracking-[.35em] text-gray-700">© 2026 Grupo Motéis Fortaleza · Assahí Motel</p></footer>
+
+    <div class="fixed bottom-8 right-6 z-[60] flex flex-col items-end md:bottom-10 md:right-10 md:flex-row md:items-center"><div id="chat-container" class="hidden-chat absolute bottom-24 right-0 hidden overflow-hidden rounded-3xl border border-white/10 bg-white shadow-[0_20px_60px_rgba(0,0,0,.55)] md:block"><div class="flex items-center justify-between border-b border-assahi-magenta/20 bg-assahi-ink p-4"><div class="flex items-center gap-3"><img src="assets/logo-assahi.png" alt="Assahí" class="h-7 w-auto object-contain"><span class="text-[10px] font-semibold uppercase tracking-widest text-assahi-pink">Reserva online</span></div><button id="close-chat" class="text-gray-400 transition hover:text-white" aria-label="Fechar reserva"><i class="fas fa-times"></i></button></div><iframe src="https://weversonf.github.io/motel/" title="Sistema de reserva online" class="h-[calc(100%-56px)] w-full border-0"></iframe></div><div class="mb-4 mr-0 rounded-2xl bg-white px-5 py-3 text-assahi-ink shadow-2xl transition md:mb-0 md:mr-4"><span class="whitespace-nowrap text-[10px] font-semibold uppercase tracking-widest">Reserve agora</span><span class="absolute right-16 top-1/2 hidden h-0 w-0 -translate-y-1/2 border-y-[8px] border-l-[8px] border-y-transparent border-l-white md:block"></span></div><button id="widget-trigger" class="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] text-3xl text-white shadow-[0_18px_40px_rgba(37,211,102,.28)] transition hover:scale-110" aria-label="Abrir reserva online"><i id="widget-icon" class="fab fa-whatsapp"></i></button></div>
+
+    <script>
+        const reservationUrl = 'https://weversonf.github.io/motel/';
+        const revealObserver = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('active'); revealObserver.unobserve(entry.target); } }), { threshold: .12 });
+        document.querySelectorAll('.reveal').forEach((element) => revealObserver.observe(element));
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileNav = document.getElementById('mobile-nav');
+        menuToggle?.addEventListener('click', () => { const open = mobileNav.classList.toggle('menu-open'); menuToggle.setAttribute('aria-expanded', String(open)); });
+        mobileNav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => { mobileNav.classList.remove('menu-open'); menuToggle.setAttribute('aria-expanded', 'false'); }));
+        const trigger = document.getElementById('widget-trigger');
+        const chatContainer = document.getElementById('chat-container');
+        const closeChat = document.getElementById('close-chat');
+        const widgetIcon = document.getElementById('widget-icon');
+        let chatOpen = false;
+        function closeWidget() { chatOpen = false; chatContainer.classList.remove('visible-chat'); chatContainer.classList.add('hidden-chat'); widgetIcon.classList.remove('fas', 'fa-times'); widgetIcon.classList.add('fab', 'fa-whatsapp'); trigger.classList.remove('bg-assahi-magenta'); trigger.classList.add('bg-[#25D366]'); }
+        trigger.addEventListener('click', () => { if (window.innerWidth >= 768) { chatOpen = !chatOpen; if (chatOpen) { chatContainer.classList.remove('hidden-chat'); chatContainer.classList.add('visible-chat'); widgetIcon.classList.remove('fab', 'fa-whatsapp'); widgetIcon.classList.add('fas', 'fa-times'); trigger.classList.remove('bg-[#25D366]'); trigger.classList.add('bg-assahi-magenta'); } else closeWidget(); } else window.location.href = reservationUrl; });
+        closeChat.addEventListener('click', closeWidget);
+    </script>
+</body>
+</html>

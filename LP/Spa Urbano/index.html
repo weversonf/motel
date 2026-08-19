@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spa Urbano Motel | Suítes sofisticadas em Fortaleza</title>
+    <meta name="description" content="Conheça o Spa Urbano Motel em Dionísio Torres, Fortaleza. Suítes com hidro, garagem privativa, cozinha 24h e discrição absoluta. Reserve sua experiência.">
+    <meta name="keywords" content="Spa Urbano Motel, motel Fortaleza, motel Dionísio Torres, suíte com hidro Fortaleza, reserva motel">
+    <meta name="theme-color" content="#071512">
+    <link rel="canonical" href="https://weversonf.github.io/motel/LP/Spa%20Urbano/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://weversonf.github.io/motel/LP/Spa%20Urbano/">
+    <meta property="og:title" content="Spa Urbano Motel | Seu refúgio em Fortaleza">
+    <meta property="og:description" content="Conforto, privacidade e bem-estar em Dionísio Torres. Conheça as suítes do Spa Urbano Motel.">
+    <meta property="og:image" content="assets/suite-jade.jpg">
+    <link rel="icon" type="image/png" href="assets/logo-spa.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        spa: {
+                            ink: '#071512',
+                            dark: '#0B211C',
+                            surface: '#102B24',
+                            emerald: '#2AA889',
+                            mint: '#A8E3C8',
+                            champagne: '#D9C69B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        :root { color-scheme: dark; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #071512; }
+        h1, h2, h3, h4, h5, h6, button, .nav-link, .display { font-family: 'Montserrat', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-weight: 500; }
+        .hero-overlay { background: linear-gradient(180deg, rgba(7,21,18,.15) 0%, rgba(7,21,18,.68) 52%, #071512 100%); }
+        .mint-gradient { background: linear-gradient(110deg, #A8E3C8, #5BC9A7, #D9C69B); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .btn-spa { background: linear-gradient(135deg, #2AA889, #176E59); box-shadow: 0 14px 34px rgba(42,168,137,.22); transition: transform .35s ease, filter .35s ease, box-shadow .35s ease; }
+        .btn-spa:hover { transform: translateY(-2px); filter: brightness(1.1); box-shadow: 0 18px 42px rgba(42,168,137,.34); }
+        .suite-card img { transition: transform .9s cubic-bezier(.2,0,.2,1); }
+        .suite-card:hover img { transform: scale(1.06); }
+        .reveal { opacity: 0; transform: translateY(24px); transition: opacity .75s ease, transform .75s ease; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        #chat-container { transform-origin: bottom right; transition: opacity .35s ease, transform .35s ease; }
+        #chat-container.hidden-chat { opacity: 0; transform: scale(.88) translateY(18px); pointer-events: none; }
+        #chat-container.visible-chat { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+        .menu-open { display: flex !important; }
+        @media (min-width: 768px) {
+            #chat-container { width: 360px; height: 500px; max-height: 80vh; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        }
+    </style>
+</head>
+<body class="bg-spa-ink text-white antialiased selection:bg-spa-emerald selection:text-white">
+    <header class="fixed inset-x-0 top-0 z-50 border-b border-spa-mint/10 bg-spa-ink/85 backdrop-blur-xl">
+        <nav class="mx-auto flex h-24 max-w-7xl items-center justify-between px-6" aria-label="Navegação principal">
+            <a href="#inicio" class="flex items-center" aria-label="Spa Urbano Motel — início">
+                <img src="assets/logo-spa.png" alt="Logo Spa Urbano Motel" class="h-16 w-auto object-contain">
+            </a>
+            <div id="desktop-nav" class="hidden items-center gap-10 md:flex">
+                <a href="#experiencia" class="nav-link text-[9px] font-semibold uppercase tracking-[.24em] text-gray-300 transition hover:text-spa-mint">Experiência</a>
+                <a href="#suites" class="nav-link text-[9px] font-semibold uppercase tracking-[.24em] text-gray-300 transition hover:text-spa-mint">Suítes</a>
+                <a href="#localizacao" class="nav-link text-[9px] font-semibold uppercase tracking-[.24em] text-gray-300 transition hover:text-spa-mint">Localização</a>
+                <a href="https://weversonf.github.io/motel/" class="btn-spa rounded-full px-8 py-3 text-[9px] font-semibold uppercase tracking-[.26em] text-white">Reservar</a>
+            </div>
+            <button id="menu-toggle" class="text-spa-mint md:hidden" aria-label="Abrir menu" aria-expanded="false"><span class="text-2xl">☰</span></button>
+        </nav>
+        <div id="mobile-nav" class="hidden flex-col gap-5 border-t border-spa-mint/10 bg-spa-ink/95 px-6 py-7 md:hidden">
+            <a href="#experiencia" class="nav-link text-[10px] uppercase tracking-[.22em] text-gray-300">Experiência</a>
+            <a href="#suites" class="nav-link text-[10px] uppercase tracking-[.22em] text-gray-300">Suítes</a>
+            <a href="#localizacao" class="nav-link text-[10px] uppercase tracking-[.22em] text-gray-300">Localização</a>
+            <a href="https://weversonf.github.io/motel/" class="btn-spa rounded-full px-7 py-3 text-center text-[10px] font-semibold uppercase tracking-[.22em]">Reservar agora</a>
+        </div>
+    </header>
+
+    <main id="inicio">
+        <section class="relative flex min-h-screen items-center justify-center overflow-hidden px-6 pt-24">
+            <img src="assets/suite-jade.jpg" alt="Suíte Jade do Spa Urbano Motel" class="absolute inset-0 h-full w-full object-cover" width="1600" height="1100" fetchpriority="high">
+            <div class="hero-overlay absolute inset-0"></div>
+            <div class="relative z-10 mx-auto max-w-5xl text-center">
+                <p class="reveal mb-8 text-[10px] font-semibold uppercase tracking-[.5em] text-spa-mint">Dionísio Torres · Fortaleza</p>
+                <h1 class="reveal mb-8 text-5xl font-normal leading-[1.05] tracking-[-.045em] text-white md:text-8xl">Seu refúgio <span class="mint-gradient">urbano</span>.</h1>
+                <p class="reveal mx-auto mb-12 max-w-2xl text-base font-light leading-relaxed tracking-wide text-gray-200 md:text-lg">Uma experiência de conforto, discrição e bem-estar no coração de Fortaleza.</p>
+                <div class="reveal flex flex-col justify-center gap-5 sm:flex-row">
+                    <a href="#suites" class="btn-spa rounded-full px-12 py-5 text-center text-[10px] font-semibold uppercase tracking-[.28em] text-white">Conheça as suítes</a>
+                    <a href="https://weversonf.github.io/motel/" class="rounded-full border border-spa-mint/60 px-12 py-5 text-center text-[10px] font-semibold uppercase tracking-[.28em] text-spa-mint transition hover:bg-spa-mint hover:text-spa-ink">Fazer reserva</a>
+                </div>
+            </div>
+            <a href="#experiencia" class="absolute bottom-9 left-1/2 -translate-x-1/2 text-spa-mint/60 transition hover:text-spa-mint" aria-label="Rolar para a experiência"><span class="text-xl">⌄</span></a>
+        </section>
+
+        <section id="experiencia" class="bg-spa-ink px-6 py-28 md:py-36">
+            <div class="mx-auto grid max-w-7xl items-center gap-20 md:grid-cols-2">
+                <div class="reveal">
+                    <p class="mb-5 text-[10px] font-semibold uppercase tracking-[.42em] text-spa-emerald">O prazer de desacelerar</p>
+                    <h2 class="mb-8 text-4xl font-normal leading-tight tracking-[-.035em] text-white md:text-6xl">Conforto pensado para <span class="text-spa-mint">você.</span></h2>
+                    <p class="mb-10 text-lg font-light leading-relaxed text-gray-400">Em Dionísio Torres, o Spa Urbano combina acesso estratégico, ambientes cuidadosamente preparados e uma atmosfera reservada para transformar algumas horas em uma experiência memorável.</p>
+                    <div class="grid grid-cols-2 gap-8">
+                        <div class="border-l border-spa-emerald/60 pl-5"><strong class="mb-2 block text-3xl font-normal text-white">24h</strong><span class="text-[9px] font-semibold uppercase tracking-[.24em] text-gray-500">Cozinha disponível</span></div>
+                        <div class="border-l border-spa-champagne/50 pl-5"><strong class="mb-2 block text-3xl font-normal text-white">100%</strong><span class="text-[9px] font-semibold uppercase tracking-[.24em] text-gray-500">Discrição e sigilo</span></div>
+                    </div>
+                </div>
+                <div class="reveal relative">
+                    <div class="absolute -inset-4 rounded-3xl border border-spa-emerald/20"></div>
+                    <img src="assets/suite-diamante.jpg" alt="Detalhes da Suíte Diamante do Spa Urbano" class="relative h-[480px] w-full rounded-2xl object-cover shadow-2xl" loading="lazy" width="1200" height="900">
+                    <div class="absolute bottom-6 left-6 rounded-xl border border-white/10 bg-spa-ink/80 px-5 py-4 backdrop-blur"><span class="block text-[9px] font-semibold uppercase tracking-[.25em] text-spa-mint">A partir de</span><strong class="text-xl font-normal text-white">R$ 160,00 <small class="text-xs text-gray-400">· 3 horas</small></strong></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="suites" class="bg-spa-dark px-6 py-28 md:py-36">
+            <div class="mx-auto max-w-[1440px]">
+                <div class="reveal mb-16 text-center md:mb-20">
+                    <p class="mb-5 text-[10px] font-semibold uppercase tracking-[.42em] text-spa-emerald">Escolha seu ambiente</p>
+                    <h2 class="mb-5 text-4xl font-normal uppercase tracking-[-.035em] text-white md:text-6xl">Nossas <span class="text-spa-mint">suítes</span></h2>
+                    <div class="mx-auto h-px w-16 bg-spa-champagne/50"></div>
+                    <p class="mt-7 text-[10px] font-medium uppercase tracking-[.34em] text-gray-500">Detalhes para viver no seu ritmo</p>
+                </div>
+                <div class="grid grid-cols-1 gap-7 md:grid-cols-2 lg:grid-cols-4">
+                    <article class="suite-card reveal flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-spa-ink/70">
+                        <div class="relative h-72 overflow-hidden"><img src="assets/suite-jade.jpg" alt="Suíte Jade Spa Urbano" class="h-full w-full object-cover" loading="lazy" width="1200" height="900"><div class="absolute inset-0 bg-gradient-to-t from-spa-ink via-transparent to-transparent"></div></div>
+                        <div class="flex flex-1 flex-col p-8"><h3 class="mb-3 text-xl font-medium uppercase tracking-tight text-white">Suíte Jade</h3><p class="mb-8 text-[9px] font-semibold uppercase tracking-[.22em] text-spa-mint">Hidro · conforto · privacidade</p><div class="mt-auto flex items-end justify-between border-t border-white/10 pt-6"><span class="text-[9px] uppercase tracking-[.18em] text-gray-500">Disponibilidade<br><strong class="text-sm font-normal text-white">Consulte valores</strong></span><a href="https://weversonf.github.io/motel/" class="rounded-lg border border-spa-emerald px-4 py-3 text-[9px] font-semibold uppercase tracking-widest text-spa-mint transition hover:bg-spa-emerald hover:text-white">Reservar</a></div></div>
+                    </article>
+                    <article class="suite-card reveal flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-spa-ink/70">
+                        <div class="relative h-72 overflow-hidden"><img src="assets/suite-rubi.jpg" alt="Suíte Rubi Spa Urbano" class="h-full w-full object-cover" loading="lazy" width="1200" height="900"><div class="absolute inset-0 bg-gradient-to-t from-spa-ink via-transparent to-transparent"></div></div>
+                        <div class="flex flex-1 flex-col p-8"><h3 class="mb-3 text-xl font-medium uppercase tracking-tight text-white">Suíte Rubi</h3><p class="mb-8 text-[9px] font-semibold uppercase tracking-[.22em] text-spa-mint">Atmosfera envolvente</p><div class="mt-auto flex items-end justify-between border-t border-white/10 pt-6"><span class="text-[9px] uppercase tracking-[.18em] text-gray-500">Disponibilidade<br><strong class="text-sm font-normal text-white">Consulte valores</strong></span><a href="https://weversonf.github.io/motel/" class="rounded-lg border border-spa-emerald px-4 py-3 text-[9px] font-semibold uppercase tracking-widest text-spa-mint transition hover:bg-spa-emerald hover:text-white">Reservar</a></div></div>
+                    </article>
+                    <article class="suite-card reveal flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-spa-ink/70">
+                        <div class="relative h-72 overflow-hidden"><img src="assets/suite-safira.jpg" alt="Suíte Safira Spa Urbano" class="h-full w-full object-cover" loading="lazy" width="1200" height="900"><div class="absolute inset-0 bg-gradient-to-t from-spa-ink via-transparent to-transparent"></div></div>
+                        <div class="flex flex-1 flex-col p-8"><h3 class="mb-3 text-xl font-medium uppercase tracking-tight text-white">Suíte Safira</h3><p class="mb-8 text-[9px] font-semibold uppercase tracking-[.22em] text-spa-mint">Bem-estar em cada detalhe</p><div class="mt-auto flex items-end justify-between border-t border-white/10 pt-6"><span class="text-[9px] uppercase tracking-[.18em] text-gray-500">Disponibilidade<br><strong class="text-sm font-normal text-white">Consulte valores</strong></span><a href="https://weversonf.github.io/motel/" class="rounded-lg border border-spa-emerald px-4 py-3 text-[9px] font-semibold uppercase tracking-widest text-spa-mint transition hover:bg-spa-emerald hover:text-white">Reservar</a></div></div>
+                    </article>
+                    <article class="suite-card reveal flex flex-col overflow-hidden rounded-3xl border border-white/10 bg-spa-ink/70">
+                        <div class="relative h-72 overflow-hidden"><img src="assets/suite-esmeralda.jpg" alt="Suíte Esmeralda Spa Urbano" class="h-full w-full object-cover" loading="lazy" width="1200" height="900"><div class="absolute inset-0 bg-gradient-to-t from-spa-ink via-transparent to-transparent"></div></div>
+                        <div class="flex flex-1 flex-col p-8"><h3 class="mb-3 text-xl font-medium uppercase tracking-tight text-white">Suíte Esmeralda</h3><p class="mb-8 text-[9px] font-semibold uppercase tracking-[.22em] text-spa-mint">Refúgio sofisticado</p><div class="mt-auto flex items-end justify-between border-t border-white/10 pt-6"><span class="text-[9px] uppercase tracking-[.18em] text-gray-500">Disponibilidade<br><strong class="text-sm font-normal text-white">Consulte valores</strong></span><a href="https://weversonf.github.io/motel/" class="rounded-lg border border-spa-emerald px-4 py-3 text-[9px] font-semibold uppercase tracking-widest text-spa-mint transition hover:bg-spa-emerald hover:text-white">Reservar</a></div></div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-spa-ink px-6 py-28 md:py-36">
+            <div class="mx-auto grid max-w-7xl grid-cols-2 gap-4 md:grid-cols-4">
+                <img src="assets/suite-diamante.jpg" alt="Ambiente da Suíte Diamante" class="reveal h-80 w-full rounded-2xl object-cover" loading="lazy" width="1200" height="900">
+                <img src="assets/suite-jade.jpg" alt="Ambiente da Suíte Jade" class="reveal h-80 w-full rounded-2xl object-cover md:mt-12" loading="lazy" width="1200" height="900">
+                <img src="assets/suite-rubi.jpg" alt="Ambiente da Suíte Rubi" class="reveal h-80 w-full rounded-2xl object-cover" loading="lazy" width="1200" height="900">
+                <img src="assets/suite-safira.jpg" alt="Ambiente da Suíte Safira" class="reveal h-80 w-full rounded-2xl object-cover md:mt-12" loading="lazy" width="1200" height="900">
+            </div>
+        </section>
+
+        <section id="localizacao" class="relative overflow-hidden border-t border-white/10 bg-spa-dark px-6 py-36 text-center">
+            <div class="absolute inset-0 bg-spa-emerald/5"></div>
+            <div class="relative z-10 mx-auto max-w-4xl">
+                <p class="reveal mb-6 text-[10px] font-semibold uppercase tracking-[.45em] text-spa-mint">Dionísio Torres · Fortaleza</p>
+                <h2 class="reveal mb-12 text-4xl font-normal uppercase leading-tight tracking-[-.04em] text-white md:text-7xl">Seu momento começa <span class="text-spa-mint">aqui.</span></h2>
+                <a href="https://weversonf.github.io/motel/" class="btn-spa reveal inline-flex rounded-full px-14 py-6 text-sm font-semibold uppercase tracking-[.3em] text-white">Fazer reserva</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="border-t border-white/10 bg-spa-ink px-6 pb-12 pt-24">
+        <div class="mx-auto mb-20 grid max-w-7xl gap-16 md:grid-cols-3">
+            <div><img src="assets/logo-spa.png" alt="Logo Spa Urbano Motel" class="mb-8 h-16 w-auto object-contain"><p class="max-w-sm text-sm font-light leading-relaxed text-gray-500">Um endereço reservado para quem valoriza conforto, bem-estar e discrição em Fortaleza.</p></div>
+            <div><h3 class="mb-7 text-[10px] font-semibold uppercase tracking-[.35em] text-white">Localização</h3><address class="not-italic text-sm font-light leading-relaxed text-gray-500">Av. Desembargador Moreira, 3033<br>Dionísio Torres · Fortaleza, CE</address><p class="mt-5 text-lg font-normal text-spa-mint">(85) 98774-0036</p></div>
+            <div><h3 class="mb-7 text-[10px] font-semibold uppercase tracking-[.35em] text-white">Atendimento</h3><p class="text-sm font-light leading-relaxed text-gray-500">Cozinha 24 horas, garagem privativa e serviço pensado para sua tranquilidade.</p><a href="https://moteisfortaleza.com/st_hotel/spa-urbano/" class="mt-5 inline-block text-[10px] font-semibold uppercase tracking-[.24em] text-spa-mint transition hover:text-white">Site oficial</a></div>
+        </div>
+        <p class="border-t border-white/10 pt-8 text-center text-[9px] font-semibold uppercase tracking-[.35em] text-gray-700">© 2026 Grupo Motéis Fortaleza · Spa Urbano</p>
+    </footer>
+
+    <div class="fixed bottom-8 right-6 z-[60] flex flex-col items-end md:bottom-10 md:right-10 md:flex-row md:items-center">
+        <div id="chat-container" class="hidden-chat absolute bottom-24 right-0 hidden overflow-hidden rounded-3xl border border-white/10 bg-white shadow-[0_20px_60px_rgba(0,0,0,.55)] md:block">
+            <div class="flex items-center justify-between border-b border-spa-emerald/20 bg-spa-ink p-4"><div class="flex items-center gap-3"><img src="assets/logo-spa.png" alt="Spa Urbano" class="h-7 w-auto object-contain"><span class="text-[10px] font-semibold uppercase tracking-widest text-spa-mint">Reserva online</span></div><button id="close-chat" class="text-gray-400 transition hover:text-white" aria-label="Fechar reserva">×</button></div>
+            <iframe src="https://weversonf.github.io/motel/" title="Sistema de reserva online" class="h-[calc(100%-56px)] w-full border-0"></iframe>
+        </div>
+        <div class="mb-4 mr-0 rounded-2xl bg-white px-5 py-3 text-spa-ink shadow-2xl transition md:mb-0 md:mr-4"><span class="whitespace-nowrap text-[10px] font-semibold uppercase tracking-widest">Reserve agora</span><span class="absolute right-16 top-1/2 hidden h-0 w-0 -translate-y-1/2 border-y-[8px] border-l-[8px] border-y-transparent border-l-white md:block"></span></div>
+        <button id="widget-trigger" class="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] text-3xl text-white shadow-[0_18px_40px_rgba(37,211,102,.28)] transition hover:scale-110" aria-label="Abrir reserva online"><span id="widget-icon" aria-hidden="true">◔</span></button>
+    </div>
+
+    <script>
+        const reservationUrl = 'https://weversonf.github.io/motel/';
+        const revealObserver = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('active'); revealObserver.unobserve(entry.target); } }), { threshold: .12 });
+        document.querySelectorAll('.reveal').forEach((element) => revealObserver.observe(element));
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileNav = document.getElementById('mobile-nav');
+        menuToggle?.addEventListener('click', () => { const open = mobileNav.classList.toggle('menu-open'); menuToggle.setAttribute('aria-expanded', String(open)); });
+        mobileNav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => { mobileNav.classList.remove('menu-open'); menuToggle.setAttribute('aria-expanded', 'false'); }));
+        const trigger = document.getElementById('widget-trigger');
+        const chatContainer = document.getElementById('chat-container');
+        const closeChat = document.getElementById('close-chat');
+        const widgetIcon = document.getElementById('widget-icon');
+        let chatOpen = false;
+        function closeWidget() { chatOpen = false; chatContainer.classList.remove('visible-chat'); chatContainer.classList.add('hidden-chat'); widgetIcon.textContent = '◔'; trigger.classList.remove('bg-spa-emerald'); trigger.classList.add('bg-[#25D366]'); }
+        trigger.addEventListener('click', () => { if (window.innerWidth >= 768) { chatOpen = !chatOpen; if (chatOpen) { chatContainer.classList.remove('hidden-chat'); chatContainer.classList.add('visible-chat'); widgetIcon.textContent = '×'; trigger.classList.remove('bg-[#25D366]'); trigger.classList.add('bg-spa-emerald'); } else closeWidget(); } else window.location.href = reservationUrl; });
+        closeChat.addEventListener('click', closeWidget);
+    </script>
+</body>
+</html>

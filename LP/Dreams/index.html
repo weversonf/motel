@@ -250,6 +250,17 @@
         .suite-features { border-color: rgba(85,255,151,.22); }
         .location { background: #050806; }
         .footer { background: #000000; }
+        .suites-carousel { position: relative; }
+        .suite-carousel-controls { display: none; }
+        @media (min-width: 1101px) {
+            .suites-grid.suites-track { display: flex; flex-wrap: nowrap; gap: 22px; overflow: visible; transition: opacity .28s ease, transform .28s ease; }
+            .suites-grid.suites-track.is-shifting { opacity: .56; transform: translateX(-10px); }
+            .suites-grid.suites-track .suite-card { flex: 0 0 calc((100% - 66px) / 4); }
+            .suite-carousel-controls { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 24px; }
+            .carousel-btn { display: grid; place-items: center; width: 38px; height: 38px; border: 1px solid rgba(85,255,151,.45); border-radius: 50%; color: var(--green-neon); background: transparent; cursor: pointer; transition: background .2s ease, color .2s ease, transform .2s ease; }
+            .carousel-btn:hover { color: #050806; background: var(--green-neon); transform: translateY(-2px); }
+            .carousel-note { color: rgba(255,255,255,.52); font: 600 10px var(--display); letter-spacing: .14em; text-transform: uppercase; }
+        }
         @media (max-width: 1100px) { .suites-grid { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 700px) { .suites-grid { grid-template-columns: 1fr; } }
         @media (prefers-reduced-motion: reduce) {
@@ -333,12 +344,12 @@
         <section class="section suites-section" id="suites">
             <div class="container">
                 <div class="section-head reveal"><div><span class="eyebrow">Escolha o seu momento</span><h2>Suítes que combinam com o seu desejo.</h2></div><p>Conheça algumas das experiências do Dreams Motel e escolha o ambiente ideal para o seu momento.</p></div>
-                <div class="suites-grid">
+                <div class="suites-carousel"><div class="suites-grid suites-track" data-suite-track aria-live="polite">
                     <article class="suite-card reveal"><div class="suite-image"><img src="assets/dreams-suite-interior.jpg" alt="Ambiente real do Dreams Motel com cama redonda" loading="lazy"><span class="suite-tag">Foto real</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Sonho</h3><span class="suite-price">Consulte valores</span></div><p>Uma experiência acolhedora e temática para viver o seu momento com conforto, privacidade e discrição.</p><div class="suite-features"><span><i class="fa-solid fa-bed"></i>Ambiente temático</span><span><i class="fa-solid fa-car"></i>Garagem privativa</span><span><i class="fa-solid fa-clock"></i>24 horas</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
                     <article class="suite-card reveal"><div class="suite-image"><img src="assets/dreams-suite-hidro.jpg" alt="Hidromassagem de suíte real do Dreams Motel" loading="lazy"><span class="suite-tag">Foto real</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Delirius</h3><span class="suite-price">Consulte valores</span></div><p>Uma atmosfera marcante e envolvente para quem procura uma experiência especial no Dreams Motel.</p><div class="suite-features"><span><i class="fa-solid fa-wand-magic-sparkles"></i>Ambientação temática</span><span><i class="fa-solid fa-lock"></i>Privacidade</span><span><i class="fa-solid fa-car"></i>Entrada reservada</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
                     <article class="suite-card reveal"><div class="suite-image"><img src="assets/dreams-suite-colorida.jpg" alt="Suíte temática real do Dreams Motel com iluminação colorida" loading="lazy"><span class="suite-tag">Foto real</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Romântica</h3><span class="suite-price">Consulte valores</span></div><p>Um cenário pensado para celebrar, desacelerar e transformar uma ocasião em uma lembrança memorável.</p><div class="suite-features"><span><i class="fa-solid fa-heart"></i>Clima romântico</span><span><i class="fa-solid fa-bed"></i>Conforto completo</span><span><i class="fa-solid fa-shield-halved"></i>Discrição</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
                     <article class="suite-card reveal"><div class="suite-image"><img src="assets/dreams-suite-redonda.jpg" alt="Ambiente real do Dreams Motel com cama circular" loading="lazy"><span class="suite-tag">Foto real</span></div><div class="suite-body"><div class="suite-title-row"><h3>Suíte Fantasia</h3><span class="suite-price">Consulte valores</span></div><p>Uma proposta ousada e sensorial para sair da rotina e viver o Dreams de um jeito único.</p><div class="suite-features"><span><i class="fa-solid fa-star"></i>Experiência temática</span><span><i class="fa-solid fa-car"></i>Garagem privativa</span><span><i class="fa-solid fa-clock"></i>Check-in livre</span></div><button class="btn btn-primary" type="button" data-open-reservation>Reservar suíte</button></div></article>
-                </div>
+                </div><div class="suite-carousel-controls" aria-label="Controles das suítes"><button class="carousel-btn" type="button" data-suite-prev aria-label="Mostrar suíte anterior"><i class="fa-solid fa-arrow-left"></i></button><span class="carousel-note">Rotação automática</span><button class="carousel-btn" type="button" data-suite-next aria-label="Mostrar próxima suíte"><i class="fa-solid fa-arrow-right"></i></button></div></div>
             </div>
         </section>
 
@@ -369,7 +380,11 @@
             const menuToggle = document.getElementById('menuToggle');
             const navLinks = document.getElementById('navLinks');
             const heroBg = document.getElementById('heroBg');
+            const suiteTrack = document.querySelector('[data-suite-track]');
+            const suitePrev = document.querySelector('[data-suite-prev]');
+            const suiteNext = document.querySelector('[data-suite-next]');
             let slideIndex = 0;
+            let suiteTimer = null;
 
             function isMobile() { return window.matchMedia('(max-width: 767px)').matches; }
             function openReservation() {
@@ -387,12 +402,33 @@
                 widgetTrigger.setAttribute('aria-label', 'Abrir reserva online');
                 widgetTrigger.innerHTML = '<i class="fa-brands fa-whatsapp" aria-hidden="true"></i><span class="sr-only">Abrir reserva online</span>';
             }
+            function isDesktop() { return window.matchMedia('(min-width: 1101px)').matches; }
+            function shiftSuites(direction) {
+                if (!suiteTrack || !isDesktop()) return;
+                suiteTrack.classList.add('is-shifting');
+                window.setTimeout(() => {
+                    if (direction > 0) suiteTrack.appendChild(suiteTrack.firstElementChild);
+                    else suiteTrack.insertBefore(suiteTrack.lastElementChild, suiteTrack.firstElementChild);
+                    suiteTrack.classList.remove('is-shifting');
+                }, 220);
+            }
+            function resetSuiteRotation() {
+                if (suiteTimer) window.clearInterval(suiteTimer);
+                suiteTimer = null;
+                if (suiteTrack && isDesktop() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    suiteTimer = window.setInterval(() => shiftSuites(1), 6500);
+                }
+            }
             widgetTrigger.addEventListener('click', () => chatContainer.classList.contains('is-open') ? closeReservation() : openReservation());
+            suitePrev?.addEventListener('click', () => { shiftSuites(-1); resetSuiteRotation(); });
+            suiteNext?.addEventListener('click', () => { shiftSuites(1); resetSuiteRotation(); });
+            window.addEventListener('resize', resetSuiteRotation);
             chatClose.addEventListener('click', closeReservation);
             document.querySelectorAll('[data-open-reservation]').forEach((button) => button.addEventListener('click', openReservation));
             menuToggle.addEventListener('click', () => { const isOpen = navLinks.classList.toggle('is-open'); menuToggle.setAttribute('aria-expanded', String(isOpen)); menuToggle.innerHTML = isOpen ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>'; });
             document.querySelectorAll('.nav-link').forEach((link) => link.addEventListener('click', () => { navLinks.classList.remove('is-open'); menuToggle.setAttribute('aria-expanded', 'false'); menuToggle.innerHTML = '<i class="fa-solid fa-bars"></i>'; }));
-            setInterval(() => { slideIndex = (slideIndex + 1) % 3; heroBg.classList.remove('slide-2', 'slide-3'); if (slideIndex === 1) heroBg.classList.add('slide-2'); if (slideIndex === 2) heroBg.classList.add('slide-3'); }, 7000);
+            window.setInterval(() => { slideIndex = (slideIndex + 1) % 3; heroBg.classList.remove('slide-2', 'slide-3'); if (slideIndex === 1) heroBg.classList.add('slide-2'); if (slideIndex === 2) heroBg.classList.add('slide-3'); }, 7000);
+            resetSuiteRotation();
             const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }), { threshold: .12 });
             document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
         })();
