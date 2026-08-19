@@ -19,6 +19,173 @@
     <!--Font Awesome-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
+    <style id="main-reservation-widget-styles">
+      .main-reservation-widget {
+        position: fixed;
+        right: 28px;
+        bottom: 28px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        font-family: inherit;
+      }
+      .main-reservation-bubble {
+        position: relative;
+        margin-bottom: 12px;
+        padding: 12px 18px;
+        border-radius: 14px;
+        background: #fff;
+        color: #172033;
+        box-shadow: 0 10px 30px rgba(0,0,0,.18);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        line-height: 1;
+        text-transform: uppercase;
+        white-space: nowrap;
+        opacity: .94;
+        transition: transform .3s ease, opacity .3s ease;
+      }
+      .main-reservation-widget:hover .main-reservation-bubble {
+        opacity: 1;
+        transform: translateY(-2px);
+      }
+      .main-reservation-bubble::after {
+        content: "";
+        position: absolute;
+        right: 18px;
+        bottom: -7px;
+        width: 0;
+        height: 0;
+        border-left: 7px solid transparent;
+        border-right: 7px solid transparent;
+        border-top: 7px solid #fff;
+      }
+      .main-widget-trigger {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 68px;
+        height: 68px;
+        border: 0;
+        border-radius: 50%;
+        background: #25D366;
+        color: #fff;
+        cursor: pointer;
+        font-size: 32px;
+        line-height: 1;
+        box-shadow: 0 14px 30px rgba(37,211,102,.32);
+        transition: transform .3s ease, background .3s ease, box-shadow .3s ease;
+      }
+      .main-widget-trigger:hover {
+        transform: scale(1.08);
+        box-shadow: 0 18px 38px rgba(37,211,102,.4);
+      }
+      .main-widget-trigger.is-open {
+        background: #172033;
+        box-shadow: 0 14px 30px rgba(23,32,51,.3);
+      }
+      #main-chat-container {
+        position: absolute;
+        right: 0;
+        bottom: 92px;
+        display: flex;
+        width: 360px;
+        height: 500px;
+        max-width: calc(100vw - 48px);
+        max-height: 80vh;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid rgba(15,23,42,.12);
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 20px 60px rgba(0,0,0,.28);
+        transform-origin: bottom right;
+        transition: opacity .3s ease, transform .3s ease, visibility .3s ease;
+      }
+      #main-chat-container.main-chat-hidden {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(12px) scale(.94);
+      }
+      #main-chat-container.main-chat-visible {
+        visibility: visible;
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0) scale(1);
+      }
+      .main-chat-header {
+        display: flex;
+        min-height: 56px;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: #172033;
+        color: #fff;
+      }
+      .main-chat-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .main-chat-brand img {
+        width: auto;
+        height: 26px;
+        object-fit: contain;
+      }
+      .main-chat-label {
+        color: #fff;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+      }
+      .main-chat-close {
+        border: 0;
+        background: transparent;
+        color: rgba(255,255,255,.75);
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+        padding: 5px;
+      }
+      .main-chat-close:hover { color: #fff; }
+      .main-chat-frame {
+        display: block;
+        width: 100%;
+        flex: 1;
+        border: 0;
+        background: #fff;
+      }
+      @media (min-width: 768px) {
+        .main-reservation-widget {
+          flex-direction: row;
+          align-items: center;
+        }
+        .main-reservation-bubble {
+          margin-right: 14px;
+          margin-bottom: 0;
+        }
+        .main-reservation-bubble::after {
+          top: 50%;
+          right: -7px;
+          bottom: auto;
+          transform: translateY(-50%);
+          border-top: 7px solid transparent;
+          border-bottom: 7px solid transparent;
+          border-left: 7px solid #fff;
+          border-right: 0;
+        }
+      }
+      @media (max-width: 767px) {
+        .main-reservation-widget { right: 18px; bottom: 18px; }
+        .main-reservation-bubble { margin-bottom: 9px; padding: 10px 14px; font-size: 10px; }
+        .main-widget-trigger { width: 60px; height: 60px; font-size: 28px; }
+        #main-chat-container { display: none; }
+      }
+    </style>
   </head>
   <body>
     <!-- Preloader -->
@@ -663,6 +830,26 @@
     </footer>
     <!-- Footer Ends -->
 
+    <!-- Floating Reservation Widget -->
+    <div class="main-reservation-widget" aria-label="Reserva online">
+      <div id="main-chat-container" class="main-chat-hidden" aria-hidden="true">
+        <div class="main-chat-header">
+          <div class="main-chat-brand">
+            <img src="images/logo-site.png" alt="Motéis Fortaleza" />
+            <span class="main-chat-label">Reserva online</span>
+          </div>
+          <button id="main-close-chat" class="main-chat-close" type="button" aria-label="Fechar reserva">
+            <i class="fa fa-times" aria-hidden="true"></i>
+          </button>
+        </div>
+        <iframe class="main-chat-frame" src="https://weversonf.github.io/motel/" title="Sistema de reserva online" loading="lazy"></iframe>
+      </div>
+      <div class="main-reservation-bubble" aria-hidden="true">Reserve agora</div>
+      <button id="main-widget-trigger" class="main-widget-trigger" type="button" aria-label="Abrir reserva online" aria-expanded="false">
+        <i id="main-widget-icon" class="fab fa-whatsapp" aria-hidden="true"></i>
+      </button>
+    </div>
+
     <!-- Back to top start -->
     <div id="back-to-top">
       <a href="#"></a>
@@ -752,5 +939,57 @@
       modal.show();
     });
     </script>
-</body>
+    <script>
+      (function () {
+        var reservationUrl = 'https://weversonf.github.io/motel/';
+        var trigger = document.getElementById('main-widget-trigger');
+        var chat = document.getElementById('main-chat-container');
+        var closeButton = document.getElementById('main-close-chat');
+        var icon = document.getElementById('main-widget-icon');
+        var isOpen = false;
+
+        if (!trigger || !chat || !closeButton || !icon) return;
+
+        function isDesktop() {
+          return window.matchMedia('(min-width: 768px)').matches;
+        }
+
+        function closeChat() {
+          isOpen = false;
+          chat.classList.remove('main-chat-visible');
+          chat.classList.add('main-chat-hidden');
+          chat.setAttribute('aria-hidden', 'true');
+          trigger.classList.remove('is-open');
+          trigger.setAttribute('aria-expanded', 'false');
+          trigger.setAttribute('aria-label', 'Abrir reserva online');
+          icon.className = 'fab fa-whatsapp';
+        }
+
+        function openChat() {
+          isOpen = true;
+          chat.classList.remove('main-chat-hidden');
+          chat.classList.add('main-chat-visible');
+          chat.setAttribute('aria-hidden', 'false');
+          trigger.classList.add('is-open');
+          trigger.setAttribute('aria-expanded', 'true');
+          trigger.setAttribute('aria-label', 'Fechar reserva online');
+          icon.className = 'fa fa-times';
+        }
+
+        trigger.addEventListener('click', function () {
+          if (!isDesktop()) {
+            window.location.href = reservationUrl;
+            return;
+          }
+          if (isOpen) closeChat();
+          else openChat();
+        });
+
+        closeButton.addEventListener('click', closeChat);
+        window.addEventListener('resize', function () {
+          if (!isDesktop() && isOpen) closeChat();
+        });
+      }());
+    </script>
+  </body>
 </html>
