@@ -199,9 +199,17 @@
       "responseTime": 450,
       "error": null,
       "finalUrl": "https://moteisfortaleza.com/"
+    },
+    {
+      "timestamp": "2026-08-20T02:43:47.585Z",
+      "status": "up",
+      "statusCode": 200,
+      "responseTime": 2727,
+      "error": null,
+      "finalUrl": "https://moteisfortaleza.com/"
     }
   ],
-  "uptimeCount": 25,
+  "uptimeCount": 26,
   "downCount": 0,
   "lastStatus": "up",
   "lastChanged": null,
