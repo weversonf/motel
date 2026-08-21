@@ -10,10 +10,15 @@
     <link href="../css/default.css" rel="stylesheet" type="text/css" />
     <link href="../css/style.css" rel="stylesheet" type="text/css" />
     <link href="../css/plugin.css" rel="stylesheet" type="text/css" />
+    <link href="../css/motel-details.css" rel="stylesheet" type="text/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>body{font-family:Inter,sans-serif;}h1,h2,h3,h4,h5,h6,.navbar-nav>li>a,.btn,.mf-chat-widget,.mf-sticky-reservation{font-family:Montserrat,sans-serif;}h1,h2,h3,h4,h5,h6{font-weight:500;}p,li{font-family:Inter,sans-serif;}</style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
 </head>
-<body>
+<body data-motel-key="dreams" style="--mf-detail-accent:#16a36f;">
     <div id="preloader"><div id="status"></div></div>
 
     <header class="main_header_area">
@@ -21,7 +26,7 @@
             <div class="container">
                 <div class="links links-left">
                     <ul>
-                        <li><a href="tel:8532578877"><i class="fa fa-phone"></i> (85) 3257-8877</a></li>
+                        <li><a href="tel:8532795788"><i class="fa fa-phone"></i> (85) 3279-5788</a></li>
                         <li><select class="wide"><option value="pt">PT-BR</option><option value="en">EN</option><option value="es">ES</option><option value="fr">FR</option></select></li>
                     </ul>
                 </div>
@@ -86,8 +91,7 @@
                             <div class="room-image"><img src="../img/suites/suite-sonho.jpg" alt="Suíte Master" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Master</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 127 / 3h</p>
+                                    <h4>Suíte Master</h4><p data-suite-price="Suíte Master"><i class="fa fa-tag"></i> R$ 127 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> Queen-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-wifi"></i> Wi-Fi</div></div></div>
@@ -101,8 +105,7 @@
                             <div class="room-image"><img src="../img/suites/suite-honolulu.jpg" alt="Suíte Luxo" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Luxo</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 189 / 3h</p>
+                                    <h4>Suíte Luxo</h4><p data-suite-price="Suíte Luxo"><i class="fa fa-tag"></i> R$ 189 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> King-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidromassagem</div></div></div>
@@ -116,8 +119,7 @@
                             <div class="room-image"><img src="../img/room-b1.jpg" alt="Suíte Premium" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Premium</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 249 / 3h</p>
+                                    <h4>Suíte Premium</h4><p data-suite-price="Suíte Premium"><i class="fa fa-tag"></i> R$ 249 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> King-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidro + Sala</div></div></div>
@@ -131,6 +133,65 @@
         </div>
     </section>
 
+    <section class="mf-experience" id="experiencia" style="--mf-detail-accent:#16a36f; --mf-detail-accent-soft:#16a36f14;" aria-labelledby="mf-experience-title">
+        <div class="container">
+            <div class="mf-experience-head">
+                <div class="mf-experience-intro">
+                    <span class="mf-eyebrow">Conforto na BR-116</span>
+                    <h3 id="mf-experience-title">Praticidade, conforto e uma pausa só sua.</h3>
+                    <p>O Dreams é uma opção inteligente para quem circula pela BR-116 e procura privacidade, atendimento objetivo e suítes confortáveis para diferentes momentos.</p>
+                </div>
+                <div class="mf-experience-summary">
+                    <strong>Escolha simples, experiência segura</strong>
+                    <span>Consulte as opções disponíveis, veja os valores de referência e confirme a sua reserva no chat.</span>
+                </div>
+            </div>
+
+            <div class="mf-feature-grid" aria-label="Destaques da unidade">
+                <article class="mf-feature-card"><span class="mf-feature-icon"><i class="fa fa-road" aria-hidden="true"></i></span><h4>Acesso pela BR-116</h4><p data-suite-price="Acesso pela BR-116">Localização prática para quem está na região de Cajazeiras.</p></article><article class="mf-feature-card"><span class="mf-feature-icon"><i class="fa fa-bed" aria-hidden="true"></i></span><h4>Categorias variadas</h4><p data-suite-price="Categorias variadas">Opções para uma pausa rápida ou uma estadia mais completa.</p></article><article class="mf-feature-card"><span class="mf-feature-icon"><i class="fa fa-wifi" aria-hidden="true"></i></span><h4>Conforto essencial</h4><p data-suite-price="Conforto essencial">Ambientes climatizados e recursos para uma experiência tranquila.</p></article>
+            </div>
+
+            <div class="mf-detail-grid">
+                <section class="mf-detail-panel" aria-labelledby="mf-gallery-title">
+                    <span class="mf-eyebrow">Ambientes</span>
+                    <h3 id="mf-gallery-title">Veja alguns detalhes</h3>
+                    <p style="margin-bottom:18px;">Uma seleção de imagens para ajudar você a escolher o ambiente ideal.</p>
+                    <div class="mf-gallery-grid"><a class="mf-gallery-item" href="../img/suites/suite-sonho.jpg" data-gallery-image data-gallery-alt="Suíte Master - Dreams Motel"><img src="../img/suites/suite-sonho.jpg" alt="Suíte Master - Dreams Motel" loading="lazy" /><span class="mf-gallery-caption">Suíte Master</span></a><a class="mf-gallery-item" href="../img/suites/suite-honolulu.jpg" data-gallery-image data-gallery-alt="Suíte Luxo - Dreams Motel"><img src="../img/suites/suite-honolulu.jpg" alt="Suíte Luxo - Dreams Motel" loading="lazy" /><span class="mf-gallery-caption">Suíte Luxo</span></a><a class="mf-gallery-item" href="../img/suites/suite-felicidade.jpg" data-gallery-image data-gallery-alt="Detalhes de conforto - Dreams Motel"><img src="../img/suites/suite-felicidade.jpg" alt="Detalhes de conforto - Dreams Motel" loading="lazy" /><span class="mf-gallery-caption">Detalhes de conforto</span></a><a class="mf-gallery-item" href="../img/suites/suite-inspiracao.jpg" data-gallery-image data-gallery-alt="Ambiente reservado - Dreams Motel"><img src="../img/suites/suite-inspiracao.jpg" alt="Ambiente reservado - Dreams Motel" loading="lazy" /><span class="mf-gallery-caption">Ambiente reservado</span></a></div>
+                </section>
+
+                <section class="mf-detail-panel mf-map-wrap" aria-labelledby="mf-map-title">
+                    <span class="mf-eyebrow">Localização</span>
+                    <h3 id="mf-map-title">Como chegar</h3>
+                    <iframe class="mf-map-frame" title="Mapa de localização do Dreams Motel" src="https://www.google.com/maps?q=BR+116+KM+06,+2430+-+Cajazeiras,+Fortaleza+-+CE&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <div class="mf-map-meta">
+                        <p><i class="fa fa-map-marker" aria-hidden="true"></i> BR 116 KM 06, 2430 - Cajazeiras, Fortaleza - CE<br /><i class="fa fa-phone" aria-hidden="true"></i> <a href="tel:8532795788">(85) 3279-5788</a></p>
+                        <div class="mf-map-actions"><a class="btn btn-orange" href="https://www.google.com/maps/dir/?api=1&destination=BR+116+KM+06,+2430+-+Cajazeiras,+Fortaleza+-+CE" target="_blank" rel="noopener">Abrir rota</a><a class="btn btn-default" href="tel:8532795788">Ligar agora</a></div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="mf-detail-panel mf-rate-panel" aria-labelledby="mf-rate-title">
+                <span class="mf-eyebrow">Tarifas</span>
+                <h3 id="mf-rate-title">Escolha o seu período</h3>
+                <p class="mf-rate-note">Os valores são consultados no catálogo central. <span data-rate-source>Confira a disponibilidade atual no chat de reservas.</span></p>
+                <div class="mf-rate-table-wrap">
+                    <table class="mf-rate-table">
+                        <thead><tr><th>Suíte</th><th>3 horas</th><th>6 horas</th><th>12h / pernoite</th><th>Hora adicional</th><th>Pessoa adicional</th></tr></thead>
+                        <tbody><tr data-rate-suite="Suíte Master"><td>Suíte Master</td><td class="mf-rate-value" data-rate-value="3h">R$ 127</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 242</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Luxo"><td>Suíte Luxo</td><td class="mf-rate-value" data-rate-value="3h">R$ 189</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 350</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Premium"><td>Suíte Premium</td><td class="mf-rate-value" data-rate-value="3h">R$ 249</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 450</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="mf-detail-panel" aria-labelledby="mf-faq-title">
+                <span class="mf-eyebrow">Dúvidas rápidas</span>
+                <h3 id="mf-faq-title">Antes de reservar</h3>
+                <div class="mf-faq-grid"><details class="mf-faq-item"><summary>O Dreams fica próximo à BR-116?</summary><p>Sim. A unidade está localizada na BR 116 KM 06, em Cajazeiras, com acesso indicado pelo mapa acima.</p></details><details class="mf-faq-item"><summary>Posso consultar o valor de cada período?</summary><p>Sim. A tabela de tarifas apresenta 3h, 6h e 12h quando disponíveis no catálogo. A confirmação final é feita pelo chat.</p></details></div>
+            </section>
+        </div>
+    </section>
+
+    <a class="mf-sticky-reservation" href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+reservar+no+Dreams+Motel" target="_blank" rel="noopener"><i class="fa fa-whatsapp" aria-hidden="true"></i> Reserve esta experiência</a>
+
     <footer>
         <div class="footer-top pad-bottom-20">
             <div class="container">
@@ -138,7 +199,7 @@
                 <div class="footer-content">
                     <div class="row">
                         <div class="col-lg-3 col-md-6 mar-bottom-30">
-                            <div class="footer-about"><h4>Grupo Motéis Fortaleza</h4><p>Referência em motéis em Fortaleza. Quatro unidades com suítes temáticas, conforto e privacidade.</p></div>
+                            <div class="footer-about"><h4>Grupo Motéis Fortaleza</h4><p data-suite-price="Grupo Motéis Fortaleza">Referência em motéis em Fortaleza. Quatro unidades com suítes temáticas, conforto e privacidade.</p></div>
                             <div class="footer-payment"><h4>Aceitamos</h4><ul><li><img src="../images/icons/visa.png" alt="Visa" /></li><li><img src="../images/icons/mastercard.png" alt="Mastercard" /></li><li><img src="../images/icons/americanexpress.png" alt="Amex" /></li></ul></div>
                         </div>
                         <div class="col-lg-3 col-md-6 mar-bottom-30">
@@ -167,6 +228,10 @@
 
     <div id="back-to-top"><a href="#"></a></div>
 
+
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+    <script src="../js/motel-details.js"></script>
     <script src="../js/jquery-3.3.1.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
     <script src="../js/plugin.js"></script>

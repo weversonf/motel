@@ -10,10 +10,15 @@
     <link href="../css/default.css" rel="stylesheet" type="text/css" />
     <link href="../css/style.css" rel="stylesheet" type="text/css" />
     <link href="../css/plugin.css" rel="stylesheet" type="text/css" />
+    <link href="../css/motel-details.css" rel="stylesheet" type="text/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>body{font-family:Inter,sans-serif;}h1,h2,h3,h4,h5,h6,.navbar-nav>li>a,.btn,.mf-chat-widget,.mf-sticky-reservation{font-family:Montserrat,sans-serif;}h1,h2,h3,h4,h5,h6{font-weight:500;}p,li{font-family:Inter,sans-serif;}</style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
 </head>
-<body>
+<body data-motel-key="assahi" style="--mf-detail-accent:#c56a2d;">
     <div id="preloader"><div id="status"></div></div>
 
     <header class="main_header_area">
@@ -21,7 +26,7 @@
             <div class="container">
                 <div class="links links-left">
                     <ul>
-                        <li><a href="tel:8532578877"><i class="fa fa-phone"></i> (85) 3257-8877</a></li>
+                        <li><a href="tel:8532562525"><i class="fa fa-phone"></i> (85) 3256-2525</a></li>
                         <li>
                             <select class="wide">
                                 <option value="pt">PT-BR</option>
@@ -107,8 +112,7 @@
                             <div class="room-image"><img src="../img/suites/suite-tahiti.jpg" alt="Suíte Tahiti" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Tahiti</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 180 / 3h</p>
+                                    <h4>Suíte Tahiti</h4><p data-suite-price="Suíte Tahiti"><i class="fa fa-tag"></i> R$ 180 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> King-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidromassagem</div></div></div>
@@ -122,8 +126,7 @@
                             <div class="room-image"><img src="../img/suites/suite-malibu.jpg" alt="Suíte Malibu" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Malibu</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 663 / 3h</p>
+                                    <h4>Suíte Malibu</h4><p data-suite-price="Suíte Malibu"><i class="fa fa-tag"></i> R$ 663 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> King-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidro + Sala</div></div></div>
@@ -137,8 +140,7 @@
                             <div class="room-image"><img src="../img/suites/suite-bora-bora.jpg" alt="Suíte Bora-Bora" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Bora-Bora</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 208 / 3h</p>
+                                    <h4>Suíte Bora-Bora</h4><p data-suite-price="Suíte Bora-Bora"><i class="fa fa-tag"></i> R$ 208 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> King-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidromassagem</div></div></div>
@@ -152,8 +154,7 @@
                             <div class="room-image"><img src="../img/suites/suite-maui.jpg" alt="Suíte Maui" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Maui</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 240 / 3h</p>
+                                    <h4>Suíte Maui</h4><p data-suite-price="Suíte Maui"><i class="fa fa-tag"></i> R$ 240 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> Queen-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidro + Varanda</div></div></div>
@@ -167,8 +168,7 @@
                             <div class="room-image"><img src="../img/suites/suite-honolulu.jpg" alt="Suíte Honolulu" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Honolulu</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 268 / 3h</p>
+                                    <h4>Suíte Honolulu</h4><p data-suite-price="Suíte Honolulu"><i class="fa fa-tag"></i> R$ 268 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> Queen-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidro + Frigobar</div></div></div>
@@ -182,8 +182,7 @@
                             <div class="room-image"><img src="../img/suites/suite-kauai.jpg" alt="Suíte Kauai" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Kauai</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 281 / 3h</p>
+                                    <h4>Suíte Kauai</h4><p data-suite-price="Suíte Kauai"><i class="fa fa-tag"></i> R$ 281 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> Queen-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidro + Ar</div></div></div>
@@ -197,8 +196,7 @@
                             <div class="room-image"><img src="../img/suites/suite-cancun.jpg" alt="Suíte Cancun" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Cancun</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 663 / 3h</p>
+                                    <h4>Suíte Cancun</h4><p data-suite-price="Suíte Cancun"><i class="fa fa-tag"></i> R$ 663 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> King-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidro + Sala</div></div></div>
@@ -212,8 +210,7 @@
                             <div class="room-image"><img src="../img/suites/suite-mandala.jpg" alt="Suíte Mandala" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Mandala</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 997 / 3h</p>
+                                    <h4>Suíte Mandala</h4><p data-suite-price="Suíte Mandala"><i class="fa fa-tag"></i> R$ 997 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> King-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidro + Ofuro</div></div></div>
@@ -227,6 +224,65 @@
         </div>
     </section>
 
+    <section class="mf-experience" id="experiencia" style="--mf-detail-accent:#c56a2d; --mf-detail-accent-soft:#c56a2d14;" aria-labelledby="mf-experience-title">
+        <div class="container">
+            <div class="mf-experience-head">
+                <div class="mf-experience-intro">
+                    <span class="mf-eyebrow">Experiência temática</span>
+                    <h3 id="mf-experience-title">Privacidade, conforto e uma experiência inspirada no mundo.</h3>
+                    <p>O Assahi reúne suítes temáticas, ambientes amplos e detalhes pensados para transformar cada estadia em uma experiência reservada e especial.</p>
+                </div>
+                <div class="mf-experience-summary">
+                    <strong>Uma escolha para quem valoriza atmosfera</strong>
+                    <span>Escolha sua suíte, confira as condições do período e fale com nossa equipe pelo chat de reservas.</span>
+                </div>
+            </div>
+
+            <div class="mf-feature-grid" aria-label="Destaques da unidade">
+                <article class="mf-feature-card"><span class="mf-feature-icon"><i class="fa fa-lock" aria-hidden="true"></i></span><h4>Acesso reservado</h4><p data-suite-price="Acesso reservado">Entrada discreta e privacidade em todos os momentos.</p></article><article class="mf-feature-card"><span class="mf-feature-icon"><i class="fa fa-bath" aria-hidden="true"></i></span><h4>Suítes com hidro</h4><p data-suite-price="Suítes com hidro">Opções com hidromassagem, ofurô e ambientes amplos.</p></article><article class="mf-feature-card"><span class="mf-feature-icon"><i class="fa fa-star" aria-hidden="true"></i></span><h4>Temas exclusivos</h4><p data-suite-price="Temas exclusivos">Decorações inspiradas em destinos e experiências marcantes.</p></article>
+            </div>
+
+            <div class="mf-detail-grid">
+                <section class="mf-detail-panel" aria-labelledby="mf-gallery-title">
+                    <span class="mf-eyebrow">Ambientes</span>
+                    <h3 id="mf-gallery-title">Veja alguns detalhes</h3>
+                    <p style="margin-bottom:18px;">Uma seleção de imagens para ajudar você a escolher o ambiente ideal.</p>
+                    <div class="mf-gallery-grid"><a class="mf-gallery-item" href="../img/suites/suite-tahiti.jpg" data-gallery-image data-gallery-alt="Suíte Tahiti - Assahi Motel"><img src="../img/suites/suite-tahiti.jpg" alt="Suíte Tahiti - Assahi Motel" loading="lazy" /><span class="mf-gallery-caption">Suíte Tahiti</span></a><a class="mf-gallery-item" href="../img/suites/suite-bora-bora.jpg" data-gallery-image data-gallery-alt="Suíte Bora Bora - Assahi Motel"><img src="../img/suites/suite-bora-bora.jpg" alt="Suíte Bora Bora - Assahi Motel" loading="lazy" /><span class="mf-gallery-caption">Suíte Bora Bora</span></a><a class="mf-gallery-item" href="../img/suites/suite-cancun.jpg" data-gallery-image data-gallery-alt="Suíte Cancún - Assahi Motel"><img src="../img/suites/suite-cancun.jpg" alt="Suíte Cancún - Assahi Motel" loading="lazy" /><span class="mf-gallery-caption">Suíte Cancún</span></a><a class="mf-gallery-item" href="../img/suites/suite-mandala.jpg" data-gallery-image data-gallery-alt="Suíte Mandala - Assahi Motel"><img src="../img/suites/suite-mandala.jpg" alt="Suíte Mandala - Assahi Motel" loading="lazy" /><span class="mf-gallery-caption">Suíte Mandala</span></a></div>
+                </section>
+
+                <section class="mf-detail-panel mf-map-wrap" aria-labelledby="mf-map-title">
+                    <span class="mf-eyebrow">Localização</span>
+                    <h3 id="mf-map-title">Como chegar</h3>
+                    <iframe class="mf-map-frame" title="Mapa de localização do Assahi Motel" src="https://www.google.com/maps?q=Av.+Luciano+Carneiro,+605+-+Fatima,+Fortaleza+-+CE&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <div class="mf-map-meta">
+                        <p><i class="fa fa-map-marker" aria-hidden="true"></i> Av. Luciano Carneiro, 605 - Fátima, Fortaleza - CE<br /><i class="fa fa-phone" aria-hidden="true"></i> <a href="tel:8532562525">(85) 3256-2525</a></p>
+                        <div class="mf-map-actions"><a class="btn btn-orange" href="https://www.google.com/maps/dir/?api=1&destination=Av.+Luciano+Carneiro,+605+-+Fatima,+Fortaleza+-+CE" target="_blank" rel="noopener">Abrir rota</a><a class="btn btn-default" href="tel:8532562525">Ligar agora</a></div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="mf-detail-panel mf-rate-panel" aria-labelledby="mf-rate-title">
+                <span class="mf-eyebrow">Tarifas</span>
+                <h3 id="mf-rate-title">Escolha o seu período</h3>
+                <p class="mf-rate-note">Os valores são consultados no catálogo central. <span data-rate-source>Confira a disponibilidade atual no chat de reservas.</span></p>
+                <div class="mf-rate-table-wrap">
+                    <table class="mf-rate-table">
+                        <thead><tr><th>Suíte</th><th>3 horas</th><th>6 horas</th><th>12h / pernoite</th><th>Hora adicional</th><th>Pessoa adicional</th></tr></thead>
+                        <tbody><tr data-rate-suite="Suíte Tahiti"><td>Suíte Tahiti</td><td class="mf-rate-value" data-rate-value="3h">R$ 180</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 335</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Bora Bora"><td>Suíte Bora Bora</td><td class="mf-rate-value" data-rate-value="3h">R$ 208</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 384</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Malibu"><td>Suíte Malibu</td><td class="mf-rate-value" data-rate-value="3h">R$ 663</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 1180</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Mauí (Cadeirante)"><td>Suíte Mauí (Cadeirante)</td><td class="mf-rate-value" data-rate-value="3h">R$ 240</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 440</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Honolulu"><td>Suíte Honolulu</td><td class="mf-rate-value" data-rate-value="3h">R$ 268</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 489</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Kauai"><td>Suíte Kauai</td><td class="mf-rate-value" data-rate-value="3h">R$ 281</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 511</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Cancún"><td>Suíte Cancún</td><td class="mf-rate-value" data-rate-value="3h">R$ 663</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 1180</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Mandala"><td>Suíte Mandala</td><td class="mf-rate-value" data-rate-value="3h">R$ 997</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 1765</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="mf-detail-panel" aria-labelledby="mf-faq-title">
+                <span class="mf-eyebrow">Dúvidas rápidas</span>
+                <h3 id="mf-faq-title">Antes de reservar</h3>
+                <div class="mf-faq-grid"><details class="mf-faq-item"><summary>Como escolher a melhor suíte?</summary><p>Use as comodidades e a faixa de valor como referência. Se preferir, nossa equipe ajuda você pelo chat de reservas.</p></details><details class="mf-faq-item"><summary>O Assahi possui opções premium?</summary><p>Sim. A Mandala, a Cancún e outras categorias oferecem ambientes maiores e recursos especiais. Consulte a disponibilidade.</p></details></div>
+            </section>
+        </div>
+    </section>
+
+    <a class="mf-sticky-reservation" href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+reservar+no+Assahi+Motel" target="_blank" rel="noopener"><i class="fa fa-whatsapp" aria-hidden="true"></i> Reserve esta experiência</a>
+
     <footer>
         <div class="footer-top pad-bottom-20">
             <div class="container">
@@ -235,8 +291,7 @@
                     <div class="row">
                         <div class="col-lg-3 col-md-6 mar-bottom-30">
                             <div class="footer-about">
-                                <h4>Grupo Motéis Fortaleza</h4>
-                                <p>Referência em motéis em Fortaleza. Quatro unidades com suítes temáticas, conforto e privacidade para momentos inesquecíveis.</p>
+                                <h4>Grupo Motéis Fortaleza</h4><p data-suite-price="Grupo Motéis Fortaleza">Referência em motéis em Fortaleza. Quatro unidades com suítes temáticas, conforto e privacidade para momentos inesquecíveis.</p>
                             </div>
                             <div class="footer-payment">
                                 <h4>Aceitamos</h4>
@@ -319,6 +374,10 @@
 
     <div id="back-to-top"><a href="#"></a></div>
 
+
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+    <script src="../js/motel-details.js"></script>
     <script src="../js/jquery-3.3.1.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
     <script src="../js/plugin.js"></script>

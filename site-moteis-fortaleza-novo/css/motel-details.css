@@ -1,0 +1,291 @@
+/* Camada premium compartilhada das páginas detalhadas do Grupo Motéis Fortaleza. */
+:root {
+  --mf-detail-accent: #ff0080;
+  --mf-detail-accent-soft: rgba(255, 0, 128, .08);
+  --mf-detail-ink: #172033;
+  --mf-detail-muted: #6c7483;
+  --mf-detail-border: rgba(23, 32, 51, .10);
+  --mf-detail-shadow: 0 18px 54px rgba(23, 32, 51, .10);
+}
+
+.mf-experience {
+  padding: 0 0 76px;
+  background: linear-gradient(180deg, #fbfbfd 0%, #ffffff 100%);
+}
+
+.mf-experience .container { position: relative; z-index: 1; }
+
+.mf-experience-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr);
+  gap: 28px;
+  align-items: stretch;
+  margin-bottom: 28px;
+}
+
+.mf-experience-intro,
+.mf-experience-summary,
+.mf-detail-panel {
+  border: 1px solid var(--mf-detail-border);
+  border-radius: 18px;
+  background: rgba(255,255,255,.96);
+  box-shadow: var(--mf-detail-shadow);
+}
+
+.mf-experience-intro { padding: 34px 36px; }
+.mf-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  color: var(--mf-detail-accent);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .17em;
+  text-transform: uppercase;
+}
+
+.mf-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 2px;
+  border-radius: 4px;
+  background: var(--mf-detail-accent);
+}
+
+.mf-experience-intro h3,
+.mf-detail-panel h3 {
+  margin: 0 0 12px;
+  color: var(--mf-detail-ink);
+  font-size: 27px;
+  font-weight: 500;
+  letter-spacing: -.02em;
+}
+
+.mf-experience-intro p,
+.mf-detail-panel p {
+  margin: 0;
+  color: var(--mf-detail-muted);
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.mf-experience-summary {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 28px 30px;
+  background: linear-gradient(140deg, var(--mf-detail-accent-soft), #fff 72%);
+}
+
+.mf-experience-summary strong {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--mf-detail-ink);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.mf-experience-summary span {
+  color: var(--mf-detail-muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.mf-feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 0 0 38px;
+}
+
+.mf-feature-card {
+  min-height: 124px;
+  padding: 22px 20px;
+  border: 1px solid var(--mf-detail-border);
+  border-radius: 16px;
+  background: #fff;
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.mf-feature-card:hover {
+  border-color: var(--mf-detail-accent);
+  box-shadow: 0 14px 30px rgba(23, 32, 51, .09);
+  transform: translateY(-3px);
+}
+
+.mf-feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 13px;
+  border-radius: 12px;
+  background: var(--mf-detail-accent-soft);
+  color: var(--mf-detail-accent);
+  font-size: 16px;
+}
+
+.mf-feature-card h4 {
+  margin: 0 0 5px;
+  color: var(--mf-detail-ink);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.mf-feature-card p {
+  margin: 0;
+  color: var(--mf-detail-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.mf-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.12fr) minmax(0, .88fr);
+  gap: 26px;
+  margin: 0 0 38px;
+}
+
+.mf-detail-panel { padding: 28px; }
+.mf-detail-panel h3 { font-size: 22px; }
+
+.mf-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.mf-gallery-item {
+  position: relative;
+  display: block;
+  min-height: 118px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #edf0f5;
+}
+
+.mf-gallery-item:first-child { grid-column: span 2; grid-row: span 2; min-height: 246px; }
+.mf-gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform .45s ease; }
+.mf-gallery-item:hover img { transform: scale(1.05); }
+.mf-gallery-caption {
+  position: absolute;
+  right: 9px;
+  bottom: 8px;
+  left: 9px;
+  padding: 7px 9px;
+  border-radius: 8px;
+  background: rgba(15, 23, 42, .72);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.mf-map-wrap { overflow: hidden; padding: 0; }
+.mf-map-wrap h3, .mf-map-meta { margin-right: 28px; margin-left: 28px; }
+.mf-map-wrap h3 { padding-top: 28px; }
+.mf-map-frame { display: block; width: 100%; height: 270px; border: 0; }
+.mf-map-meta { padding-bottom: 22px; }
+.mf-map-meta p { margin-bottom: 16px; font-size: 13px; }
+.mf-map-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+.mf-map-actions a { margin: 0; }
+
+.mf-rate-panel { margin-bottom: 38px; }
+.mf-rate-panel h3 { margin-bottom: 7px; }
+.mf-rate-note { margin-bottom: 18px !important; font-size: 13px !important; }
+.mf-rate-table-wrap { overflow-x: auto; border: 1px solid var(--mf-detail-border); border-radius: 14px; }
+.mf-rate-table { width: 100%; min-width: 720px; border-collapse: collapse; background: #fff; }
+.mf-rate-table th,
+.mf-rate-table td { padding: 14px 15px; border-bottom: 1px solid var(--mf-detail-border); text-align: left; white-space: nowrap; }
+.mf-rate-table th { background: var(--mf-detail-accent-soft); color: var(--mf-detail-ink); font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.mf-rate-table td { color: var(--mf-detail-muted); font-size: 13px; }
+.mf-rate-table tbody tr:last-child td { border-bottom: 0; }
+.mf-rate-table td:first-child { color: var(--mf-detail-ink); font-weight: 600; }
+.mf-rate-table .mf-rate-value { color: var(--mf-detail-accent); font-weight: 700; }
+.mf-rate-loading { color: var(--mf-detail-muted); font-size: 13px; }
+
+.mf-faq-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.mf-faq-item { padding: 18px 20px; border: 1px solid var(--mf-detail-border); border-radius: 14px; background: #fff; }
+.mf-faq-item summary { cursor: pointer; color: var(--mf-detail-ink); font-size: 14px; font-weight: 600; list-style: none; }
+.mf-faq-item summary::-webkit-details-marker { display: none; }
+.mf-faq-item summary::after { float: right; color: var(--mf-detail-accent); content: "+"; font-size: 18px; font-weight: 400; }
+.mf-faq-item[open] summary::after { content: "−"; }
+.mf-faq-item p { padding-top: 10px; font-size: 13px; }
+
+.mf-sticky-reservation {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 19px;
+  border-radius: 999px;
+  background: var(--mf-detail-accent);
+  color: #fff !important;
+  box-shadow: 0 14px 30px rgba(23, 32, 51, .24);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  text-decoration: none !important;
+  text-transform: uppercase;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.mf-sticky-reservation:hover { color: #fff; box-shadow: 0 18px 38px rgba(23, 32, 51, .28); transform: translateY(-3px); }
+.mf-sticky-reservation i { font-size: 16px; }
+
+.mf-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, .86);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+.mf-lightbox.is-visible { opacity: 1; pointer-events: auto; }
+.mf-lightbox img { max-width: min(100%, 1080px); max-height: 84vh; border-radius: 12px; box-shadow: 0 24px 80px rgba(0,0,0,.38); }
+.mf-lightbox button { position: absolute; top: 22px; right: 24px; width: 42px; height: 42px; border: 0; border-radius: 50%; background: #fff; color: #172033; cursor: pointer; font-size: 22px; }
+
+@media (max-width: 991px) {
+  .mf-experience-head, .mf-detail-grid { grid-template-columns: 1fr; }
+  .mf-gallery-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 767px) {
+  .mf-experience { padding-bottom: 48px; }
+  .mf-experience-intro, .mf-detail-panel { padding: 24px 20px; }
+  .mf-experience-intro h3 { font-size: 23px; }
+  .mf-feature-grid, .mf-faq-grid { grid-template-columns: 1fr; }
+  .mf-feature-card { min-height: auto; }
+  .mf-gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mf-gallery-item:first-child { grid-column: span 2; grid-row: auto; min-height: 210px; }
+  .mf-gallery-item { min-height: 130px; }
+  .mf-sticky-reservation { right: 14px; bottom: 14px; left: 14px; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mf-feature-card, .mf-gallery-item img, .mf-sticky-reservation, .mf-lightbox { transition: none; }
+}
+
+/* Balão de reserva padronizado para as páginas de detalhe. */
+.mf-chat-widget { position: fixed; right: 22px; bottom: 88px; z-index: 1100; display: flex; flex-direction: column; align-items: flex-end; font-family: var(--mf-font-display, 'Montserrat', sans-serif); }
+.mf-chat-bubble { margin-bottom: 9px; padding: 10px 16px; border-radius: 14px; background: #fff; color: var(--mf-detail-ink); box-shadow: 0 10px 28px rgba(23,32,51,.18); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.mf-chat-trigger { display: inline-flex; align-items: center; justify-content: center; width: 58px; height: 58px; border: 0; border-radius: 50%; background: #25d366; color: #fff; cursor: pointer; font-size: 28px; box-shadow: 0 12px 26px rgba(37,211,102,.28); transition: transform .2s ease; }
+.mf-chat-trigger:hover { color: #fff; transform: scale(1.06); }
+.mf-chat-panel { position: absolute; right: 0; bottom: 70px; width: 340px; height: 460px; overflow: hidden; border: 1px solid rgba(23,32,51,.12); border-radius: 16px; background: #fff; box-shadow: 0 20px 60px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transform: translateY(10px) scale(.96); transform-origin: bottom right; transition: opacity .2s ease, transform .2s ease; }
+.mf-chat-panel.is-open { opacity: 1; pointer-events: auto; transform: translateY(0) scale(1); }
+.mf-chat-panel iframe { display: block; width: 100%; height: 100%; border: 0; }
+@media (max-width: 767px) {
+  .mf-chat-widget { right: 14px; bottom: 82px; }
+  .mf-chat-bubble { font-size: 10px; }
+  .mf-chat-trigger { width: 54px; height: 54px; font-size: 25px; }
+  .mf-chat-panel { display: none; }
+}

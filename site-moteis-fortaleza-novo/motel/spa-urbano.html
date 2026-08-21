@@ -10,10 +10,15 @@
     <link href="../css/default.css" rel="stylesheet" type="text/css" />
     <link href="../css/style.css" rel="stylesheet" type="text/css" />
     <link href="../css/plugin.css" rel="stylesheet" type="text/css" />
+    <link href="../css/motel-details.css" rel="stylesheet" type="text/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <style>body{font-family:Inter,sans-serif;}h1,h2,h3,h4,h5,h6,.navbar-nav>li>a,.btn,.mf-chat-widget,.mf-sticky-reservation{font-family:Montserrat,sans-serif;}h1,h2,h3,h4,h5,h6{font-weight:500;}p,li{font-family:Inter,sans-serif;}</style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
 </head>
-<body>
+<body data-motel-key="spa" style="--mf-detail-accent:#8b5bd6;">
     <div id="preloader"><div id="status"></div></div>
 
     <header class="main_header_area">
@@ -86,8 +91,7 @@
                             <div class="room-image"><img src="../img/suites/suite-jade.jpg" alt="Suíte Jade" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Jade</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 160 / 3h</p>
+                                    <h4>Suíte Jade</h4><p data-suite-price="Suíte Jade"><i class="fa fa-tag"></i> R$ 160 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> Queen-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidro + Ar</div></div></div>
@@ -101,8 +105,7 @@
                             <div class="room-image"><img src="../img/suites/suite-rubi.jpg" alt="Suíte Rubi" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Rubi</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 204 / 3h</p>
+                                    <h4>Suíte Rubi</h4><p data-suite-price="Suíte Rubi"><i class="fa fa-tag"></i> R$ 204 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> King-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidro + Frigobar</div></div></div>
@@ -116,8 +119,7 @@
                             <div class="room-image"><img src="../img/suites/suite-esmeralda.jpg" alt="Suíte Esmeralda" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Esmeralda</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 441 / 3h</p>
+                                    <h4>Suíte Esmeralda</h4><p data-suite-price="Suíte Esmeralda"><i class="fa fa-tag"></i> R$ 441 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> King-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidro + Ofuro</div></div></div>
@@ -131,8 +133,7 @@
                             <div class="room-image"><img src="../img/suites/suite-safira.jpg" alt="Suíte Safira" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Safira</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 180 / 3h</p>
+                                    <h4>Suíte Safira</h4><p data-suite-price="Suíte Safira"><i class="fa fa-tag"></i> R$ 180 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> Queen-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bath"></i> Hidro + Varanda</div></div></div>
@@ -146,8 +147,7 @@
                             <div class="room-image"><img src="../img/suites/suite-diamante.jpg" alt="Suíte Diamante" /></div>
                             <div class="room-content">
                                 <div class="room-title">
-                                    <h4>Suíte Diamante</h4>
-                                    <p><i class="fa fa-tag"></i> R$ 552 / 3h</p>
+                                    <h4>Suíte Diamante</h4><p data-suite-price="Suíte Diamante"><i class="fa fa-tag"></i> R$ 552 / 3h</p>
                                     <div class="deal-rating"><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span><span class="fa fa-star checked"></span></div>
                                 </div>
                                 <div class="room-services mar-bottom-15"><div class="row"><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-bed"></i> King-size</div><div class="col-md-6 col-sm-6 col-xs-6"><i class="fa fa-swimmer"></i> Piscina</div></div></div>
@@ -161,6 +161,65 @@
         </div>
     </section>
 
+    <section class="mf-experience" id="experiencia" style="--mf-detail-accent:#8b5bd6; --mf-detail-accent-soft:#8b5bd614;" aria-labelledby="mf-experience-title">
+        <div class="container">
+            <div class="mf-experience-head">
+                <div class="mf-experience-intro">
+                    <span class="mf-eyebrow">Experiência premium</span>
+                    <h3 id="mf-experience-title">O endereço mais sofisticado para desacelerar.</h3>
+                    <p>O Spa Urbano combina localização central, ambientação elegante e suítes inspiradas em pedras preciosas para quem busca uma experiência mais exclusiva em Fortaleza.</p>
+                </div>
+                <div class="mf-experience-summary">
+                    <strong>Luxo com personalidade</strong>
+                    <span>Conheça as categorias, compare as comodidades e escolha o ambiente que melhor traduz o seu momento.</span>
+                </div>
+            </div>
+
+            <div class="mf-feature-grid" aria-label="Destaques da unidade">
+                <article class="mf-feature-card"><span class="mf-feature-icon"><i class="fa fa-gem" aria-hidden="true"></i></span><h4>Pedras preciosas</h4><p data-suite-price="Pedras preciosas">Suítes com identidade visual inspirada em Jade, Rubi e Diamante.</p></article><article class="mf-feature-card"><span class="mf-feature-icon"><i class="fa fa-bath" aria-hidden="true"></i></span><h4>Relaxamento completo</h4><p data-suite-price="Relaxamento completo">Hidromassagem, ofurô e ambientes desenhados para desacelerar.</p></article><article class="mf-feature-card"><span class="mf-feature-icon"><i class="fa fa-swimmer" aria-hidden="true"></i></span><h4>Piscina privativa</h4><p data-suite-price="Piscina privativa">A Suíte Diamante oferece uma experiência ainda mais exclusiva.</p></article>
+            </div>
+
+            <div class="mf-detail-grid">
+                <section class="mf-detail-panel" aria-labelledby="mf-gallery-title">
+                    <span class="mf-eyebrow">Ambientes</span>
+                    <h3 id="mf-gallery-title">Veja alguns detalhes</h3>
+                    <p style="margin-bottom:18px;">Uma seleção de imagens para ajudar você a escolher o ambiente ideal.</p>
+                    <div class="mf-gallery-grid"><a class="mf-gallery-item" href="../img/suites/suite-jade.jpg" data-gallery-image data-gallery-alt="Suíte Jade - Spa Urbano"><img src="../img/suites/suite-jade.jpg" alt="Suíte Jade - Spa Urbano" loading="lazy" /><span class="mf-gallery-caption">Suíte Jade</span></a><a class="mf-gallery-item" href="../img/suites/suite-rubi.jpg" data-gallery-image data-gallery-alt="Suíte Rubi - Spa Urbano"><img src="../img/suites/suite-rubi.jpg" alt="Suíte Rubi - Spa Urbano" loading="lazy" /><span class="mf-gallery-caption">Suíte Rubi</span></a><a class="mf-gallery-item" href="../img/suites/suite-esmeralda.jpg" data-gallery-image data-gallery-alt="Suíte Esmeralda - Spa Urbano"><img src="../img/suites/suite-esmeralda.jpg" alt="Suíte Esmeralda - Spa Urbano" loading="lazy" /><span class="mf-gallery-caption">Suíte Esmeralda</span></a><a class="mf-gallery-item" href="../img/suites/suite-diamante.jpg" data-gallery-image data-gallery-alt="Suíte Diamante - Spa Urbano"><img src="../img/suites/suite-diamante.jpg" alt="Suíte Diamante - Spa Urbano" loading="lazy" /><span class="mf-gallery-caption">Suíte Diamante</span></a></div>
+                </section>
+
+                <section class="mf-detail-panel mf-map-wrap" aria-labelledby="mf-map-title">
+                    <span class="mf-eyebrow">Localização</span>
+                    <h3 id="mf-map-title">Como chegar</h3>
+                    <iframe class="mf-map-frame" title="Mapa de localização do Spa Urbano" src="https://www.google.com/maps?q=Av.+Des.+Moreira,+3033+-+Dionisio+Torres,+Fortaleza+-+CE&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <div class="mf-map-meta">
+                        <p><i class="fa fa-map-marker" aria-hidden="true"></i> Av. Des. Moreira, 3033 - Dionísio Torres, Fortaleza - CE<br /><i class="fa fa-phone" aria-hidden="true"></i> <a href="tel:8532578877">(85) 3257-8877</a></p>
+                        <div class="mf-map-actions"><a class="btn btn-orange" href="https://www.google.com/maps/dir/?api=1&destination=Av.+Des.+Moreira,+3033+-+Dionisio+Torres,+Fortaleza+-+CE" target="_blank" rel="noopener">Abrir rota</a><a class="btn btn-default" href="tel:8532578877">Ligar agora</a></div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="mf-detail-panel mf-rate-panel" aria-labelledby="mf-rate-title">
+                <span class="mf-eyebrow">Tarifas</span>
+                <h3 id="mf-rate-title">Escolha o seu período</h3>
+                <p class="mf-rate-note">Os valores são consultados no catálogo central. <span data-rate-source>Confira a disponibilidade atual no chat de reservas.</span></p>
+                <div class="mf-rate-table-wrap">
+                    <table class="mf-rate-table">
+                        <thead><tr><th>Suíte</th><th>3 horas</th><th>6 horas</th><th>12h / pernoite</th><th>Hora adicional</th><th>Pessoa adicional</th></tr></thead>
+                        <tbody><tr data-rate-suite="Suíte Jade"><td>Suíte Jade</td><td class="mf-rate-value" data-rate-value="3h">R$ 160</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 300</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Safira"><td>Suíte Safira</td><td class="mf-rate-value" data-rate-value="3h">R$ 180</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 335</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Rubi"><td>Suíte Rubi</td><td class="mf-rate-value" data-rate-value="3h">R$ 204</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 377</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Esmeralda"><td>Suíte Esmeralda</td><td class="mf-rate-value" data-rate-value="3h">R$ 441</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 791</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr><tr data-rate-suite="Suíte Diamante"><td>Suíte Diamante</td><td class="mf-rate-value" data-rate-value="3h">R$ 552</td><td class="mf-rate-value" data-rate-value="6h">Consulte</td><td class="mf-rate-value" data-rate-value="12h">R$ 986</td><td data-rate-value="hora">Consulte</td><td data-rate-value="pessoa">Consulte</td></tr></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="mf-detail-panel" aria-labelledby="mf-faq-title">
+                <span class="mf-eyebrow">Dúvidas rápidas</span>
+                <h3 id="mf-faq-title">Antes de reservar</h3>
+                <div class="mf-faq-grid"><details class="mf-faq-item"><summary>Qual é a suíte mais exclusiva?</summary><p>A Suíte Diamante é a categoria de maior exclusividade, com piscina privativa e recursos premium.</p></details><details class="mf-faq-item"><summary>Onde fica o Spa Urbano?</summary><p>A unidade fica na Av. Des. Moreira, em Dionísio Torres. Abra a rota pelo botão do mapa.</p></details></div>
+            </section>
+        </div>
+    </section>
+
+    <a class="mf-sticky-reservation" href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+reservar+no+Spa+Motel" target="_blank" rel="noopener"><i class="fa fa-whatsapp" aria-hidden="true"></i> Reserve esta experiência</a>
+
     <footer>
         <div class="footer-top pad-bottom-20">
             <div class="container">
@@ -168,7 +227,7 @@
                 <div class="footer-content">
                     <div class="row">
                         <div class="col-lg-3 col-md-6 mar-bottom-30">
-                            <div class="footer-about"><h4>Grupo Motéis Fortaleza</h4><p>Referência em motéis em Fortaleza. Quatro unidades com suítes temáticas, conforto e privacidade.</p></div>
+                            <div class="footer-about"><h4>Grupo Motéis Fortaleza</h4><p data-suite-price="Grupo Motéis Fortaleza">Referência em motéis em Fortaleza. Quatro unidades com suítes temáticas, conforto e privacidade.</p></div>
                             <div class="footer-payment"><h4>Aceitamos</h4><ul><li><img src="../images/icons/visa.png" alt="Visa" /></li><li><img src="../images/icons/mastercard.png" alt="Mastercard" /></li><li><img src="../images/icons/americanexpress.png" alt="Amex" /></li></ul></div>
                         </div>
                         <div class="col-lg-3 col-md-6 mar-bottom-30">
@@ -197,6 +256,10 @@
 
     <div id="back-to-top"><a href="#"></a></div>
 
+
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+    <script src="../js/motel-details.js"></script>
     <script src="../js/jquery-3.3.1.min.js"></script>
     <script src="../js/bootstrap.min.js"></script>
     <script src="../js/plugin.js"></script>
