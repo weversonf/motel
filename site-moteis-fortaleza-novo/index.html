@@ -506,7 +506,7 @@
                       <span class="fa fa-star checked"></span>
                       <span class="fa fa-star checked"></span>
                     </div>
-                    <p>Suíte Malibu - R$ 663</p>
+                    <p data-dynamic-price data-motel="assahi" data-suite="Suíte Malibu">Suíte Malibu - R$ 663</p>
                   </div>
                   <div class="room-services mar-bottom-15">
                     <ul>
@@ -536,7 +536,7 @@
                       <span class="fa fa-star checked"></span>
                       <span class="fa fa-star checked"></span>
                     </div>
-                    <p>Suíte Inspiração - R$ 259</p>
+                    <p data-dynamic-price data-motel="dragon" data-suite="Suíte Inspiração">Suíte Inspiração - R$ 259</p>
                   </div>
                   <div class="room-services mar-bottom-15">
                     <ul>
@@ -566,7 +566,7 @@
                       <span class="fa fa-star checked"></span>
                       <span class="fa fa-star checked"></span>
                     </div>
-                    <p>Suíte Esmeralda - R$ 441</p>
+                    <p data-dynamic-price data-motel="spa" data-suite="Suíte Esmeralda">Suíte Esmeralda - R$ 441</p>
                   </div>
                   <div class="room-services mar-bottom-15">
                     <ul>
@@ -596,7 +596,7 @@
                       <span class="fa fa-star checked"></span>
                       <span class="fa fa-star checked"></span>
                     </div>
-                    <p>Suíte Econômica - R$ 127</p>
+                    <p data-dynamic-price data-motel="dreams" data-suite="Suíte Econômica" data-catalog-suite="Suíte Delirius">Suíte Econômica - R$ 127</p>
                   </div>
                   <div class="room-services mar-bottom-15">
                     <ul>
@@ -889,7 +889,10 @@
     </div>
 
     <!-- *Scripts* -->
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="js/jquery-3.3.1.min.js"></script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/plugin.js"></script>
     <script src="js/main.js"></script>
@@ -914,6 +917,120 @@
       { motel:"Spa Urbano", bairro:"Dionísio Torres", suite:"Suíte Diamante", preco:"R$ 552", img:"img/suites/suite-diamante.jpg", link:"motel/spa-urbano.html", key:"spa", cat:"piscina", hidro:true, sauna:false, piscina:true, ofuro:true }
     ];
 
+    (function sincronizarPrecosDoCatalogo() {
+      var firebaseConfig = {
+        apiKey: "AIzaSyCln4mcb1j46UcmG-sTVb3bUudTQCpdfvY",
+        authDomain: "moteisfortaleza-9dadd.firebaseapp.com",
+        projectId: "moteisfortaleza-9dadd",
+        storageBucket: "moteisfortaleza-9dadd.firebasestorage.app",
+        messagingSenderId: "285292896374",
+        appId: "1:285292896374:web:ef6d3ad37e94313ad3bf57"
+      };
+
+      function normalizar(value) {
+        return String(value || "")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, " ")
+          .trim();
+      }
+
+      function chaveMotel(value) {
+        var nome = normalizar(value);
+        if (nome.indexOf("assahi") !== -1) return "assahi";
+        if (nome.indexOf("dragon") !== -1) return "dragon";
+        if (nome.indexOf("dreams") !== -1) return "dreams";
+        if (nome.indexOf("spa") !== -1) return "spa";
+        return nome;
+      }
+
+      function valorNumerico(value) {
+        if (value === null || value === undefined || value === "") return null;
+        var amount = Number(String(value).replace(/[^0-9,.-]/g, "").replace(",", "."));
+        return Number.isFinite(amount) && amount > 0 ? amount : null;
+      }
+
+      function moeda(value) {
+        var amount = valorNumerico(value);
+        return amount !== null
+          ? new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(amount)
+          : null;
+      }
+
+      function chaveSuite(value) {
+        var nome = normalizar(value);
+        var aliases = {
+          "suite economica": "suite delirius",
+          "suite master": "suite delirius"
+        };
+        return aliases[nome] || nome;
+      }
+
+      function extrairSuites(data) {
+        var catalogo = data && data.motels && typeof data.motels === "object" ? data.motels : data;
+        var result = [];
+        if (!catalogo || typeof catalogo !== "object") return result;
+
+        Object.keys(catalogo).forEach(function(nomeMotel) {
+          var motel = catalogo[nomeMotel];
+          if (!motel || typeof motel !== "object" || !Array.isArray(motel.suites)) return;
+          motel.suites.forEach(function(suite) {
+            if (!suite || typeof suite !== "object") return;
+            var preco3 = suite.preco3 ?? suite.price3h ?? suite.priceRotativo ?? suite.preco;
+            var preco6 = suite.preco6 ?? suite.price6h;
+            var preco12 = suite.preco12 ?? suite.price12h ?? suite.pricePernoite ?? suite.precoPernoite;
+            var amount3 = valorNumerico(preco3);
+            if (amount3 === null) return;
+            result.push({
+              motel: chaveMotel(nomeMotel),
+              suite: chaveSuite(suite.nome || suite.name || suite.suite),
+              preco3: amount3,
+              preco6: valorNumerico(preco6),
+              preco12: valorNumerico(preco12)
+            });
+          });
+        });
+        return result;
+      }
+
+      function atualizarCatalogo(data) {
+        var catalogo = extrairSuites(data);
+        if (!catalogo.length) return;
+
+        suitesData.forEach(function(item) {
+          var match = catalogo.find(function(suite) {
+            return suite.motel === chaveMotel(item.key || item.motel) && suite.suite === chaveSuite(item.suite);
+          });
+          if (match) {
+            item.preco = moeda(match.preco3) || item.preco;
+            item.preco6 = moeda(match.preco6);
+            item.preco12 = moeda(match.preco12);
+          }
+        });
+
+        document.querySelectorAll("[data-dynamic-price]").forEach(function(element) {
+          var match = catalogo.find(function(suite) {
+            return suite.motel === chaveMotel(element.dataset.motel) && suite.suite === chaveSuite(element.dataset.catalogSuite || element.dataset.suite);
+          });
+          if (!match) return;
+          var nome = element.dataset.suite || "";
+          element.textContent = nome + " - " + (moeda(match.preco3) || "Consulte valores");
+        });
+      }
+
+      try {
+        if (!window.firebase || !firebase.firestore) return;
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        firebase.firestore().collection("config").doc("motels").onSnapshot(
+          atualizarCatalogo,
+          function(error) { console.warn("Não foi possível atualizar os preços do Site Geral:", error); }
+        );
+      } catch (error) {
+        console.warn("Sincronização de preços indisponível; mantendo valores publicados:", error);
+      }
+    }());
+
     document.getElementById('btn-buscar').addEventListener('click', function(e) {
       e.preventDefault();
       var periodo = document.getElementById('filtro-periodo').value;
@@ -928,6 +1045,9 @@
         var html = '<div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">';
         resultados.forEach(function(s) {
           var tags = '';
+          var precoSelecionado = s.preco;
+          if (periodo === '6h' && s.preco6) precoSelecionado = s.preco6;
+          if ((periodo === '12h' || periodo === 'pernoite') && s.preco12) precoSelecionado = s.preco12;
           if (s.hidro) tags += '<span style="display:inline-block; background:#e8f5e9; color:#2e7d32; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:500; margin-right:3px;"><i class="fa fa-bath"></i> Hidro</span>';
           if (s.piscina) tags += '<span style="display:inline-block; background:#e3f2fd; color:#1565c0; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:500; margin-right:3px;"><i class="fa fa-swimmer"></i> Piscina</span>';
           if (s.ofuro) tags += '<span style="display:inline-block; background:#fce4ec; color:#c62828; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:500; margin-right:3px;"><i class="fa fa-hot-tub"></i> Ofuro</span>';
@@ -943,7 +1063,7 @@
             '<h4 style="margin:2px 0 6px; font-size:17px; color:#FF0080; font-weight:600;">' + s.suite + '</h4>' +
             '<div style="margin-bottom:8px; min-height:18px;">' + tags + '</div>' +
             '<div style="display:flex; align-items:center; justify-content:space-between;">' +
-            '<span style="font-size:18px; font-weight:700; color:#0F172A;">' + s.preco + ' <small style="font-size:12px; font-weight:400; color:#999;">/ ' + periodo + '</small></span>' +
+            '<span style="font-size:18px; font-weight:700; color:#0F172A;">' + precoSelecionado + ' <small style="font-size:12px; font-weight:400; color:#999;">/ ' + periodo + '</small></span>' +
             '<a href="https://wa.me/558532578877?text=Ol%C3%A1%2C+gostaria+de+reservar+' + encodeURIComponent(s.suite) + '+no+' + encodeURIComponent(s.motel) + '" target="_blank" style="padding:6px 14px; border-radius:50px; background:linear-gradient(135deg,#FF0080,#9900CC); color:#fff; font-size:12px; font-weight:500; text-decoration:none; white-space:nowrap;">Reservar</a>' +
             '</div></div></div>';
         });
