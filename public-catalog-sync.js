@@ -1,4 +1,6 @@
 (function () {
+  // v2: leitura direta das coleções centrais e aliases editoriais.
+
   "use strict";
 
   var script = document.currentScript;
@@ -26,8 +28,10 @@
     var key = normalize(value);
     var aliases = {
       suiteborabora: "suiteborabora",
-      suitemalibu: "suitemalibu",
+      suitemalibu: "suitemalibucancun",
       suitemalibucancun: "suitemalibucancun",
+      suitemaui: "suitemauicadeirante",
+      suitemauicadeirante: "suitemauicadeirante",
       suitecancun: "suitecancun",
       suitefortaleza: "suitefortaleza",
       suiteceara: "suiteceara",
