@@ -1017,12 +1017,17 @@
           var nome = element.dataset.suite || "";
           element.textContent = nome + " - " + (moeda(match.preco3) || "Consulte valores");
         });
+        document.querySelectorAll("[data-dynamic-from]").forEach(function(element) {
+          var motel = chaveMotel(element.dataset.motel || "");
+          var prices = catalogo.filter(function(suite) { return !motel || suite.motel === motel; }).map(function(suite) { return suite.preco3; }).filter(function(value) { return value > 0; });
+          if (prices.length) element.textContent = moeda(Math.min.apply(Math, prices));
+        });
       }
 
       try {
         if (!window.firebase || !firebase.firestore) return;
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        firebase.firestore().collection("config").doc("motels").onSnapshot(
+        firebase.firestore().collection("config").doc("public_catalog").onSnapshot(
           atualizarCatalogo,
           function(error) { console.warn("Não foi possível atualizar os preços do Site Geral:", error); }
         );
