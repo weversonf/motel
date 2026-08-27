@@ -142,8 +142,10 @@
             }
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
 </head>
-<body class="bg-dragon-dark text-gray-200 font-sans selection:bg-dragon-primary selection:text-white antialiased">
+<body class="bg-dragon-dark text-gray-200 font-sans selection:bg-dragon-primary selection:text-white antialiased" data-catalog-motel="Motel Dragon">
 
     <!-- Header -->
     <nav class="fixed w-full z-50 bg-dragon-dark/90 backdrop-blur-xl border-b border-dragon-gold/10">
@@ -226,12 +228,12 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-dragon-dark to-transparent opacity-90"></div>
                     </div>
                     <div class="p-10 flex-grow flex flex-col">
-                        <h3 class="text-xl text-white mb-3 tracking-tight font-medium uppercase">Suíte Sucesso</h3>
+                        <h3 class="text-xl text-white mb-3 tracking-tight font-medium uppercase" data-suite-name="Suíte Sucesso">Suíte Sucesso</h3>
                         <p class="text-dragon-gold text-[9px] mb-8 uppercase tracking-[0.25em] font-semibold">Hidro + Ofurô + Sala</p>
                         <div class="mt-auto pt-8 border-t border-white/5 flex justify-between items-end">
                             <div>
                                 <span class="block text-[8px] text-gray-600 uppercase font-bold tracking-widest mb-1">Experiência</span>
-                                <span class="text-xl font-light text-white tracking-tighter">R$ 552</span>
+                                <span class="text-xl font-light text-white tracking-tighter" data-dynamic-price data-dynamic-price>R$ 552</span>
                             </div>
                             <a href="https://reservas.moteisfortaleza.com/" class="text-[9px] border border-dragon-primary text-dragon-primary px-6 py-3 rounded-lg font-bold hover:bg-dragon-primary hover:text-white transition-all duration-500 uppercase tracking-widest">Reservar</a>
                         </div>
@@ -245,12 +247,12 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-dragon-dark to-transparent opacity-90"></div>
                     </div>
                     <div class="p-10 flex-grow flex flex-col">
-                        <h3 class="text-xl text-white mb-3 tracking-tight font-medium uppercase">Suíte Felicidade</h3>
+                        <h3 class="text-xl text-white mb-3 tracking-tight font-medium uppercase" data-suite-name="Suíte Felicidade">Suíte Felicidade</h3>
                         <p class="text-dragon-gold text-[9px] mb-8 uppercase tracking-[0.25em] font-semibold">Teto Espelhado + Hidro</p>
                         <div class="mt-auto pt-8 border-t border-white/5 flex justify-between items-end">
                             <div>
                                 <span class="block text-[8px] text-gray-600 uppercase font-bold tracking-widest mb-1">Experiência</span>
-                                <span class="text-xl font-light text-white tracking-tighter">R$ 301</span>
+                                <span class="text-xl font-light text-white tracking-tighter" data-dynamic-price data-dynamic-price>R$ 301</span>
                             </div>
                             <a href="https://reservas.moteisfortaleza.com/" class="text-[9px] border border-dragon-primary text-dragon-primary px-6 py-3 rounded-lg font-bold hover:bg-dragon-primary hover:text-white transition-all duration-500 uppercase tracking-widest">Reservar</a>
                         </div>
@@ -264,12 +266,12 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-dragon-dark to-transparent opacity-90"></div>
                     </div>
                     <div class="p-10 flex-grow flex flex-col">
-                        <h3 class="text-xl text-white mb-3 tracking-tight font-medium uppercase">Suíte Inspiração</h3>
+                        <h3 class="text-xl text-white mb-3 tracking-tight font-medium uppercase" data-suite-name="Suíte Inspiração">Suíte Inspiração</h3>
                         <p class="text-dragon-gold text-[9px] mb-8 uppercase tracking-[0.25em] font-semibold">Oriental + Hidro</p>
                         <div class="mt-auto pt-8 border-t border-white/5 flex justify-between items-end">
                             <div>
                                 <span class="block text-[8px] text-gray-600 uppercase font-bold tracking-widest mb-1">Experiência</span>
-                                <span class="text-xl font-light text-white tracking-tighter">R$ 259</span>
+                                <span class="text-xl font-light text-white tracking-tighter" data-dynamic-price data-dynamic-price>R$ 259</span>
                             </div>
                             <a href="https://reservas.moteisfortaleza.com/" class="text-[9px] border border-dragon-primary text-dragon-primary px-6 py-3 rounded-lg font-bold hover:bg-dragon-primary hover:text-white transition-all duration-500 uppercase tracking-widest">Reservar</a>
                         </div>
@@ -283,12 +285,12 @@
                         <div class="absolute inset-0 bg-gradient-to-t from-dragon-dark to-transparent opacity-90"></div>
                     </div>
                     <div class="p-10 flex-grow flex flex-col">
-                        <h3 class="text-xl text-white mb-3 tracking-tight font-medium uppercase">Suíte Sonho</h3>
+                        <h3 class="text-xl text-white mb-3 tracking-tight font-medium uppercase" data-suite-name="Suíte Sonho">Suíte Sonho</h3>
                         <p class="text-dragon-gold text-[9px] mb-8 uppercase tracking-[0.25em] font-semibold">Cama King + Hidro</p>
                         <div class="mt-auto pt-8 border-t border-white/5 flex justify-between items-end">
                             <div>
                                 <span class="block text-[8px] text-gray-600 uppercase font-bold tracking-widest mb-1">Experiência</span>
-                                <span class="text-xl font-light text-white tracking-tighter">R$ 193</span>
+                                <span class="text-xl font-light text-white tracking-tighter" data-dynamic-price data-dynamic-price>R$ 193</span>
                             </div>
                             <a href="https://reservas.moteisfortaleza.com/" class="text-[9px] border border-dragon-primary text-dragon-primary px-6 py-3 rounded-lg font-bold hover:bg-dragon-primary hover:text-white transition-all duration-500 uppercase tracking-widest">Reservar</a>
                         </div>
@@ -425,5 +427,6 @@
             trigger.classList.replace('bg-dragon-primary', 'bg-[#25D366]');
         }
     </script>
+    <script src="../../public-catalog-sync.js?v=3" data-catalog-motel="Motel Dragon"></script>
 </body>
 </html>
