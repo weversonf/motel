@@ -27,6 +27,7 @@
     var aliases = {
       suiteborabora: "suiteborabora",
       suitemalibu: "suitemalibu",
+      suitemalibucancun: "suitemalibucancun",
       suitecancun: "suitecancun",
       suitefortaleza: "suitefortaleza",
       suiteceara: "suiteceara",
@@ -62,21 +63,38 @@
     }).format(numberValue(value));
   }
 
-  function rawSuites(snapshotData) {
-    var catalog = snapshotData && snapshotData.motels && typeof snapshotData.motels === "object"
-      ? snapshotData.motels
-      : snapshotData || {};
+  function rowsFromCentralCatalog(motels, suites, rates) {
+    var motelById = {};
+    var ratesBySuite = {};
     var rows = [];
-    Object.keys(catalog).forEach(function (motelName) {
-      var motel = catalog[motelName];
-      if (!motel || typeof motel !== "object" || !Array.isArray(motel.suites)) return;
-      motel.suites.forEach(function (suite) {
-        if (!suite || typeof suite !== "object") return;
-        var name = suite.nome || suite.name || suite.suite;
-        var price3 = suite.preco3 ?? suite.preco_3h ?? suite.preco3h ?? suite.price3h ?? suite.preco;
-        var price6 = suite.preco6 ?? suite.preco_6h ?? suite.preco6h ?? suite.price6h;
-        var price12 = suite.preco12 ?? suite.preco_12h ?? suite.preco12h ?? suite.price12h ?? suite.precoPernoite;
-        rows.push({ motel: motelKey(motelName), suite: suiteKey(name), price3: numberValue(price3), price6: numberValue(price6), price12: numberValue(price12) });
+
+    motels.forEach(function (motel) {
+      motelById[motel.id] = motel;
+    });
+    rates.forEach(function (rate) {
+      if (rate.ativo === false || !rate.suiteId) return;
+      if (!ratesBySuite[rate.suiteId]) ratesBySuite[rate.suiteId] = [];
+      ratesBySuite[rate.suiteId].push(rate);
+    });
+
+    suites.forEach(function (suite) {
+      if (suite.ativo === false || suite.status === "arquivada") return;
+      var motel = motelById[suite.motelId];
+      if (!motel) return;
+      var suiteRates = ratesBySuite[suite.id] || [];
+      function rate(hours, type) {
+        return suiteRates.find(function (item) {
+          return (item.tipo || "periodo") === (type || "periodo") && Number(item.duracaoHoras) === hours;
+        });
+      }
+      rows.push({
+        motel: motelKey(motel.nome || motel.name || motel.id),
+        suite: suiteKey(suite.nome || suite.name || suite.id),
+        price3: numberValue(rate(3)?.valor ?? suite.preco3),
+        price6: numberValue(rate(6)?.valor ?? suite.preco6),
+        price12: numberValue(rate(12)?.valor ?? suite.preco12),
+        price24: numberValue(rate(24)?.valor ?? suite.preco24),
+        additionalHour: numberValue(rate(1, "fracao_adicional")?.valor ?? suite.fracao)
       });
     });
     return rows;
@@ -85,6 +103,7 @@
   function priceFor(row, duration) {
     if (!row) return 0;
     if (duration === "6h") return row.price6 || row.price3;
+    if (duration === "24h") return row.price24 || row.price12 || row.price3;
     if (duration === "12h" || duration === "pernoite") return row.price12 || row.price3;
     return row.price3;
   }
@@ -105,12 +124,11 @@
       item.preco = money(row.price3);
       item.preco6 = row.price6 ? money(row.price6) : null;
       item.preco12 = row.price12 ? money(row.price12) : null;
-      item.preco24 = row.price12 ? money(row.price12) : item.preco24;
+      item.preco24 = row.price24 ? money(row.price24) : null;
     });
   }
 
   function updateMarkedNodes(rows) {
-    var lowest = Infinity;
     document.querySelectorAll("[data-suite-name]").forEach(function (title) {
       var row = findRow(rows, title.dataset.catalogMotel || motelHint, title.dataset.suiteName || title.textContent);
       if (!row) return;
@@ -120,7 +138,6 @@
       if (priceNode && amount > 0) {
         priceNode.textContent = money(amount);
         priceNode.setAttribute("aria-label", "Preço de " + duration + ": " + money(amount));
-        lowest = Math.min(lowest, row.price3 || amount);
       }
     });
 
@@ -131,7 +148,9 @@
     });
 
     document.querySelectorAll("[data-dynamic-from]").forEach(function (node) {
-      var prices = rows.filter(function (row) { return row.motel === motelKey(node.dataset.catalogMotel || motelHint) && row.price3 > 0; }).map(function (row) { return row.price3; });
+      var prices = rows.filter(function (row) {
+        return row.motel === motelKey(node.dataset.catalogMotel || motelHint) && row.price3 > 0;
+      }).map(function (row) { return row.price3; });
       if (prices.length) node.textContent = money(Math.min.apply(Math, prices));
     });
 
@@ -146,11 +165,23 @@
     }
     try {
       if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      firebase.firestore().collection("config").doc("public_catalog").onSnapshot(function (snapshot) {
-        if (snapshot.exists) updateMarkedNodes(rawSuites(snapshot.data()));
-      }, function (error) {
-        console.warn("Não foi possível atualizar os preços do catálogo central:", error);
-      });
+      var db = firebase.firestore();
+      var state = { motels: null, suites: null, rates: null };
+      function render() {
+        if (!state.motels || !state.suites || !state.rates) return;
+        updateMarkedNodes(rowsFromCentralCatalog(state.motels, state.suites, state.rates));
+      }
+      function subscribe(name, collection) {
+        return db.collection(collection).where("ativo", "==", true).onSnapshot(function (snapshot) {
+          state[name] = snapshot.docs.map(function (doc) { return { id: doc.id, ...doc.data() }; });
+          render();
+        }, function (error) {
+          console.warn("Não foi possível ler " + collection + ":", error);
+        });
+      }
+      subscribe("motels", "catalog_motels");
+      subscribe("suites", "catalog_suites");
+      subscribe("rates", "catalog_rates");
     } catch (error) {
       console.warn("Falha ao iniciar o catálogo central:", error);
     }
