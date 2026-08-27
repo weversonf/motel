@@ -275,7 +275,7 @@
             "Assahi":{cor:"#ff8800",icone:"⛩️",token_asaas:"",suites:[
                 {nome:"Suíte Tahiti",preco3:180,preco12:335,preco24:675,fracao:15,qtde:48,descricao:"TV Smart, Home, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
                 {nome:"Suíte Bora Bora",preco3:208,preco12:384,preco24:760,fracao:17,qtde:14,descricao:"Hidromassagem c/ iluminação Cromoterapia, TV Smart, Poltrona, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
-                {nome:"Suíte Mauí (Cadeirante)",preco3:240,preco12:440,preco24:858,fracao:20,qtde:1,descricao:"TV Smart, Home, 2 Camas, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
+                {nome:"Suíte Mauí (Adaptada)",preco3:240,preco12:440,preco24:858,fracao:20,qtde:1,descricao:"TV Smart, Home, 2 Camas, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
                 {nome:"Suíte Honolulu",preco3:268,preco12:489,preco24:944,fracao:23,qtde:2,descricao:"Área de banho, Poltrona, Ofurô com iluminação Cromoterapia, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:[]},
                 {nome:"Suíte Kauai",preco3:281,preco12:511,preco24:983,fracao:24,qtde:2,descricao:"Hidromassagem c/ iluminação Cromoterapia, Pole Dance, Sauna a Vapor, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro"]},
                 {nome:"Suíte Fórmula 1",preco3:613,preco12:1092,preco24:2000,fracao:51,qtde:1,descricao:"Boate, Duas Camas, Piscina Aquecida, Sonorização, Pole Dance, Hidromassagem c/ iluminação Cromoterapia, Sauna a Vapor, Poltrona Erótica, TV Smart, Ar Split, Secador, Prancha para Cabelo e Portão Automático.",tags:["hidro","piscina"]},
@@ -813,7 +813,7 @@
             div.className = 'ui-box msg bot';
             div.style.background = 'transparent'; div.style.border = 'none';
             motel.suites.forEach(function(s) {
-                var best = s.preco3 <= motel.suites.reduce(function(m, x) { return Math.min(m, x.preco3); }, Infinity) ? ' ⭐ Mais econômica' : '';
+                var best = '';
                 div.innerHTML += '<div class="card-select" style="--cor:' + motel.cor + ';--cor-sombra:' + motel.cor + '66;cursor:default">'
                     + '<div style="padding:10px 12px"><div style="font-weight:bold;color:' + motel.cor + ';font-size:.9rem">' + s.nome + best + '</div>'
                     + (s.descricao ? '<div style="font-size:.7rem;color:#888;margin:2px 0">' + s.descricao + '</div>' : '')
