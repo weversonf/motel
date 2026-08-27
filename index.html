@@ -1219,25 +1219,8 @@
                 + '</div>', 'bot');
         };
         async function carregarMotels() {
-            try {
-                if (db) {
-                    var snap = await db.collection("config").doc("motels").get();
-                    if (snap.exists) {
-                        motels = snap.data().motels;
-                        var tokenOk = motels[Object.keys(motels)[0]]?.token_asaas;
-                        console.log("Motels carregados do Firestore, token_asaas presente:", !!tokenOk);
-                    } else {
-                        console.log("Documento config/motels nao existe no Firestore, usando fallback");
-                        motels = JSON.parse(JSON.stringify(DADOS_PADRAO));
-                    }
-                } else {
-                    console.log("db nao disponivel, usando fallback");
-                    motels = JSON.parse(JSON.stringify(DADOS_PADRAO));
-                }
-            } catch(e) {
-                console.warn("Erro ao carregar motels:", e);
-                motels = JSON.parse(JSON.stringify(DADOS_PADRAO));
-            }
+            // V01 independente: o catálogo local é a única fonte de motéis e suítes.
+            motels = JSON.parse(JSON.stringify(DADOS_PADRAO));
             nextStep();
         }
 

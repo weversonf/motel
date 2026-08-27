@@ -2613,18 +2613,8 @@
     }
 
     async function carregarMotels() {
-        try {
-            const snap = await getDoc(doc(db, "config", "motels"));
-            if (snap.exists()) {
-                dadosMotels = snap.data().motels;
-                migrarDados();
-            } else {
-                dadosMotels = JSON.parse(JSON.stringify(PADRAO.motels));
-            }
-        } catch (e) {
-            console.warn("Erro ao carregar motels:", e);
-            dadosMotels = JSON.parse(JSON.stringify(PADRAO.motels));
-        }
+        // V01 independente: o catálogo local é a única fonte de motéis e suítes.
+        dadosMotels = JSON.parse(JSON.stringify(PADRAO.motels));
     }
 
     function timestampReserva(r) {
