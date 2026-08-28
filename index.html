@@ -1219,8 +1219,23 @@
                 + '</div>', 'bot');
         };
         async function carregarMotels() {
-            // V01 independente: o catálogo local é a única fonte de motéis e suítes.
+            // V01 independente: catálogo, nomes, preços e suítes vêm somente do fallback local.
             motels = JSON.parse(JSON.stringify(DADOS_PADRAO));
+            // O pagamento usa apenas a credencial por motel; ela não substitui o catálogo V01.
+            try {
+                if (db) {
+                    var snap = await db.collection("config").doc("motels").get();
+                    var remoto = snap.exists && snap.data().motels ? snap.data().motels : {};
+                    Object.keys(motels).forEach(function(nome) {
+                        if (remoto[nome] && remoto[nome].token_asaas) {
+                            motels[nome].token_asaas = remoto[nome].token_asaas;
+                        }
+                    });
+                    console.log("V01: catálogo local carregado; credenciais de pagamento preservadas.");
+                }
+            } catch(e) {
+                console.warn("V01: não foi possível carregar credenciais de pagamento:", e);
+            }
             nextStep();
         }
 
