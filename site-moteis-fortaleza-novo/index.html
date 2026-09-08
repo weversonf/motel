@@ -20,6 +20,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.min.css" />
     <style id="main-reservation-widget-styles">
+      .call-to-action::before {
+        width: 100% !important;
+        background: rgba(15, 23, 42, 0.88) !important;
+      }
       .main-reservation-widget {
         position: fixed;
         right: 48px;
@@ -282,20 +286,9 @@
                 <li>
                   <a href="#contato">Contato</a>
                 </li>
-                <li class="submenu dropdown">
-                  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"
-                    >Dashboard<i class="fa fa-angle-down" aria-hidden="true"></i
-                  ></a>
-                  <ul class="dropdown-menu">
-                    <li><a href="dashboard/dashboard.html">Dashboard</a></li>
-                    <li><a href="dashboard/profile.html">Perfil</a></li>
-                    <li><a href="dashboard/appointment.html">Reservas</a></li>
-                    <li><a href="dashboard/events.html">Histórico</a></li>
-                  </ul>
-                </li>
               </ul>
               <div class="nav-btn">
-                <a href="#" class="btn btn-orange">Reserve Agora</a>
+                <a href="https://reservas.moteisfortaleza.com/" target="_blank" class="btn btn-orange">Reserve Agora</a>
               </div>
             </div>
             <!-- /.navbar-collapse -->
@@ -618,26 +611,20 @@
     <!-- Room Ends -->
 
     <!-- Call To Action Starts -->
-    <section class="call-to-action">
-      <div class="container-fluid">
-        <div class="row display-flex">
-          <div class="col-lg-6 col-lg-6">
-            <div class="call-content pad-left-30">
+    <section class="call-to-action" style="padding: 80px 0;">
+      <div class="container">
+        <div class="row text-center justify-content-center">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <div class="call-content" style="padding: 0;">
               <h2 class="white mar-bottom-25">Reserve sua <span>suíte</span> agora</h2>
               <p>
-                Faça sua reserva pelo WhatsApp e garanta o melhor momento para você e seu acompanhante. Todos os nossos motéis estão prontos para receber vocês com conforto e privacidade.
+                Faça sua reserva pelo WhatsApp ou online e garanta o melhor momento para você e seu acompanhante. Todos os nossos motéis estão prontos para receber vocês com conforto e privacidade.
               </p>
               <p>
                 De Fátima a Cajazeiras, passando pelo Luciano Cavalcante e Dionísio Torres — escolha o motel mais próximo e venha viver essa experiência.
               </p>
               <a href="https://reservas.moteisfortaleza.com/" target="_blank" class="btn btn-orange mar-top-20">RESERVAR AGORA <i class="fas fa-angle-double-right"></i></a>
             </div>
-          </div>
-          <div class="col-lg-6 col-lg-6">
-            <div class="call-button">
-              <button type="button" class="play-btn js-video-button" data-video-id="347309186" data-channel="vimeo"><i class="fa fa-play"></i></button>
-            </div>
-            <div class="video-figure"></div>
           </div>
         </div>
       </div>
@@ -680,104 +667,7 @@
     </section>
     <!-- Services Ends -->
 
-    <!-- Reviews Starts -->
-    <section class="reviews">
-      <div class="container">
-        <div class="section-title title-white">
-          <h2>Depoimentos <span>reais</span></h2>
-          <p>
-            Veja o que nossos hóspedes estão dizendo no Google Meu Negócio sobre cada um dos nossos motéis.
-          </p>
-        </div>
-        <div class="review-slider">
-          <div class="slider-item">
-            <div class="slider-image">
-              <img src="images/review1.jpg" alt="Cliente" />
-            </div>
-            <div class="slider-content">
-              <img src="images/logo-assahi.png" alt="Assahi Motel" style="max-width:45px; background:#fff; border-radius:50%; padding:3px; border:2px solid #eee; float:right; margin-left:10px;" />
-              <p>"Melhor motel de Fortaleza! A Suíte Mandala é maravilhosa, o ofuro é enorme e a hidro super relaxante. Atendimento nota mil, recepcionista muito educada. Vou voltar mais vezes com certeza. O café da manhã servido no quarto é um diferencial incrível!"</p>
-              <div class="deal-rating">
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-              </div>
-              <h4>Pedro H.</h4>
-              <span>há 2 semanas no Google - Assahi Motel</span>
-            </div>
-            <div class="slider-quote">
-              <img src="images/icons/quote.png" alt="Aspas" />
-            </div>
-          </div>
-          <div class="slider-item">
-            <div class="slider-image">
-              <img src="images/review2.jpg" alt="Cliente" />
-            </div>
-            <div class="slider-content">
-              <img src="images/logo-dragon.png" alt="Dragon Motel" style="max-width:45px; background:#fff; border-radius:50%; padding:3px; border:2px solid #eee; float:right; margin-left:10px;" />
-              <p>"Simplesmente sensacional! A Suíte Sucesso tem um ofuro gigante, hidro com jatos perfeitos, a cama king-size é muito confortável. O ambiente todo é lindo, decorado com muito bom gosto. Estacionamento amplo e seguro. Recomendo demais!"</p>
-              <div class="deal-rating">
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-              </div>
-              <h4>Lucas M.</h4>
-              <span>há 1 mês no Google - Dragon Motel</span>
-            </div>
-            <div class="slider-quote">
-              <img src="images/icons/quote.png" alt="Aspas" />
-            </div>
-          </div>
-          <div class="slider-item">
-            <div class="slider-image">
-              <img src="images/review1.jpg" alt="Cliente" />
-            </div>
-            <div class="slider-content">
-              <img src="images/logo-spa.png" alt="Spa Urbano" style="max-width:45px; background:#fff; border-radius:50%; padding:3px; border:2px solid #eee; float:right; margin-left:10px;" />
-              <p>"A Suíte Diamante é a melhor suíte que já conheci! Piscina privativa aquecida, hidro com cromoterapia, ofuro perfeito. O atendimento é diferenciado, permitiram check-in mais cedo sem custo extra. Experiência 5 estrelas, superou todas as expectativas!"</p>
-              <div class="deal-rating">
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-              </div>
-              <h4>Camila R.</h4>
-              <span>há 3 semanas no Google - Spa Urbano</span>
-            </div>
-            <div class="slider-quote">
-              <img src="images/icons/quote.png" alt="Aspas" />
-            </div>
-          </div>
-          <div class="slider-item">
-            <div class="slider-image">
-              <img src="images/review2.jpg" alt="Cliente" />
-            </div>
-            <div class="slider-content">
-              <img src="images/logo-dreams.png" alt="Dreams Motel" style="max-width:45px; background:#fff; border-radius:50%; padding:3px; border:2px solid #eee; float:right; margin-left:10px;" />
-              <p>"Ótimo custo-benefício! Pagamos super barato e o quarto era limpo, cheiroso, hidro funcionando perfeitamente. Ar-condicionado gelando bem, TV com todos os canais. Atendimento rápido e educado. Pra quem quer economizar sem abrir mão do conforto, é a melhor escolha!"</p>
-              <div class="deal-rating">
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-                <span class="fa fa-star checked"></span>
-              </div>
-              <h4>Juliana S.</h4>
-              <span>há 2 meses no Google - Dreams Motel</span>
-            </div>
-            <div class="slider-quote">
-              <img src="images/icons/quote.png" alt="Aspas" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Reviews Ends -->
+    <!-- Depoimentos ocultados -->
 
     <!-- Footer Starts -->
     <footer>
