@@ -3287,11 +3287,19 @@
       "responseTime": 218,
       "error": "Redirecionado para página de suspensão: https://moteisfortaleza.com/cgi-sys/suspendedpage.cgi",
       "finalUrl": "https://moteisfortaleza.com/cgi-sys/suspendedpage.cgi"
+    },
+    {
+      "timestamp": "2026-09-14T01:35:52.360Z",
+      "status": "up",
+      "statusCode": 308,
+      "responseTime": 490,
+      "error": null,
+      "finalUrl": "https://www.moteisfortaleza.com/"
     }
   ],
-  "uptimeCount": 404,
+  "uptimeCount": 405,
   "downCount": 7,
-  "lastStatus": "down",
-  "lastChanged": "2026-09-13T05:07:14.047Z",
+  "lastStatus": "up",
+  "lastChanged": "2026-09-14T01:35:52.360Z",
   "startTime": "2026-07-21T14:00:00.000Z"
 }
