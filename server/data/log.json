@@ -5052,11 +5052,19 @@
       "statusCode": 0,
       "responseTime": 236,
       "error": "fetch failed"
+    },
+    {
+      "timestamp": "2026-10-22T23:33:25.053Z",
+      "status": "up",
+      "statusCode": 200,
+      "responseTime": 404,
+      "error": null,
+      "finalUrl": "https://moteisfortaleza.com/"
     }
   ],
-  "uptimeCount": 622,
+  "uptimeCount": 623,
   "downCount": 10,
-  "lastStatus": "down",
-  "lastChanged": "2026-10-22T12:12:12.807Z",
+  "lastStatus": "up",
+  "lastChanged": "2026-10-22T23:33:25.053Z",
   "startTime": "2026-07-21T14:00:00.000Z"
 }
