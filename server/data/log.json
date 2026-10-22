@@ -5045,10 +5045,17 @@
       "statusCode": 0,
       "responseTime": 283,
       "error": "fetch failed"
+    },
+    {
+      "timestamp": "2026-10-22T20:34:33.507Z",
+      "status": "down",
+      "statusCode": 0,
+      "responseTime": 236,
+      "error": "fetch failed"
     }
   ],
   "uptimeCount": 622,
-  "downCount": 9,
+  "downCount": 10,
   "lastStatus": "down",
   "lastChanged": "2026-10-22T12:12:12.807Z",
   "startTime": "2026-07-21T14:00:00.000Z"
