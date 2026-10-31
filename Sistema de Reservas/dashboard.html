@@ -2604,17 +2604,24 @@
 
     var pollingInterval = null;
     function iniciarPollingAuto() {
-        if (pollingInterval) clearInterval(pollingInterval);
-        pollingInterval = setInterval(async function() {
-            try {
-                var antes = reservas.length;
-                await carregarReservas();
-                if (reservas.length !== antes) {
-                    var tabAtiva = document.querySelector('.table-filters');
-                    if (tabAtiva) { popularFiltrosTabela(); renderTabela(); atualizarEstatisticas(); renderCalendario(); }
-                }
-            } catch(e) {}
-        }, 15000);
+        if (pollingInterval) {
+            if (typeof pollingInterval === 'function') pollingInterval();
+            else clearInterval(pollingInterval);
+            pollingInterval = null;
+        }
+        try {
+            pollingInterval = db.collection("reservas").orderBy("criado_em", "desc").limit(200).onSnapshot(function(qs) {
+                reservas = qs.docs.map(function(d) { return { id: d.id, ...d.data() }; });
+                var tabAtiva = document.querySelector('.table-filters');
+                if (tabAtiva) { popularFiltrosTabela(); renderTabela(); }
+                atualizarEstatisticas();
+                renderCalendario();
+            }, function(err) {
+                console.warn("Erro no listener em tempo real de reservas:", err);
+            });
+        } catch(e) {
+            console.warn("Falha ao iniciar listener de reservas:", e);
+        }
     }
 
     function preencherSuite(s) {
@@ -2657,8 +2664,7 @@
 
     async function carregarReservas() {
         try {
-            const q = query(collection(db, "reservas"), orderBy("criado_em", "desc"));
-            const s = await getDocs(q);
+            const s = await db.collection("reservas").orderBy("criado_em", "desc").limit(200).get();
             reservas = s.docs.map(d => ({ id: d.id, ...d.data() }));
         } catch (e) {
             console.warn("Erro ao carregar reservas:", e);
@@ -3383,7 +3389,7 @@
         if (!confirm("Tem certeza que deseja excluir permanentemente esta reserva?")) return;
         try {
             await deleteDoc(doc(db, "reservas", id));
-            await carregarReservas();
+            reservas = reservas.filter(function(x) { return x.id !== id; });
             atualizarEstatisticas();
             renderCalendario();
             renderTabela();
