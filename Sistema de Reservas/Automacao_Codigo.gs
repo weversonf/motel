@@ -11,27 +11,7 @@
 
 function doPost(e) {
   try {
-    var contents = JSON.parse(e.postData.contents);
-
-    // ===== TELEGRAM (webhook do bot) =====
-    if (contents.message && contents.message.chat && contents.message.from) {
-      processarMensagemTelegram(contents.message);
-      return ContentService.createTextOutput(JSON.stringify({ status: 'ok' }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    if (contents.callback_query && contents.callback_query.from && contents.callback_query.message) {
-      processarCallback(contents.callback_query);
-      return ContentService.createTextOutput(JSON.stringify({ status: 'ok' }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-    if (contents.acao === 'notificar_telegram') {
-      enviarParaAutorizados(formatarMensagemTelegram(contents));
-      return ContentService.createTextOutput(JSON.stringify({ status: 'ok' }))
-        .setMimeType(ContentService.MimeType.JSON);
-    }
-
-    // ===== DASHBOARD / CHAT =====
-    const dados = contents;
+    const dados = JSON.parse(e.postData.contents);
     const resposta = { sucesso: false, pagamento_url: '', payment_id: '', external_reference: '', erro: '' };
 
     // Webhook do ASAAS
@@ -41,11 +21,17 @@ function doPost(e) {
 
     // Verificar status de pagamento
     if (dados.acao === 'verificar_pagamento' && dados.payment_id) {
+      if (!dados.token_asaas || !dados.token_asaas.startsWith('$')) {
+        dados.token_asaas = obterTokenMotel(dados.motel, dados.token_asaas);
+      }
       return verificarPagamento(dados);
     }
 
     // [SEGURANÇA] Validar pagamento antes do check-in (chamado pelo dashboard)
-    if (dados.acao === 'checkin_validar' && dados.payment_id && dados.token_asaas) {
+    if (dados.acao === 'checkin_validar' && dados.payment_id) {
+      if (!dados.token_asaas || !dados.token_asaas.startsWith('$')) {
+        dados.token_asaas = obterTokenMotel(dados.motel, dados.token_asaas);
+      }
       return validarCheckin(dados);
     }
 
@@ -61,36 +47,40 @@ function doPost(e) {
         .setMimeType(ContentService.MimeType.JSON);
     }
 
-    // Notificar (email + telegram)
-    if (dados.acao === 'notificar') {
+    // Enviar comprovante por e-mail para o cliente (opcional / LGPD)
+    if (dados.acao === 'enviar_comprovante_cliente' && dados.email_destino) {
+      enviarComprovanteParaCliente(dados);
+      return ContentService.createTextOutput(JSON.stringify({ sucesso: true }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Notificar (Telegram + email)
+    if (dados.acao === 'notificar' || dados.acao === 'notificar_telegram') {
       enviarEmailNotificacao(dados);
-      try {
-        enviarParaAutorizados(formatarMensagemTelegram(dados));
-      } catch(e) {
-        console.warn('[TELEGRAM] Falha ao notificar reserva:', e);
-      }
       return ContentService.createTextOutput(JSON.stringify({ sucesso: true }))
         .setMimeType(ContentService.MimeType.JSON);
     }
 
     // Criar nova cobrança
-    if (dados.token_asaas && dados.token_asaas.startsWith('$')) {
+    const tokenAsaas = obterTokenMotel(dados.motel, dados.token_asaas);
+    if (tokenAsaas && tokenAsaas.startsWith('$')) {
+      dados.token_asaas = tokenAsaas;
       const resultado = criarCobrancaASAAS(dados);
       if (resultado.sucesso) {
         resposta.pagamento_url = resultado.pagamento_url;
         resposta.payment_id = resultado.payment_id;
         resposta.external_reference = resultado.external_reference;
         resposta.sucesso = true;
+        dados.payment_id = resultado.payment_id;
+        dados.status = dados.status || 'aguardando_pagamento';
         enviarEmailNotificacao(dados);
-        try {
-          enviarParaAutorizados(formatarMensagemTelegram(dados));
-        } catch(e) {
-          console.warn('[TELEGRAM] Falha ao notificar nova reserva:', e);
-        }
       } else {
         resposta.erro = 'ERRO_ASAAS: ' + resultado.erro;
         resposta.sucesso = false;
       }
+    } else {
+      resposta.erro = 'Chave do Asaas não configurada para o motel "' + (dados.motel || 'não informado') + '". Configure no painel ou avise a recepção.';
+      resposta.sucesso = false;
     }
 
     return ContentService
@@ -136,6 +126,52 @@ function salvarNaPlanilha(dados) {
     console.warn('Erro ao salvar na planilha:', e);
   }
 }
+
+function obterTokenMotel(motelNome, tokenInformado) {
+  if (tokenInformado && tokenInformado.startsWith('$')) {
+    return tokenInformado;
+  }
+  // 1. Lê exclusivamente das ScriptProperties. Os aliases mantêm
+  // compatibilidade entre o nome exibido no Chat e as chaves já existentes.
+  try {
+    const props = PropertiesService.getScriptProperties();
+    if (props) {
+      const nomeNorm = (motelNome || '').toUpperCase().replace(/[^A-Z0-9]/g, '_');
+      const aliases = {
+        'MOTEL_DRAGON': ['TOKEN_MOTEL_DRAGON', 'TOKEN_DRAGON'],
+        'DRAGON_MOTEL': ['TOKEN_MOTEL_DRAGON', 'TOKEN_DRAGON'],
+        'DRAGON': ['TOKEN_MOTEL_DRAGON', 'TOKEN_DRAGON'],
+        'DREAMS': ['TOKEN_DREAMS'],
+        'ASSAHI': ['TOKEN_ASSAHI'],
+        'SPA_URBANO': ['TOKEN_SPA_URBANO']
+      };
+      const chaves = ['TOKEN_' + nomeNorm].concat(aliases[nomeNorm] || [], [motelNome]);
+      for (var i = 0; i < chaves.length; i++) {
+        const tokenProp = props.getProperty(chaves[i]);
+        if (tokenProp && tokenProp.startsWith('$')) return tokenProp;
+      }
+    }
+  } catch(e) {
+    console.warn('Erro ao ler ScriptProperties:', e);
+  }
+  // 2. Tenta buscar do Firestore config/motels (com cache em memória por execução)
+  try {
+    if (!globalThis._cacheConfigMotels) {
+      globalThis._cacheConfigMotels = firebaseApi('get', '/config/motels', null);
+    }
+    const configSnap = globalThis._cacheConfigMotels;
+    if (configSnap && configSnap.fields && configSnap.fields.motels && configSnap.fields.motels.mapValue) {
+      const motelsMap = configSnap.fields.motels.mapValue.fields;
+      if (motelsMap[motelNome] && motelsMap[motelNome].mapValue && motelsMap[motelNome].mapValue.fields) {
+        const t = motelsMap[motelNome].mapValue.fields.token_asaas ? motelsMap[motelNome].mapValue.fields.token_asaas.stringValue : '';
+        if (t && t.startsWith('$')) return t;
+      }
+    }
+  } catch(e) {}
+
+  return '';
+}
+
 function apiAsaas(token, method, path, body) {
   const isSandbox = token.startsWith('$aact_hmlg_');
   const urlBase = isSandbox ? 'https://api-sandbox.asaas.com/v3' : 'https://api.asaas.com/v3';
@@ -149,364 +185,121 @@ function apiAsaas(token, method, path, body) {
   return JSON.parse(resp.getContentText());
 }
 
-// ===== NOTIFICAÇÃO POR EMAIL =====
+// ===== NOTIFICAÇÃO TELEGRAM + EMAIL =====
 var EMAIL_NOTIFICAR = 'weversonf@gmail.com';
-var LINK_PAINEL_ADMIN = 'https://moteisfortaleza-9dadd.web.app/admin/';
-
-function montarHtmlReserva(dados, confirmado) {
-  var isConfirmado = confirmado || false;
-
-  // Badge do status
-  var badgeTexto = isConfirmado ? 'Pagamento Confirmado' : 'Aguardando Pagamento';
-  var badgeStyle = 'display:inline-block;background:rgba(255,255,255,0.15);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;padding:6px 18px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:0.5px;margin-top:12px;border:1px solid rgba(255,255,255,0.2)';
-
-  // Status badge na tabela
-  var statusStyle = isConfirmado
-    ? 'display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#00d99f,#00b894);color:#fff;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:700'
-    : 'display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#ffc107,#ff9800);color:#fff;padding:4px 14px;border-radius:20px;font-size:13px;font-weight:700';
-  var statusTexto = isConfirmado ? 'Confirmado' : (dados.status === 'pendente_recepcao' ? 'Pendente' : 'Aguardando');
-
-  // Calcular check-out aproximado (hora_chegada + duracao)
-  var checkin = (dados.data_reserva || '?');
-  var horachegada = (dados.hora_chegada || '?');
-  var checkout = (dados.data_reserva || '?');
-  var horasaida = (dados.hora_saida || '?');
-  if (dados.duracao && dados.hora_chegada) {
-    var parts = dados.hora_chegada.split(':');
-    var hh = parseInt(parts[0]) || 0;
-    var mm = parseInt(parts[1]) || 0;
-    var durMatch = dados.duracao.match(/(\d+)h/);
-    if (durMatch) {
-      var addH = parseInt(durMatch[1]);
-      hh += addH;
-      if (hh >= 24) { hh -= 24; }
-      horasaida = String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0');
-    }
-  }
-
-  var html = ''
-    + '<!DOCTYPE html>'
-    + '<html lang="pt-BR">'
-    + '<head>'
-    + '<meta charset="UTF-8">'
-    + '<meta name="viewport" content="width=device-width,initial-scale=1.0">'
-    + '<title>' + (isConfirmado ? 'Nova Reserva Confirmada' : 'Nova Reserva') + ' - Motéis Fortaleza</title>'
-    + '<style>'
-    + 'body{margin:0;padding:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:linear-gradient(135deg,#f9f0f5 0%,#f0e6f6 100%);-webkit-text-size-adjust:none;-ms-text-size-adjust:none}'
-    + 'table{border-spacing:0;border-collapse:collapse}'
-    + 'td{padding:0}'
-    + 'img{border:0;display:block}'
-    + '.wrapper{width:100%;table-layout:fixed;background:linear-gradient(135deg,#f9f0f5 0%,#f0e6f6 100%);padding:40px 0 60px}'
-    + '.main{background:#fff;margin:0 auto;width:100%;max-width:600px;border-spacing:0;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:#2d1b3d;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(210,1,80,0.15),0 8px 20px rgba(0,0,0,0.05)}'
-    + '.header{background:linear-gradient(135deg,#d20150 0%,#a0013d 50%,#7a002e 100%);padding:32px 0 28px;text-align:center;position:relative}'
-    + '.header::after{content:"";position:absolute;bottom:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#ff6b9d,#ffd700,#00d99f,#6c63ff,#ff6b9d);background-size:200% 100%}'
-    + '.header-icon{font-size:48px;display:block;margin-bottom:12px}'
-    + '.logo-text{font-size:22px;font-weight:800;color:#fff;letter-spacing:-0.5px;display:block}'
-    + '.logo-sub{font-size:12px;color:rgba(255,255,255,0.7);letter-spacing:3px;text-transform:uppercase;margin-top:4px;display:block}'
-    + '.content{padding:36px 32px 32px}'
-    + '.content h1{font-size:26px;font-weight:800;color:#1a0a2e;margin:0 0 8px;letter-spacing:-0.3px;line-height:1.2}'
-    + '.content .subtitle{font-size:15px;color:#7a5a8a;line-height:1.6;margin:0 0 28px}'
-    + '.content .subtitle strong{color:#d20150}'
-    + '.info-grid{background:#faf7fc;border-radius:16px;padding:4px 0;margin:20px 0;border:1px solid #f0e8f4}'
-    + '.info-row{padding:14px 20px;border-bottom:1px solid #f0e8f4}'
-    + '.info-row:last-child{border-bottom:none}'
-    + '.info-label{font-size:12px;font-weight:600;color:#a080b0;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px}'
-    + '.info-value{font-size:16px;font-weight:600;color:#1a0a2e}'
-    + '.info-value .muted{color:#7a5a8a;font-weight:400}'
-    + '.button-container{text-align:center;margin:32px 0 8px}'
-    + '.button{background:linear-gradient(135deg,#d20150 0%,#a0013d 100%);color:#fff;padding:15px 36px;border-radius:12px;text-decoration:none;font-weight:700;font-size:15px;display:inline-block;box-shadow:0 4px 16px rgba(210,1,80,0.3);transition:all .2s;letter-spacing:.3px}'
-    + '.button-secondary{background:#f5f0f8;color:#d20150;padding:12px 28px;border-radius:12px;text-decoration:none;font-weight:600;font-size:13px;display:inline-block;margin-top:10px}'
-    + '.footer{background:#1a0a2e;padding:32px 32px 28px;text-align:center}'
-    + '.footer-logo{font-size:18px;font-weight:800;color:#fff;letter-spacing:-0.3px}'
-    + '.footer p{margin:12px 0 0;padding:0;font-size:12px;color:rgba(255,255,255,0.5);line-height:1.6}'
-    + '.footer a{color:#ff6b9d;text-decoration:none;font-weight:600}'
-    + '.footer .social-links{margin:16px 0 0}'
-    + '.footer .social-links a{display:inline-block;width:32px;height:32px;line-height:32px;background:rgba(255,255,255,0.08);border-radius:50%;margin:0 4px;font-size:14px;color:rgba(255,255,255,0.6);text-decoration:none}'
-    + '@media only screen and (max-width:480px){.content{padding:28px 20px 24px}.content h1{font-size:22px}.info-row{padding:12px 16px}.footer{padding:24px 20px 20px}.header{padding:24px 0 20px}}'
-    + '</style>'
-    + '</head>'
-    + '<body>'
-    + '<center class="wrapper">'
-    + '<table class="main" width="100%">'
-    + '<tr>'
-    + '<td class="header">'
-    + '<span class="header-icon">' + (isConfirmado ? '&#9989;' : '&#128276;') + '</span>'
-    + '<span class="logo-text">Motéis Fortaleza</span>'
-    + '<span class="logo-sub">Sistema de Reservas</span>'
-    + '<span class="badge" style="' + badgeStyle + '">' + badgeTexto + '</span>'
-    + '</td>'
-    + '</tr>'
-    + '<tr>'
-    + '<td class="content">'
-    + '<h1>' + (isConfirmado ? 'Nova Reserva Confirmada' : 'Nova Reserva Recebida') + '</h1>'
-    + '<p class="subtitle">'
-    + 'Prezado(a) <strong>Administrador(a)</strong>,<br>'
-    + (isConfirmado
-      ? 'Uma nova reserva foi realizada e o pagamento foi <strong>confirmado com sucesso</strong>. Abaixo estão os detalhes completos:'
-      : 'Uma nova reserva foi realizada e est\u00e1 aguardando pagamento. Abaixo est\u00e3o os detalhes:')
-    + '</p>'
-    + '<div class="info-grid">'
-    + '<div class="info-row"><div class="info-label">&#128279; Protocolo</div><div class="info-value">#' + (dados.reserva_id || dados.payment_id || '...') + '</div></div>'
-    + '<div class="info-row"><div class="info-label">&#127968; Motel / Suíte</div><div class="info-value">' + (dados.motel || '?') + ' &#8212; <span class="muted">' + (dados.suite || '?') + '</span></div></div>'
-    + '<div class="info-row"><div class="info-label">&#128197; Check-in</div><div class="info-value">' + checkin + ' &#8212; <span class="muted">' + horachegada + '</span></div></div>'
-    + '<div class="info-row"><div class="info-label">&#128197; Check-out</div><div class="info-value">' + checkout + ' &#8212; <span class="muted">' + horasaida + '</span></div></div>'
-    + '<div class="info-row"><div class="info-label">&#128101; H\u00f3spedes</div><div class="info-value">' + (dados.hospedes || '1') + '</div></div>'
-    + '<div class="info-row"><div class="info-label">&#128176; Valor Total</div><div class="info-value">R$ <strong>' + (dados.preco || '0') + '</strong></div></div>'
-    + '<div class="info-row"><div class="info-label">&#128994; Status do Pagamento</div><div class="info-value"><span style="' + statusStyle + '">' + (isConfirmado ? '&#10003;' : '&#9203;') + ' ' + statusTexto + '</span></div></div>'
-    + '</div>'
-    + '<p class="subtitle" style="margin-bottom:0;font-size:14px;">Para gerenciar esta reserva ou visualizar mais detalhes, acesse o painel administrativo:</p>'
-    + '<div class="button-container">'
-    + '<a href="' + LINK_PAINEL_ADMIN + '" class="button">&#128279; Acessar Painel Administrativo</a><br>'
-    + '<a href="' + LINK_PAINEL_ADMIN + '" class="button-secondary">&#128196; Ver Detalhes da Reserva</a>'
-    + '</div>'
-    + '</td>'
-    + '</tr>'
-    + '<tr>'
-    + '<td class="footer">'
-    + '<div class="footer-logo">Motéis Fortaleza</div>'
-    + '<p>Este e-mail foi enviado automaticamente pelo nosso sistema de gest\u00e3o de reservas.<br>Para suporte, entre em contato com a equipe de TI.</p>'
-    + '<div class="social-links">'
-    + '<a href="#">&#120143;</a>'
-    + '<a href="#">&#120156;</a>'
-    + '<a href="#">&#120157;</a>'
-    + '</div>'
-    + '<p style="margin-top:16px;font-size:11px;color:rgba(255,255,255,0.3);">&copy; 2026 Motéis Fortaleza. Todos os direitos reservados.</p>'
-    + '</td>'
-    + '</tr>'
-    + '</table>'
-    + '</center>'
-    + '</body>'
-    + '</html>';
-
-  return html;
-}
-
-// ===== TELEGRAM (comandos do bot e alertas de reserva) =====
-// Configure TELEGRAM_BOT_TOKEN em Configurações do Projeto > Propriedades do Script no Google Apps Script
 var IDS_AUTORIZADOS_PADRAO = ['8649472512', '6802504310'];
 
 function obterTokenTelegram() {
-  return (PropertiesService.getScriptProperties().getProperty('TELEGRAM_BOT_TOKEN') || '').trim();
+  try {
+    return (PropertiesService.getScriptProperties().getProperty('TELEGRAM_BOT_TOKEN') || '').trim();
+  } catch (e) {
+    return '';
+  }
 }
 
 function obterIdsAutorizados() {
-  var extra = (PropertiesService.getScriptProperties().getProperty('TELEGRAM_CHAT_ID') || '').trim();
   var lista = IDS_AUTORIZADOS_PADRAO.slice();
-  if (extra) {
-    extra.split(',').forEach(function(id) {
-      var limpo = id.trim();
-      if (limpo && lista.indexOf(limpo) === -1) lista.push(limpo);
-    });
-  }
+  try {
+    var extra = (PropertiesService.getScriptProperties().getProperty('TELEGRAM_CHAT_ID') || '').trim();
+    if (extra) {
+      extra.split(',').forEach(function(id) {
+        var limpo = id.trim();
+        if (limpo && lista.indexOf(limpo) === -1) lista.push(limpo);
+      });
+    }
+  } catch (e) {}
   return lista;
 }
 
-function processarMensagemTelegram(msg) {
-  var chatId = msg.chat.id;
-  var userId = msg.from.id.toString();
-  var texto = msg.text || '';
-
-  if (obterIdsAutorizados().indexOf(userId) === -1) {
-    enviarMensagem(chatId, "Acesso negado.");
-    return;
-  }
-
-  if (texto === '/start') {
-    enviarMensagem(chatId, 'Bot Rose Online\n\nComandos disponíveis:\n'
-      + '/conferirdia — Relatório financeiro\n'
-      + '/resumo — Resumo do dia\n'
-      + '/test — Testar bot');
-  } else if (texto === '/conferirdia') {
-    enviarRelatorioComBotoes(chatId);
-  } else if (texto === '/resumo') {
-    enviarResumoDoDia(chatId);
-  } else if (texto === '/test') {
-    testarTelegram(chatId);
-  }
-}
-
-function processarCallback(callback) {
-  var chatId = callback.message.chat.id;
-  var userId = callback.from.id.toString();
-  var data = callback.data;
-
-  if (obterIdsAutorizados().indexOf(userId) === -1) {
-    enviarMensagem(chatId, "Acesso negado.");
-    return;
-  }
-
-  if (data === 'conferir_asaas') {
-    enviarMensagem(chatId, "Conferindo pagamentos no Asaas... (em breve)");
-  } else if (data === 'conferir_recepcao') {
-    enviarMensagem(chatId, "Buscando pendentes da recepção... (em breve)");
-  }
-}
-
-function enviarRelatorioComBotoes(chatId) {
-  var token = obterTokenTelegram(); if (!token) return; var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
-  var payload = {
-    chat_id: chatId,
-    text: 'Relatório Financeiro:',
-    reply_markup: {
-      inline_keyboard: [
-        [{ text: "Conferir Pagamentos Asaas", callback_data: 'conferir_asaas' }],
-        [{ text: "Pendentes Recepção", callback_data: 'conferir_recepcao' }]
-      ]
-    }
-  };
-  UrlFetchApp.fetch(url, {
-    method: 'post',
-    payload: JSON.stringify(payload),
-    contentType: 'application/json'
-  });
-}
-
 function enviarParaAutorizados(mensagem) {
-  var token = obterTokenTelegram(); if (!token) return; var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
+  var token = obterTokenTelegram();
+  if (!token) {
+    console.warn('[TELEGRAM] TELEGRAM_BOT_TOKEN não configurado nas ScriptProperties.');
+    return;
+  }
+  var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
   obterIdsAutorizados().forEach(function(chatId) {
-    UrlFetchApp.fetch(url, {
-      method: 'post',
-      payload: { chat_id: chatId, text: mensagem, parse_mode: 'HTML' },
-      muteHttpExceptions: true
-    });
+    try {
+      UrlFetchApp.fetch(url, {
+        method: 'post',
+        contentType: 'application/json',
+        payload: JSON.stringify({ chat_id: String(chatId).trim(), text: mensagem, parse_mode: 'HTML' }),
+        muteHttpExceptions: true
+      });
+    } catch (e) {
+      console.warn('[TELEGRAM] Falha ao enviar para ' + chatId + ':', e.message);
+    }
   });
 }
 
-function enviarMensagem(chatId, texto) {
-  var token = obterTokenTelegram(); if (!token) return; var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
-  UrlFetchApp.fetch(url, {
-    method: 'post',
-    payload: { chat_id: chatId, text: texto },
-    muteHttpExceptions: true
-  });
-}
-
-function enviarResumoDoDia(chatId) {
-  var hoje = new Date();
-  var dataStr = hoje.getFullYear() + '-'
-    + ('0' + (hoje.getMonth() + 1)).slice(-2) + '-'
-    + ('0' + hoje.getDate()).slice(-2);
-
-  try {
-    var resultado = firebaseApi('post', ':runQuery', {
-      structuredQuery: {
-        from: [{ collectionId: 'reservas' }],
-        where: {
-          fieldFilter: {
-            field: { fieldPath: 'data_reserva' },
-            op: 'EQUAL',
-            value: { stringValue: dataStr }
-          }
-        },
-        limit: 200
-      }
-    });
-
-    if (!resultado || resultado.error) {
-      enviarMensagem(chatId, 'Erro ao buscar dados.');
-      return;
-    }
-
-    var total = 0, receita = 0;
-    var p = {}, m = {};
-
-    for (var i = 0; i < resultado.length; i++) {
-      if (!resultado[i].document) continue;
-      var f = resultado[i].document.fields;
-      var st = f.status ? f.status.stringValue : 'desconhecido';
-      var ml = f.motel ? f.motel.stringValue : 'Desconhecido';
-      var pr = f.preco ? parseFloat(f.preco.stringValue || f.preco.integerValue || 0) : 0;
-
-      p[st] = (p[st] || 0) + 1;
-      m[ml] = (m[ml] || 0) + 1;
-      if (st === 'confirmado' || st === 'check_in') receita += pr;
-      total++;
-    }
-
-    var msg = '<b>Resumo do Dia</b>';
-    msg += '\n' + dataStr.split('-').reverse().join('/');
-    msg += '\n━━━━━━━━━━━━━━━';
-    msg += '\n\n<b>Total:</b> ' + total;
-    msg += '\n\n<b>Por status:</b>';
-    if (p['confirmado'])           msg += '\nConfirmado: ' + p['confirmado'];
-    if (p['check_in'])             msg += '\nCheck-in: ' + p['check_in'];
-    if (p['aguardando_pagamento']) msg += '\nAguardando PIX: ' + p['aguardando_pagamento'];
-    if (p['pendente_cartao'])      msg += '\nPendente Cartão: ' + p['pendente_cartao'];
-    if (p['pendente_recepcao'])    msg += '\nPendente Recepção: ' + p['pendente_recepcao'];
-    if (p['cancelado'])            msg += '\nCancelado: ' + p['cancelado'];
-
-    msg += '\n\n<b>Por motel:</b>';
-    var mk = Object.keys(m).sort();
-    for (var j = 0; j < mk.length; j++)
-      msg += '\n' + mk[j] + ': ' + m[mk[j]];
-
-    msg += '\n\n<b>Receita:</b> R$ ' + receita.toFixed(2).replace('.', ',');
-
-    var token = obterTokenTelegram(); if (!token) return; var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
-    UrlFetchApp.fetch(url, {
-      method: 'post',
-      payload: { chat_id: chatId, text: msg, parse_mode: 'HTML' },
-      muteHttpExceptions: true
-    });
-  } catch(e) {
-    enviarMensagem(chatId, 'Erro ao gerar resumo: ' + e.message);
-  }
-}
-
-function testarTelegram(chatId) {
-  var token = obterTokenTelegram(); if (!token) return; var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
-  try {
-    var resp = UrlFetchApp.fetch(url, {
-      method: 'post',
-      payload: { chat_id: chatId, text: 'TESTE OK - Bot funcionando!' },
-      muteHttpExceptions: true
-    });
-    console.log('[TEST] Resposta Telegram:', resp.getContentText());
-  } catch(e) {
-    console.error('[TEST] Erro ao chamar Telegram:', e.message);
-  }
-}
-
-function formatarMensagemTelegram(dados) {
+function formatarMensagemTelegram(dados, tituloPersonalizado) {
   var statusTexto = '';
   switch (dados.status) {
-    case 'confirmado': statusTexto = 'Confirmado'; break;
-    case 'pendente_cartao': statusTexto = 'Pendente (Cartão)'; break;
-    case 'pendente_recepcao': statusTexto = 'Pendente (Recepção)'; break;
-    case 'aguardando_pagamento': statusTexto = 'Aguardando PIX'; break;
-    default: statusTexto = dados.status || 'Desconhecido';
+    case 'confirmado': statusTexto = '✅ Confirmado (Pago)'; break;
+    case 'pendente_cartao': statusTexto = '⏳ Pendente (Cartão)'; break;
+    case 'pendente_recepcao': statusTexto = '⏳ Pendente (Recepção)'; break;
+    case 'aguardando_pagamento': statusTexto = '⏳ Aguardando PIX'; break;
+    default: statusTexto = dados.status || 'Aguardando PIX';
   }
-
-  return '<b>Nova Reserva</b>'
-    + '\nNome: ' + (dados.cliente_nome || '?')
-    + '\nCPF: ' + (dados.cliente_cpf || '?')
-    + '\nMotel: ' + (dados.motel || '?')
-    + '\nSuite: ' + (dados.suite || '?')
-    + '\nData: ' + (dados.data_reserva || '?')
-    + '\nHorario: ' + (dados.hora_chegada || '?')
-    + '\nPeriodo: ' + (dados.duracao || '?')
-    + '\nValor: R$ ' + (dados.preco || '0') + ',00'
-    + '\nProtocolo: ' + (dados.payment_id || '?')
-    + '\nStatus: ' + statusTexto;
+  var titulo = tituloPersonalizado || (dados.status === 'confirmado' ? '✅ <b>Reserva Confirmada (PIX Pago)</b>' : '🔔 <b>Nova Reserva Iniciada</b>');
+  return titulo
+    + '\n🏨 Motel: <b>' + (dados.motel || '?') + '</b>'
+    + '\n🛏 Suíte: ' + (dados.suite || '?')
+    + '\n👤 Cliente: ' + (dados.cliente_nome || '?')
+    + (dados.cliente_cpf ? '\n🆔 CPF: ' + dados.cliente_cpf : '')
+    + (dados.data_reserva ? '\n📅 Data: ' + dados.data_reserva + (dados.hora_chegada ? ' às ' + dados.hora_chegada : '') : '')
+    + (dados.duracao ? '\n⏳ Período: ' + dados.duracao : '')
+    + '\n💰 Valor: R$ ' + (dados.preco || '0')
+    + (dados.payment_id ? '\n📋 Pagamento: ' + dados.payment_id : '')
+    + '\n📌 Status: ' + statusTexto;
 }
 
 function enviarEmailNotificacao(dados) {
   try {
+    enviarParaAutorizados(formatarMensagemTelegram(dados));
+  } catch (e) {
+    console.warn('[TELEGRAM] Erro ao notificar reserva:', e);
+  }
+  try {
+    var enviarEmail = PropertiesService.getScriptProperties().getProperty('ENVIAR_EMAIL');
+    if (enviarEmail === 'false') return;
+    var statusTexto = dados.status === 'pendente_recepcao' ? 'Pendente (Recepção)' : (dados.status === 'pendente_cartao' ? 'Pendente (Cartão)' : 'Aguardando PIX');
     var assunto = 'Nova Reserva - ' + (dados.motel || 'Motel') + ' (' + (dados.suite || '?') + ')';
-    var htmlBody = montarHtmlReserva(dados, false);
-    MailApp.sendEmail(EMAIL_NOTIFICAR, assunto, 'Para visualizar esta mensagem, use um cliente de e-mail com suporte a HTML.', {htmlBody: htmlBody});
+    var corpo = 'NOVA RESERVA\n━━━━━━━━━━━━━━\n\n'
+      + 'Motel: ' + (dados.motel || '?') + '\n'
+      + 'Suíte: ' + (dados.suite || '?') + '\n'
+      + 'Período: ' + (dados.duracao || '?') + '\n'
+      + 'Valor: R$ ' + (dados.preco || '0') + '\n\n'
+      + 'Cliente: ' + (dados.cliente_nome || '?') + '\n'
+      + 'CPF: ' + (dados.cliente_cpf || '?') + '\n'
+      + 'Data: ' + (dados.data_reserva || '?') + ' às ' + (dados.hora_chegada || '?') + '\n\n'
+      + 'Status: ' + statusTexto;
+    MailApp.sendEmail(EMAIL_NOTIFICAR, assunto, corpo);
   } catch(e) {
-    console.warn('Email fail:', e);
+    console.warn('Email fail:', e.message);
   }
 }
 
-function enviarEmailConfirmacao(dados) {
+function enviarComprovanteParaCliente(dados) {
   try {
-    var assunto = '✅ Pagamento Confirmado - ' + (dados.motel || 'Motel') + ' (' + (dados.suite || '?') + ')';
-    var htmlBody = montarHtmlReserva(dados, true);
-    MailApp.sendEmail(EMAIL_NOTIFICAR, assunto, 'Para visualizar esta mensagem, use um cliente de e-mail com suporte a HTML.', {htmlBody: htmlBody});
+    const assunto = '✅ Comprovante da sua Pré-Reserva - ' + (dados.motel || 'Motéis Fortaleza') + ' (' + (dados.suite || '') + ')';
+    const htmlBody = '<div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;border:1px solid #e0d0e8;border-radius:14px;padding:20px;background:#fff">'
+      + '<h2 style="color:#d20150;text-align:center;margin-top:0">Pré-Reserva Confirmada</h2>'
+      + '<p style="text-align:center;font-size:14px;color:#555">Olá <b>' + (dados.cliente_nome || 'Cliente') + '</b>, aqui está a via de comprovação da sua reserva.</p>'
+      + '<div style="background:#fdf2f8;border-radius:10px;padding:15px;margin:15px 0">'
+      + '<p style="margin:5px 0"><b>Motel:</b> ' + (dados.motel || '') + '</p>'
+      + '<p style="margin:5px 0"><b>Suíte:</b> ' + (dados.suite || '') + '</p>'
+      + '<p style="margin:5px 0"><b>Período:</b> ' + (dados.duracao || '') + '</p>'
+      + '<p style="margin:5px 0"><b>Data:</b> ' + (dados.data_reserva || '') + '</p>'
+      + '<p style="margin:5px 0"><b>Horário:</b> ' + (dados.hora_chegada || '') + '</p>'
+      + '<p style="margin:5px 0"><b>Valor:</b> R$ ' + (dados.preco || '0') + ',00</p>'
+      + '<p style="margin:5px 0"><b>Protocolo:</b> ' + (dados.protocolo || '') + '</p>'
+      + '</div>'
+      + '<p style="text-align:center;font-size:13px;color:#888">Apresente seu CPF e este protocolo na recepção ao chegar.</p>'
+      + '</div>';
+    MailApp.sendEmail(dados.email_destino, assunto, 'Sua pré-reserva foi confirmada com sucesso.', { htmlBody: htmlBody });
   } catch(e) {
-    console.warn('Email confirmacao fail:', e);
+    console.warn('Erro ao enviar e-mail para cliente:', e);
   }
 }
 
@@ -532,20 +325,19 @@ function criarCobrancaASAAS(dados) {
     const customerId = criarOuBuscarCliente(token, dados.cliente_nome, dados.cliente_cpf);
 
     const agora = new Date();
-    const externalRef = dados.cliente_cpf.replace(/\D/g, '') + '_' + agora.getTime();
+    const externalRef = dados.reserva_id ? String(dados.reserva_id) : (dados.cliente_cpf.replace(/\D/g, '') + '_' + agora.getTime());
 
-    // [FIX 1] dueDate = agora + 15 minutos para que o link PIX expire rapidamente
+    // [FIX] O Asaas aceita apenas a data (YYYY-MM-DD) em dueDate
     // Isso evita que links de pagamento fiquem válidos por dias
-    const dataExpiracao = new Date(agora.getTime() + 15 * 60 * 1000);
-    const dueDateISO = dataExpiracao.toISOString(); // formato YYYY-MM-DDTHH:mm:ss.sssZ
+    const dueDateStr = agora.toISOString().slice(0, 10);
 
-    console.log('[ASAAS] Criando cobrança | cliente:', dados.cliente_nome, '| valor: R$', dados.preco, '| expira em:', dueDateISO);
+    console.log('[ASAAS] Criando cobrança | cliente:', dados.cliente_nome, '| valor: R$', dados.preco, '| expira em:', dueDateStr);
 
     const cobranca = apiAsaas(token, 'post', '/payments', {
       customer: customerId,
       billingType: 'PIX',
       value: Number(dados.preco),
-      dueDate: dueDateISO,
+      dueDate: dueDateStr,
       description: dados.motel + ' - ' + dados.suite + ' (' + dados.duracao + ')',
       externalReference: externalRef,
       notificationDisabled: false
@@ -580,22 +372,63 @@ function firebaseApi(method, path, body) {
   return JSON.parse(resp.getContentText());
 }
 
-function buscarReservaPorCPF(cpf, statusAlvo) {
-  const nums = cpf.replace(/\D/g, '');
-  const cpfMascarado = nums.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-  // Se statusAlvo for 'check_in', retorna null (nunca cancela check-in)
-  if (statusAlvo === 'check_in') return null;
+function buscarReservaPorPaymentId(paymentId) {
+  if (!paymentId) return null;
   const query = {
     structuredQuery: {
       where: {
-        compositeFilter: {
-          op: 'AND',
-          filters: [
-            { fieldFilter: { field: { fieldPath: 'cliente_cpf' }, op: 'EQUAL', value: { stringValue: cpfMascarado } } },
-            { fieldFilter: { field: { fieldPath: 'status' }, op: 'EQUAL', value: { stringValue: statusAlvo } } }
-          ]
-        }
+        fieldFilter: { field: { fieldPath: 'payment_id' }, op: 'EQUAL', value: { stringValue: String(paymentId) } }
       },
+      limit: 1
+    }
+  };
+  const result = firebaseApi('post', ':runQuery', query);
+  if (result && result.length > 0 && result[0].document) {
+    return {
+      id: result[0].document.name.split('/').pop(),
+      data: result[0].document.fields
+    };
+  }
+  return null;
+}
+
+function buscarReservaPorDocId(docId) {
+  if (!docId) return null;
+  const result = firebaseApi('get', '/reservas/' + docId, null);
+  if (result && result.fields) {
+    return {
+      id: docId,
+      data: result.fields
+    };
+  }
+  return null;
+}
+
+function buscarReservaPorCPF(cpf, statusAlvo) {
+  const nums = cpf.replace(/\D/g, '');
+  const cpfMascarado = nums.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  if (statusAlvo === 'check_in') return null;
+  
+  var filter;
+  if (statusAlvo) {
+    filter = {
+      compositeFilter: {
+        op: 'AND',
+        filters: [
+          { fieldFilter: { field: { fieldPath: 'cliente_cpf' }, op: 'EQUAL', value: { stringValue: cpfMascarado } } },
+          { fieldFilter: { field: { fieldPath: 'status' }, op: 'EQUAL', value: { stringValue: statusAlvo } } }
+        ]
+      }
+    };
+  } else {
+    filter = {
+      fieldFilter: { field: { fieldPath: 'cliente_cpf' }, op: 'EQUAL', value: { stringValue: cpfMascarado } }
+    };
+  }
+
+  const query = {
+    structuredQuery: {
+      where: filter,
       limit: 1
     }
   };
@@ -612,26 +445,130 @@ function buscarReservaPorCPF(cpf, statusAlvo) {
   return null;
 }
 
-// [FIX 3 + 4] atualizarStatusReserva agora registra logs de auditoria e aceita 'origem'
-function atualizarStatusReserva(docId, novoStatus, origem) {
+// [ATUALIZAÇÃO DE STATUS ROBUSTA] Registra logs de auditoria e garante sincronização Asaas
+function atualizarStatusReserva(docId, novoStatus, origem, statusAsaas, paymentId) {
   const origemFinal = origem || 'desconhecido';
   const agora = new Date().toISOString();
 
-  // Log de auditoria — visível no Stackdriver (Apps Script > Execuções)
   console.log('[AUDIT] Mudança de status | doc:', docId, '| novo status:', novoStatus, '| origem:', origemFinal, '| timestamp:', agora);
 
-  const path = '/reservas/' + docId
+  var path = '/reservas/' + docId
     + '?updateMask.fieldPaths=status'
     + '&updateMask.fieldPaths=status_atualizado_em'
     + '&updateMask.fieldPaths=status_origem';
 
-  const fields = {
+  var isPago = (novoStatus === 'confirmado');
+  var fields = {
     status:               { stringValue: novoStatus },
     status_atualizado_em: { stringValue: agora },
     status_origem:        { stringValue: origemFinal }
   };
 
+  if (isPago) {
+    // Confirmacao: marca explicitamente o pagamento.
+    path += '&updateMask.fieldPaths=status_pagamento'
+      + '&updateMask.fieldPaths=asaas_paid';
+    fields.status_pagamento = { stringValue: 'pago' };
+    fields.asaas_paid       = { booleanValue: true };
+  } else {
+    // Cancelamento: NAO apaga as marcas de pagamento; registra o status anterior.
+    var statusAnterior = '';
+    try {
+      var atual = firebaseApi('get', '/reservas/' + docId, null);
+      if (atual && atual.fields && atual.fields.status && atual.fields.status.stringValue) {
+        statusAnterior = atual.fields.status.stringValue;
+      }
+    } catch (e) {
+      console.warn('[AUDIT] Nao foi possivel ler o status anterior:', e.message);
+    }
+    path += '&updateMask.fieldPaths=status_anterior';
+    fields.status_anterior = { stringValue: statusAnterior };
+  }
+
+  if (statusAsaas) {
+    path += '&updateMask.fieldPaths=status_asaas_confirmado';
+    fields.status_asaas_confirmado = { stringValue: String(statusAsaas) };
+  }
+  if (paymentId) {
+    path += '&updateMask.fieldPaths=payment_id';
+    fields.payment_id = { stringValue: String(paymentId) };
+  }
+
   return firebaseApi('patch', path, { fields: fields });
+}
+
+// ===== REGRA CENTRAL DE CANCELAMENTO =====
+// Uma reserva jamais pode ser cancelada por cronômetro local. Antes de aceitar
+// um evento terminal, consultamos todas as cobranças ligadas à reserva no Asaas.
+// Caso a consulta falhe ou fique ambígua, preservamos a reserva para auditoria.
+var STATUS_ASAAS_PAGO = ['RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'];
+var STATUS_ASAAS_CANCELAVEL = ['OVERDUE', 'DELETED'];
+
+function valorCampo(fields, nome) {
+  if (!fields || !fields[nome]) return '';
+  var valor = fields[nome];
+  return valor.stringValue || valor.integerValue || valor.doubleValue || '';
+}
+
+function reservaJaEstaPaga(fields) {
+  var status = String(valorCampo(fields, 'status')).toLowerCase();
+  var pagamento = String(valorCampo(fields, 'status_pagamento')).toLowerCase();
+  var asaas = String(valorCampo(fields, 'status_asaas_confirmado')).toUpperCase();
+  return status === 'confirmado' || pagamento === 'pago'
+    || (fields && fields.asaas_paid && fields.asaas_paid.booleanValue === true)
+    || STATUS_ASAAS_PAGO.indexOf(asaas) >= 0;
+}
+
+function avaliarCancelamentoNoAsaas(reserva, payment) {
+  var fields = reserva && reserva.data ? reserva.data : {};
+  if (!reserva || !reserva.id) return { seguroParaCancelar: false, motivo: 'reserva_nao_encontrada' };
+  if (reservaJaEstaPaga(fields)) return { seguroParaCancelar: false, pago: true, motivo: 'pagamento_local' };
+
+  var motel = valorCampo(fields, 'motel');
+  var token = obterTokenMotel(motel, valorCampo(fields, 'token_asaas'));
+  if (!token || !token.startsWith('$')) return { seguroParaCancelar: false, motivo: 'token_indisponivel' };
+
+  var cobrancas = [];
+  var referencia = (payment && payment.externalReference) || reserva.id;
+  try {
+    var lista = apiAsaas(token, 'get', '/payments?externalReference=' + encodeURIComponent(referencia) + '&limit=50');
+    cobrancas = (lista && Array.isArray(lista.data)) ? lista.data : [];
+
+    // Reservas antigas podem não ter externalReference igual ao docId.
+    if (!cobrancas.length && payment && payment.id) {
+      var individual = apiAsaas(token, 'get', '/payments/' + payment.id);
+      if (individual && individual.id) cobrancas = [individual];
+    }
+  } catch (e) {
+    console.warn('[ASAAS] Falha ao validar cancelamento; reserva preservada | doc:', reserva.id, '| erro:', e.message);
+    return { seguroParaCancelar: false, motivo: 'consulta_asaas_falhou' };
+  }
+
+  if (!cobrancas.length) return { seguroParaCancelar: false, motivo: 'cobranca_nao_localizada' };
+
+  var paga = null;
+  for (var i = 0; i < cobrancas.length; i++) {
+    if (STATUS_ASAAS_PAGO.indexOf(String(cobrancas[i].status || '').toUpperCase()) >= 0) {
+      paga = cobrancas[i];
+      break;
+    }
+  }
+  if (paga) {
+    atualizarStatusReserva(reserva.id, 'confirmado', 'reconciliacao_asaas_pagamento_tardio', paga.status, paga.id);
+    return { seguroParaCancelar: false, pago: true, motivo: 'pagamento_asaas', payment: paga };
+  }
+
+  var cobrancaDoEvento = null;
+  for (var j = 0; j < cobrancas.length; j++) {
+    if (payment && cobrancas[j].id === payment.id) { cobrancaDoEvento = cobrancas[j]; break; }
+  }
+  if (!cobrancaDoEvento) return { seguroParaCancelar: false, motivo: 'evento_nao_corresponde_a_cobranca' };
+
+  var statusAtual = String(cobrancaDoEvento.status || '').toUpperCase();
+  return {
+    seguroParaCancelar: STATUS_ASAAS_CANCELAVEL.indexOf(statusAtual) >= 0,
+    motivo: statusAtual || 'status_indefinido'
+  };
 }
 
 // ===== WEBHOOK ASAAS =====
@@ -647,66 +584,82 @@ function processarWebhook(dados) {
 
     console.log('[WEBHOOK] Evento recebido:', evento, '| payment_id:', payment.id, '| status:', payment.status);
 
-    // [FIX 2] Somente PAYMENT_RECEIVED confirma que o dinheiro foi RECEBIDO.
-    // PAYMENT_CONFIRMED = cobrança registrada no Asaas, NÃO significa crédito real.
-    // Aceitar PAYMENT_CONFIRMED causou o bug do cliente 'David'.
-    if (evento === 'PAYMENT_RECEIVED') {
+    // Eventos que confirmam pagamento: PAYMENT_RECEIVED ou PAYMENT_CONFIRMED
+    if (evento === 'PAYMENT_RECEIVED' || evento === 'PAYMENT_CONFIRMED') {
       var nomeCliente = payment.customer ? (payment.customer.name || '') : '';
       var valor = payment.value || '';
-      console.log('[WEBHOOK] Pagamento RECEBIDO | cliente:', nomeCliente, '| valor: R$', valor, '| ref:', payment.externalReference);
-      if (payment.externalReference) {
-        const cpf = payment.externalReference.split('_')[0];
-        const reserva = buscarReservaPorCPF(cpf, 'aguardando_pagamento');
-        if (reserva) {
-          console.log('[WEBHOOK] Atualizando reserva para confirmado | doc:', reserva.id);
-          atualizarStatusReserva(reserva.id, 'confirmado', 'webhook_PAYMENT_RECEIVED');
-          try {
-            var f = reserva.data;
-            var dadosReserva = {
-              reserva_id:    reserva.id,
-              cliente_nome:  f.cliente_nome   ? f.cliente_nome.stringValue   : '',
-              cliente_cpf:   f.cliente_cpf    ? f.cliente_cpf.stringValue    : '',
-              motel:         f.motel          ? f.motel.stringValue          : '',
-              suite:         f.suite          ? f.suite.stringValue          : '',
-              data_reserva:  f.data_reserva   ? f.data_reserva.stringValue   : '',
-              hora_chegada:  f.hora_chegada   ? f.hora_chegada.stringValue   : '',
-              duracao:       f.duracao        ? f.duracao.stringValue        : '',
-              preco:         f.preco          ? f.preco.stringValue          : '',
-              payment_id:    f.payment_id     ? (f.payment_id.stringValue || f.payment_id.integerValue) : '',
-              status:        'confirmado'
-            };
-            enviarEmailConfirmacao(dadosReserva);
-            enviarParaAutorizados(formatarMensagemTelegram(dadosReserva));
-          } catch(e) {
-            console.warn('[WEBHOOK] Falha ao notificar confirmacao:', e);
-          }
-        } else {
-          console.warn('[WEBHOOK] Reserva não encontrada para CPF:', cpf, '| pode já ter sido confirmada ou cancelada');
-          try {
-            enviarEmailConfirmacao({
-              payment_id: payment.id || '',
-              cliente_nome: nomeCliente || '',
-              preco: valor || '',
-              status: 'confirmado'
-            });
-          } catch(e) { console.warn('[WEBHOOK] Email fallback fail:', e); }
+      console.log('[WEBHOOK] Pagamento APROVADO | evento:', evento, '| cliente:', nomeCliente, '| valor: R$', valor, '| ref:', payment.externalReference);
+
+      var reserva = null;
+
+      // 1. Se externalReference for o próprio ID do documento Firestore (sem underline), atualiza direto (imune a cotas de leitura)
+      if (payment.externalReference && !payment.externalReference.includes('_')) {
+        console.log('[WEBHOOK] externalReference é docId direto:', payment.externalReference);
+        atualizarStatusReserva(payment.externalReference, 'confirmado', 'webhook_' + evento, evento, payment.id);
+        reserva = { id: payment.externalReference };
+      }
+
+      // 2. Busca prioritária direta por payment_id
+      if (!reserva) {
+        reserva = buscarReservaPorPaymentId(payment.id);
+      }
+
+      // Sem payment_id ou docId, não alteramos automaticamente. CPF não é
+      // vínculo único: o mesmo cliente pode gerar mais de uma reserva.
+
+      if (reserva) {
+        console.log('[WEBHOOK] Reserva confirmada com sucesso | doc:', reserva.id);
+        if (payment.externalReference && payment.externalReference.includes('_')) {
+          atualizarStatusReserva(reserva.id, 'confirmado', 'webhook_' + evento, evento, payment.id);
         }
+        try {
+          var fConf = reserva.data || {};
+          enviarParaAutorizados(formatarMensagemTelegram({
+            motel: valorCampo(fConf, 'motel') || (payment.description ? payment.description.split(' - ')[0] : '?'),
+            suite: valorCampo(fConf, 'suite') || (payment.description || '?'),
+            duracao: valorCampo(fConf, 'duracao') || '',
+            preco: valor || valorCampo(fConf, 'preco') || '0',
+            cliente_nome: valorCampo(fConf, 'cliente_nome') || nomeCliente || '?',
+            cliente_cpf: valorCampo(fConf, 'cliente_cpf') || '',
+            data_reserva: valorCampo(fConf, 'data_reserva') || '',
+            hora_chegada: valorCampo(fConf, 'hora_chegada') || '',
+            payment_id: payment.id || '',
+            status: 'confirmado'
+          }, '✅ <b>Pagamento Confirmado no Asaas</b>'));
+        } catch(e) { console.warn('[WEBHOOK] Telegram fail:', e); }
+        try {
+          MailApp.sendEmail(EMAIL_NOTIFICAR, '✅ Pagamento Recebido - ' + (payment.id || ''),
+            'Pagamento recebido no Asaas e reserva confirmada:\n\nCliente: ' + nomeCliente + '\nValor: R$ ' + valor + '\nID Asaas: ' + (payment.id || '') + '\nDoc Reserva: ' + reserva.id + '\nEvento: ' + evento);
+        } catch(e) { console.warn('[WEBHOOK] Email fail:', e); }
+      } else {
+        console.warn('[WEBHOOK] Reserva não encontrada por vínculo único | payment_id:', payment.id, '| ref:', payment.externalReference);
+        try {
+          enviarParaAutorizados('⚠️ <b>Pagamento Recebido Sem Reserva Vinculada</b>\n👤 Cliente: ' + (nomeCliente || '?') + '\n💰 Valor: R$ ' + valor + '\n📋 ID Asaas: ' + (payment.id || '') + '\n🔗 Ref: ' + (payment.externalReference || ''));
+        } catch(e) {}
+        try {
+          MailApp.sendEmail(EMAIL_NOTIFICAR, '⚠️ Pagamento Recebido Sem Reserva Vinculada',
+            'Pagamento recebido no Asaas, mas reserva não foi encontrada no banco:\n\nCliente: ' + nomeCliente + '\nValor: R$ ' + valor + '\nID Asaas: ' + (payment.id || '') + '\nRef: ' + (payment.externalReference || '') + '\nEvento: ' + evento);
+        } catch(e) { console.warn('[WEBHOOK] Email fallback fail:', e); }
       }
     } else if (evento === 'PAYMENT_OVERDUE' || evento === 'PAYMENT_DELETED') {
       console.log('[WEBHOOK] Pagamento vencido/excluído | evento:', evento, '| payment_id:', payment.id, '| ref:', payment.externalReference);
-      if (payment.externalReference) {
-        const cpf = payment.externalReference.split('_')[0];
-        const reserva = buscarReservaPorCPF(cpf, 'aguardando_pagamento');
-        if (reserva) {
-          console.log('[WEBHOOK] Cancelando reserva por vencimento | doc:', reserva.id);
-          atualizarStatusReserva(reserva.id, 'cancelado', 'webhook_' + evento);
+      var reservaCanc = buscarReservaPorPaymentId(payment.id);
+      if (!reservaCanc && payment.externalReference && !payment.externalReference.includes('_')) {
+        reservaCanc = buscarReservaPorDocId(payment.externalReference);
+      }
+      if (reservaCanc) {
+        var decisao = avaliarCancelamentoNoAsaas(reservaCanc, payment);
+        if (decisao.seguroParaCancelar) {
+          console.log('[WEBHOOK] Cancelando reserva validada pelo Asaas | doc:', reservaCanc.id);
+          atualizarStatusReserva(reservaCanc.id, 'cancelado', 'webhook_' + evento, evento, payment.id);
         } else {
-          console.warn('[WEBHOOK] Reserva não encontrada para cancelamento CPF:', cpf);
+          console.warn('[WEBHOOK] Cancelamento bloqueado para preservar reserva | doc:', reservaCanc.id, '| motivo:', decisao.motivo);
         }
+      } else {
+        console.warn('[WEBHOOK] Reserva não encontrada com vínculo inequívoco para cancelamento payment_id:', payment.id);
       }
     } else {
-      // Logar eventos ignorados para rastreabilidade
-      console.log('[WEBHOOK] Evento ignorado (não altera status):', evento, '| Apenas PAYMENT_RECEIVED confirma reserva.');
+      console.log('[WEBHOOK] Evento informativo ignorado:', evento, '| payment_id:', payment.id);
     }
 
     return ContentService.createTextOutput(JSON.stringify({ sucesso: true }))
@@ -760,19 +713,53 @@ function validarCheckin(dados) {
 // ===== VERIFICAR PAGAMENTO (chamado pelo chat) =====
 function verificarPagamento(dados) {
   const token = dados.token_asaas;
+  const STATUS_PAGO = ['RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'];
+
+  // Token indisponivel: NAO afirmamos que nao foi pago (isso faria o chat cancelar).
   if (!token || !token.startsWith('$')) {
-    return ContentService.createTextOutput(JSON.stringify({ sucesso: true, pago: false, erro: 'Token inválido' }))
+    return ContentService.createTextOutput(JSON.stringify({ sucesso: false, pago: null, erro: 'Token invalido' }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 
   try {
-    const pagamento = apiAsaas(token, 'get', '/payments/' + dados.payment_id);
-    const pago = pagamento.status === 'RECEIVED';
+    // 1) Uma reserva pode ter mais de uma cobranca (ex.: PIX abandonado).
+    //    Se QUALQUER uma estiver paga, consideramos pago.
+    const extRef = dados.external_reference || dados.reserva_id || '';
+    if (extRef) {
+      const lista = apiAsaas(token, 'get', '/payments?externalReference=' + encodeURIComponent(extRef) + '&limit=50');
+      const arr = (lista && lista.data) ? lista.data : [];
+      var pagoItem = null;
+      for (var i = 0; i < arr.length; i++) {
+        if (STATUS_PAGO.indexOf(arr[i].status) >= 0) { pagoItem = arr[i]; break; }
+      }
+      if (pagoItem) {
+        return ContentService.createTextOutput(JSON.stringify({ sucesso: true, pago: true, status: pagoItem.status, payment_id: pagoItem.id }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+      if (arr.length) {
+        var statusNaoPago = arr[0].status;
+        for (var j = 0; j < arr.length; j++) {
+          if (arr[j].status === 'OVERDUE') { statusNaoPago = 'OVERDUE'; }
+        }
+        return ContentService.createTextOutput(JSON.stringify({ sucesso: true, pago: false, status: statusNaoPago }))
+          .setMimeType(ContentService.MimeType.JSON);
+      }
+    }
 
-    return ContentService.createTextOutput(JSON.stringify({ sucesso: true, pago: pago, status: pagamento.status }))
+    // 2) Fallback: consulta a cobranca especifica pelo payment_id
+    if (dados.payment_id) {
+      const pagamento = apiAsaas(token, 'get', '/payments/' + dados.payment_id);
+      const pago = STATUS_PAGO.indexOf(pagamento.status) >= 0;
+      return ContentService.createTextOutput(JSON.stringify({ sucesso: true, pago: pago, status: pagamento.status || 'UNKNOWN' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // 3) Nada consultado: resposta nao autoritativa (o chat nao deve cancelar)
+    return ContentService.createTextOutput(JSON.stringify({ sucesso: false, pago: null, erro: 'Sem referencia de pagamento' }))
       .setMimeType(ContentService.MimeType.JSON);
   } catch (e) {
-    return ContentService.createTextOutput(JSON.stringify({ sucesso: false, erro: e.message }))
+    // Erro ao consultar o Asaas: resposta nao autoritativa.
+    return ContentService.createTextOutput(JSON.stringify({ sucesso: false, pago: null, erro: e.message }))
       .setMimeType(ContentService.MimeType.JSON);
   }
 }
@@ -872,8 +859,11 @@ function limparReservasExpiradas() {
     var pendentes = firebaseApi('post', ':runQuery', queryPendentes);
     var docsPendentes = (pendentes || []).filter(function(item) { return item && item.document; });
     if (docsPendentes.length > 0) {
-      // Carrega tokens dos motéis apenas quando há reservas realmente pendentes
-      var configSnap = firebaseApi('get', '/config/motels', null);
+      // Carrega tokens dos motéis apenas se houver reservas pendentes
+      if (!globalThis._cacheConfigMotels) {
+        globalThis._cacheConfigMotels = firebaseApi('get', '/config/motels', null);
+      }
+      var configSnap = globalThis._cacheConfigMotels;
       var tokensPorMotel = {};
       if (configSnap && configSnap.fields && configSnap.fields.motels && configSnap.fields.motels.mapValue) {
         var motelsMap = configSnap.fields.motels.mapValue.fields;
@@ -894,40 +884,60 @@ function limparReservasExpiradas() {
         var tokenAsaas = tokensPorMotel[motelNome] || (fields.token_asaas ? fields.token_asaas.stringValue : '');
         var criadoEm = fields.criado_em ? new Date(fields.criado_em.stringValue).getTime() : 0;
 
-        // Se tem token, consulta status real no Asaas
-        if (paymentId && tokenAsaas && tokenAsaas.startsWith('$')) {
+        // Regra de ouro: se qualquer cobranca estiver paga, confirma; se NAO
+        // conseguirmos confirmar no Asaas, NAO cancela por tempo.
+        var STATUS_PAGO_LIMPEZA = ['RECEIVED', 'CONFIRMED', 'RECEIVED_IN_CASH'];
+        var indeterminado = true;
+        if (tokenAsaas && tokenAsaas.startsWith('$')) {
           try {
-            var pagInfo = apiAsaas(tokenAsaas, 'get', '/payments/' + paymentId);
-            if (pagInfo && pagInfo.status) {
-              if (pagInfo.status === 'RECEIVED') {
-                // Pagamento foi recebido! Atualiza para confirmado
-                console.log('[LIMPEZA] Pagamento RECEBIDO detectado via consulta Asaas | doc:', docId, '| payment:', paymentId);
-                atualizarStatusReserva(docId, 'confirmado', 'limpeza_consulta_asaas');
-                continue; // não cancela
+            var listaExp = apiAsaas(tokenAsaas, 'get', '/payments?externalReference=' + encodeURIComponent(docId) + '&limit=50');
+            var arrExp = (listaExp && listaExp.data) ? listaExp.data : [];
+            if (!arrExp.length && paymentId) {
+              var pagInfo = apiAsaas(tokenAsaas, 'get', '/payments/' + paymentId);
+              if (pagInfo && pagInfo.status) arrExp = [pagInfo];
+            }
+            if (arrExp.length) {
+              var pagoExp = null;
+              for (var p = 0; p < arrExp.length; p++) {
+                if (STATUS_PAGO_LIMPEZA.indexOf(arrExp[p].status) >= 0) { pagoExp = arrExp[p]; break; }
               }
-              if (pagInfo.status === 'PENDING' || pagInfo.status === 'CONFIRMED') {
-                // Ainda não expirou ou está pendente, não faz nada
+              if (pagoExp) {
+                console.log('[LIMPEZA] Pagamento ja recebido; confirmando | doc:', docId, '| payment:', pagoExp.id);
+                atualizarStatusReserva(docId, 'confirmado', 'limpeza_consulta_asaas');
                 continue;
               }
+              var statusExp = arrExp[0].status;
+              for (var q = 0; q < arrExp.length; q++) {
+                if (arrExp[q].status === 'OVERDUE') { statusExp = 'OVERDUE'; }
+              }
+              if (statusExp === 'PENDING' || statusExp === 'AWAITING_RISK_ANALYSIS') {
+                continue;
+              }
+              indeterminado = false;
             }
           } catch(e) {
-            console.warn('[LIMPEZA] Erro ao consultar Asaas | doc:', docId, '| payment:', paymentId, '| erro:', e.message);
+            console.warn('[LIMPEZA] Erro ao consultar Asaas (nao cancelando) | doc:', docId, '| erro:', e.message);
+            indeterminado = true;
           }
         }
 
-        // Sem token ou sem payment_id: verifica apenas por tempo
+        if (indeterminado) {
+          console.log('[LIMPEZA] Sem confirmacao do Asaas; reserva NAO cancelada | doc:', docId);
+          continue;
+        }
+
         if (criadoEm && (agora - criadoEm > TEMPO_EXPIRACAO)) {
-          console.log('[LIMPEZA] Cancelando reserva expirada | doc:', docId, '| criado_em:', fields.criado_em ? fields.criado_em.stringValue : '?');
-          atualizarStatusReserva(docId, 'cancelado', 'limpeza_automatica_expirada');
-          canceladas++;
+          // O cron apenas reconcilia pagamentos. Não cancela por tempo, pois o
+          // Asaas pode registrar um PIX após esse prazo visual.
+          console.log('[LIMPEZA] Reserva pendente fora do prazo visual preservada | doc:', docId);
         }
       }
     }
 
-    // 2) Deleta reservas canceladas com mais de 7 dias (roda apenas 1x por dia para poupar leituras do Firestore)
-    var props = PropertiesService.getScriptProperties();
-    var hojeDia = new Date().toISOString().split('T')[0];
-    if (props.getProperty('ULTIMA_LIMPEZA_7DIAS') !== hojeDia) {
+    // 2) Deleta reservas canceladas com mais de 7 dias (roda apenas 1x por dia para não esgotar a cota do Firestore)
+    var propsLimpeza = PropertiesService.getScriptProperties();
+    var hojeDia = new Date().toISOString().slice(0, 10);
+    if (propsLimpeza.getProperty('ULTIMA_LIMPEZA_7DIAS') !== hojeDia) {
       var dataCorteISO = new Date(agora - TEMPO_DELECAO).toISOString();
       var queryCanceladas = {
         structuredQuery: {
@@ -947,13 +957,24 @@ function limparReservasExpiradas() {
       if (canceladasLista && canceladasLista.length) {
         for (var j = 0; j < canceladasLista.length; j++) {
           if (!canceladasLista[j].document) continue;
+          var f2 = canceladasLista[j].document.fields;
           var docId2 = canceladasLista[j].document.name.split('/').pop();
+          if (f2.payment_id) {
+            var resultadoReconciliacao = avaliarCancelamentoNoAsaas(
+              { id: docId2, data: f2 },
+              { id: valorCampo(f2, 'payment_id'), externalReference: valorCampo(f2, 'external_reference') || docId2 }
+            );
+            if (resultadoReconciliacao.pago) {
+              console.log('[LIMPEZA] Reserva cancelada recuperada após pagamento Asaas | doc:', docId2);
+              continue;
+            }
+          }
           console.log('[LIMPEZA] Deletando reserva cancelada antiga | doc:', docId2);
           deletarDocumentoFirestore('/reservas/' + docId2);
           deletadas++;
         }
       }
-      props.setProperty('ULTIMA_LIMPEZA_7DIAS', hojeDia);
+      propsLimpeza.setProperty('ULTIMA_LIMPEZA_7DIAS', hojeDia);
     }
 
     console.log('[LIMPEZA] Concluído | canceladas:', canceladas, '| deletadas:', deletadas);
@@ -962,4 +983,12 @@ function limparReservasExpiradas() {
     console.error('[LIMPEZA] Erro:', e.message);
     return { sucesso: false, erro: e.message };
   }
+}
+
+// ===== PROTEÇÃO DE TOKENS DOS MOTÉIS =====
+// Os tokens são gerenciados exclusivamente em Propriedades do script.
+// Esta função existe apenas para bloquear execuções acidentais de versões
+// antigas que tentavam gravar tokens a partir do código-fonte.
+function salvarTokensAsaas() {
+  console.warn('[TOKENS] Operação bloqueada. Nenhum token foi criado, alterado ou excluído. Use Configurações do projeto > Propriedades do script somente quando uma rotação for autorizada.');
 }
