@@ -281,16 +281,32 @@ function montarHtmlReserva(dados, confirmado) {
   return html;
 }
 
-// ===== TELEGRAM (comandos do bot) =====
-var TELEGRAM_TOKEN = '8775507409:AAE_ELsc4wzurqdnQ9wZtC_cnAhTXknIlj8';
-var IDS_AUTORIZADOS = ['6802504310'];
+// ===== TELEGRAM (comandos do bot e alertas de reserva) =====
+// Configure TELEGRAM_BOT_TOKEN em Configurações do Projeto > Propriedades do Script no Google Apps Script
+var IDS_AUTORIZADOS_PADRAO = ['8649472512', '6802504310'];
+
+function obterTokenTelegram() {
+  return (PropertiesService.getScriptProperties().getProperty('TELEGRAM_BOT_TOKEN') || '').trim();
+}
+
+function obterIdsAutorizados() {
+  var extra = (PropertiesService.getScriptProperties().getProperty('TELEGRAM_CHAT_ID') || '').trim();
+  var lista = IDS_AUTORIZADOS_PADRAO.slice();
+  if (extra) {
+    extra.split(',').forEach(function(id) {
+      var limpo = id.trim();
+      if (limpo && lista.indexOf(limpo) === -1) lista.push(limpo);
+    });
+  }
+  return lista;
+}
 
 function processarMensagemTelegram(msg) {
   var chatId = msg.chat.id;
   var userId = msg.from.id.toString();
   var texto = msg.text || '';
 
-  if (IDS_AUTORIZADOS.indexOf(userId) === -1) {
+  if (obterIdsAutorizados().indexOf(userId) === -1) {
     enviarMensagem(chatId, "Acesso negado.");
     return;
   }
@@ -314,7 +330,7 @@ function processarCallback(callback) {
   var userId = callback.from.id.toString();
   var data = callback.data;
 
-  if (IDS_AUTORIZADOS.indexOf(userId) === -1) {
+  if (obterIdsAutorizados().indexOf(userId) === -1) {
     enviarMensagem(chatId, "Acesso negado.");
     return;
   }
@@ -327,7 +343,7 @@ function processarCallback(callback) {
 }
 
 function enviarRelatorioComBotoes(chatId) {
-  var url = 'https://api.telegram.org/bot' + TELEGRAM_TOKEN + '/sendMessage';
+  var token = obterTokenTelegram(); if (!token) return; var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
   var payload = {
     chat_id: chatId,
     text: 'Relatório Financeiro:',
@@ -346,8 +362,8 @@ function enviarRelatorioComBotoes(chatId) {
 }
 
 function enviarParaAutorizados(mensagem) {
-  var url = 'https://api.telegram.org/bot' + TELEGRAM_TOKEN + '/sendMessage';
-  IDS_AUTORIZADOS.forEach(function(chatId) {
+  var token = obterTokenTelegram(); if (!token) return; var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
+  obterIdsAutorizados().forEach(function(chatId) {
     UrlFetchApp.fetch(url, {
       method: 'post',
       payload: { chat_id: chatId, text: mensagem, parse_mode: 'HTML' },
@@ -357,7 +373,7 @@ function enviarParaAutorizados(mensagem) {
 }
 
 function enviarMensagem(chatId, texto) {
-  var url = 'https://api.telegram.org/bot' + TELEGRAM_TOKEN + '/sendMessage';
+  var token = obterTokenTelegram(); if (!token) return; var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
   UrlFetchApp.fetch(url, {
     method: 'post',
     payload: { chat_id: chatId, text: texto },
@@ -426,7 +442,7 @@ function enviarResumoDoDia(chatId) {
 
     msg += '\n\n<b>Receita:</b> R$ ' + receita.toFixed(2).replace('.', ',');
 
-    var url = 'https://api.telegram.org/bot' + TELEGRAM_TOKEN + '/sendMessage';
+    var token = obterTokenTelegram(); if (!token) return; var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
     UrlFetchApp.fetch(url, {
       method: 'post',
       payload: { chat_id: chatId, text: msg, parse_mode: 'HTML' },
@@ -438,7 +454,7 @@ function enviarResumoDoDia(chatId) {
 }
 
 function testarTelegram(chatId) {
-  var url = 'https://api.telegram.org/bot' + TELEGRAM_TOKEN + '/sendMessage';
+  var token = obterTokenTelegram(); if (!token) return; var url = 'https://api.telegram.org/bot' + token + '/sendMessage';
   try {
     var resp = UrlFetchApp.fetch(url, {
       method: 'post',
@@ -854,8 +870,9 @@ function limparReservasExpiradas() {
       }
     };
     var pendentes = firebaseApi('post', ':runQuery', queryPendentes);
-    if (pendentes && pendentes.length) {
-      // Carrega tokens dos motéis para consultar Asaas
+    var docsPendentes = (pendentes || []).filter(function(item) { return item && item.document; });
+    if (docsPendentes.length > 0) {
+      // Carrega tokens dos motéis apenas quando há reservas realmente pendentes
       var configSnap = firebaseApi('get', '/config/motels', null);
       var tokensPorMotel = {};
       if (configSnap && configSnap.fields && configSnap.fields.motels && configSnap.fields.motels.mapValue) {
@@ -907,34 +924,36 @@ function limparReservasExpiradas() {
       }
     }
 
-    // 2) Deleta reservas canceladas com mais de 7 dias (para não acumular no painel)
-    var queryCanceladas = {
-      structuredQuery: {
-        where: {
-          compositeFilter: {
-            op: 'AND',
-            filters: [
-              { fieldFilter: { field: { fieldPath: 'status' }, op: 'EQUAL', value: { stringValue: 'cancelado' } } }
-            ]
-          }
-        },
-        limit: 50
-      }
-    };
-    var canceladasLista = firebaseApi('post', ':runQuery', queryCanceladas);
-    if (canceladasLista && canceladasLista.length) {
-      for (var j = 0; j < canceladasLista.length; j++) {
-        if (!canceladasLista[j].document) continue;
-        var f2 = canceladasLista[j].document.fields;
-        var docId2 = canceladasLista[j].document.name.split('/').pop();
-        if (!f2.criado_em) continue;
-        var criadoEm2 = new Date(f2.criado_em.stringValue).getTime();
-        if (agora - criadoEm2 > TEMPO_DELECAO) {
-          console.log('[LIMPEZA] Deletando reserva cancelada antiga | doc:', docId2, '| criado_em:', f2.criado_em.stringValue);
+    // 2) Deleta reservas canceladas com mais de 7 dias (roda apenas 1x por dia para poupar leituras do Firestore)
+    var props = PropertiesService.getScriptProperties();
+    var hojeDia = new Date().toISOString().split('T')[0];
+    if (props.getProperty('ULTIMA_LIMPEZA_7DIAS') !== hojeDia) {
+      var dataCorteISO = new Date(agora - TEMPO_DELECAO).toISOString();
+      var queryCanceladas = {
+        structuredQuery: {
+          where: {
+            compositeFilter: {
+              op: 'AND',
+              filters: [
+                { fieldFilter: { field: { fieldPath: 'status' }, op: 'EQUAL', value: { stringValue: 'cancelado' } } },
+                { fieldFilter: { field: { fieldPath: 'criado_em' }, op: 'LESS_THAN', value: { stringValue: dataCorteISO } } }
+              ]
+            }
+          },
+          limit: 50
+        }
+      };
+      var canceladasLista = firebaseApi('post', ':runQuery', queryCanceladas);
+      if (canceladasLista && canceladasLista.length) {
+        for (var j = 0; j < canceladasLista.length; j++) {
+          if (!canceladasLista[j].document) continue;
+          var docId2 = canceladasLista[j].document.name.split('/').pop();
+          console.log('[LIMPEZA] Deletando reserva cancelada antiga | doc:', docId2);
           deletarDocumentoFirestore('/reservas/' + docId2);
           deletadas++;
         }
       }
+      props.setProperty('ULTIMA_LIMPEZA_7DIAS', hojeDia);
     }
 
     console.log('[LIMPEZA] Concluído | canceladas:', canceladas, '| deletadas:', deletadas);
