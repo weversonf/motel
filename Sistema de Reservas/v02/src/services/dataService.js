@@ -43,7 +43,7 @@ export async function loadReservations() {
   try {
     const db = getDB();
     const snap = await Promise.race([
-      db.collection("reservas").orderBy("criado_em", "desc").get(),
+      db.collection("reservas").orderBy("criado_em", "desc").limit(150).get(),
       new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 5000)),
     ]);
     const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
