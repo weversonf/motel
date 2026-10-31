@@ -8,8 +8,8 @@
  */
 
 // ===== CONFIGURAÇÕES =====
-var TELEGRAM_TOKEN = '8775507409:AAE_ELsc4wzurqdnQ9wZtC_cnAhTXknIlj8';
-var IDS_AUTORIZADOS = ['6802504310']; // Adicione o ID da Rose aqui
+var TELEGRAM_TOKEN = (PropertiesService.getScriptProperties().getProperty('TELEGRAM_BOT_TOKEN') || '').trim();
+var IDS_AUTORIZADOS = ['8649472512', '6802504310'];
 
 // ===== FUNÇÃO PRINCIPAL =====
 function doPost(e) {
