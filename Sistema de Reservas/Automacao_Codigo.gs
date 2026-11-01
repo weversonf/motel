@@ -236,12 +236,12 @@ function formatarMensagemTelegram(dados, tituloPersonalizado) {
   var statusTexto = '';
   switch (dados.status) {
     case 'confirmado': statusTexto = '✅ Confirmado (Pago)'; break;
-    case 'pendente_cartao': statusTexto = '⏳ Pendente (Cartão)'; break;
+    case 'pendente_cartao': statusTexto = '⏳ A pagar no motel (Cartão)'; break;
     case 'pendente_recepcao': statusTexto = '⏳ Pendente (Recepção)'; break;
     case 'aguardando_pagamento': statusTexto = '⏳ Aguardando PIX'; break;
     default: statusTexto = dados.status || 'Aguardando PIX';
   }
-  var titulo = tituloPersonalizado || (dados.status === 'confirmado' ? '✅ <b>Reserva Confirmada (PIX Pago)</b>' : '🔔 <b>Nova Reserva Iniciada</b>');
+  var titulo = tituloPersonalizado || dados.titulo_telegram || (dados.status === 'confirmado' ? '✅ <b>Reserva Confirmada (Pagamento Recebido)</b>' : '🔔 <b>Nova Reserva Iniciada</b>');
   return titulo
     + '\n🏨 Motel: <b>' + (dados.motel || '?') + '</b>'
     + '\n🛏 Suíte: ' + (dados.suite || '?')
@@ -263,7 +263,7 @@ function enviarEmailNotificacao(dados) {
   try {
     var enviarEmail = PropertiesService.getScriptProperties().getProperty('ENVIAR_EMAIL');
     if (enviarEmail === 'false') return;
-    var statusTexto = dados.status === 'pendente_recepcao' ? 'Pendente (Recepção)' : (dados.status === 'pendente_cartao' ? 'Pendente (Cartão)' : 'Aguardando PIX');
+    var statusTexto = dados.status === 'pendente_recepcao' ? 'Pendente (Recepção)' : (dados.status === 'pendente_cartao' ? 'A pagar no motel (Cartão)' : 'Aguardando PIX');
     var assunto = 'Nova Reserva - ' + (dados.motel || 'Motel') + ' (' + (dados.suite || '?') + ')';
     var corpo = 'NOVA RESERVA\n━━━━━━━━━━━━━━\n\n'
       + 'Motel: ' + (dados.motel || '?') + '\n'

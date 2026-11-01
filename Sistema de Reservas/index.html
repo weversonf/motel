@@ -281,7 +281,8 @@
                     + '</div>'
                     + '<label class="regulamento-check"><input type="checkbox" id="aceiteRegulamento" onchange="window.toggleBotoesPagamento()"> <span>Li e concordo com todas as condições do regulamento acima</span></label>'
                     + '<button class="btn-action" id="btnPix" style="margin-bottom:8px;background:#28a745" onclick="window.mostrarOpcoesPix()" disabled>💳 Pagar com PIX</button>'
-                    + '<button class="btn-action" id="btnCartao" style="background:#666" onclick="window.confirmarCartao()" disabled>💳 Pagar com Cartão</button>'
+                    + '<button class="btn-action" id="btnCartao" style="background:#666" onclick="window.confirmarCartao()" disabled>💳 Cartão na recepção</button>'
+                    + '<div style="text-align:center;margin-top:6px;font-size:.75rem;color:#888">O cartão é pago presencialmente no motel. Pagamento online disponível apenas via PIX.</div>'
                     + '<div style="text-align:center;margin-top:6px"><span onclick="window.voltar()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">← Voltar</span> · <span onclick="window.irParaMenu()" style="color:#666;font-size:.8rem;cursor:pointer;text-decoration:underline">🏠 Menu</span></div>'
                     + '<div class="badge-pendente">⏳ Pré-reserva - aguardando confirmação</div>';
             }
@@ -295,9 +296,22 @@
         window.handleText = function() {
             var text = userInput.value.trim();
             if (!text) return;
-            addMsg(text, 'user');
-            userInput.value = '';
-            if (step === 0) { userData.nome = text; step++; setTimeout(nextStep, 400); }
+            if (step === 0) {
+                var palavras = text.split(/\s+/).filter(Boolean);
+                var parecePedido = /\b(pagar|pagamento|cart[aã]o|pix|reserva|quero|su[ií]te|motel|cr[eé]dito|d[eé]bito)\b/i.test(text);
+                var nomeValido = text.length >= 2 && text.length <= 60 && palavras.length <= 6
+                    && /^[A-Za-zÀ-ÖØ-öø-ÿ' -]+$/.test(text) && !parecePedido;
+                if (!nomeValido) {
+                    addMsg('⚠️ Digite apenas o nome do hóspede (ex.: João Silva). A forma de pagamento será escolhida no final.', 'bot');
+                    userInput.focus();
+                    return;
+                }
+                addMsg(text, 'user');
+                userInput.value = '';
+                userData.nome = text;
+                step++;
+                setTimeout(nextStep, 400);
+            }
         };
         window.mascaraCPF = function(i) {
             i.value = i.value.replace(/\D/g,"");
@@ -746,7 +760,7 @@
                 addMsg('🎁 PIX com +3h grátis - 6h total', 'user');
             } else {
                 userData.preco = userData.precoOriginal;
-                addMsg('💳 Pagar com Cartão', 'user');
+                addMsg('💳 Pagar com cartão na recepção', 'user');
             }
             finalizarFluxo();
         }
@@ -810,7 +824,7 @@
 
             if (isRecepcao || isCartao) {
                 addMsg(tituloSucesso, 'bot');
-                addMsg((isAlteracao ? '✏️ Sua reserva foi atualizada. ' : '💵 Sua reserva foi enviada para a recepção. ') + (isCartao ? 'Pagamento com cartão será confirmado na recepção.' : 'Apresente seu CPF no check-in.'), 'bot');
+                addMsg((isAlteracao ? '✏️ Sua reserva foi atualizada. ' : '💵 Sua reserva foi enviada para a recepção. ') + (isCartao ? 'O cartão será pago presencialmente e confirmado pela recepção do motel.' : 'Apresente seu CPF no check-in.'), 'bot');
                 addMsg('<div style="font-size:.8rem;color:#888;text-align:center">Protocolo: ' + userData.protocolo + '</div>', 'bot');
                 addMsg('<div style="text-align:center;margin-top:4px"><button class="btn-action" style="background:#333;font-size:.85rem;padding:10px" onclick="window.mostrarComprovante()">📄 Meu Comprovante</button></div>', 'bot');
                 fetch(APP_SCRIPT_URL, { method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"}, body:JSON.stringify({ acao:'notificar', motel:payload.motel, suite:payload.suite, duracao:payload.duracao, preco:payload.preco, cliente_nome:payload.cliente_nome, cliente_cpf:payload.cliente_cpf, data_reserva:payload.data_reserva, hora_chegada:payload.hora_chegada, status:isCartao ? 'pendente_cartao' : 'pendente_recepcao' }) }).catch(function(){});
